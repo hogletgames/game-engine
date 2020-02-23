@@ -1,5 +1,8 @@
 ## Game Engine
 
+### Dependencies
+- [spdlog](https://github.com/gabime/spdlog)
+
 ### How to build library
 Build shared library:
 ```bash
