@@ -30,23 +30,68 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_WINDOWS_KEY_EVENT_H_
+#define GE_WINDOWS_KEY_EVENT_H_
 
-#include <ge/application.h>
-#include <ge/log.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window_event.h>
+#include <ge/window/event.h>
 
-#define GE_INITIALIZE() ::GE::initialize()
-#define GE_SHUTDOWN()   ::GE::shutdown()
+#include <sstream>
 
 namespace GE {
 
-void initialize();
-void shutdown();
+class GE_API KeyEvent: public Event
+{
+public:
+    uint16_t getKeyCode() const { return m_key_code; }
+
+protected:
+    explicit KeyEvent(uint16_t key_code)
+        : m_key_code{key_code}
+    {}
+
+    uint16_t m_key_code{};
+};
+
+class GE_API KeyPressedEvent: public KeyEvent
+{
+public:
+    KeyPressedEvent(uint16_t key_code = 0, uint32_t repeat_count = 0)
+        : KeyEvent{key_code}
+        , m_repeat_count{repeat_count}
+    {}
+
+    uint32_t getRepeatCount() const { return m_repeat_count; }
+
+    std::string toString() const override
+    {
+        std::stringstream ss;
+        ss << "KeyPressedEvent: " << m_key_code << " (" << m_repeat_count << " repeats)";
+        return ss.str();
+    }
+
+    DECLARE_EVENT_TYPE(KEY_PRESSED)
+
+private:
+    uint32_t m_repeat_count{};
+};
+
+class GE_API KeyReleasedEvent: public KeyEvent
+{
+public:
+    explicit KeyReleasedEvent(uint16_t key_code = 0)
+        : KeyEvent{key_code}
+    {}
+
+    std::string toString() const override
+    {
+        std::stringstream ss;
+        ss << "KeyReleasedEvent: " << m_key_code;
+        return ss.str();
+    }
+
+    DECLARE_EVENT_TYPE(KEY_RELEASED)
+};
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_WINDOWS_KEY_EVENT_H_

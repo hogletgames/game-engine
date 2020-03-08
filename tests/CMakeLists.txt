@@ -32,6 +32,7 @@ endif()
 
 set(GE_CORE_TEST_SRC
     test_ge_core.cpp
+    test_ge_window.cpp
 )
 
 add_executable(test_ge_core ${GE_CORE_TEST_SRC})

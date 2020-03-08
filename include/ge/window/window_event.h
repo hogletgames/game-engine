@@ -30,23 +30,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_WINDOW_WINDOW_EVENT_H_
+#define GE_WINDOW_WINDOW_EVENT_H_
 
-#include <ge/application.h>
-#include <ge/log.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window_event.h>
+#include <ge/window/event.h>
 
-#define GE_INITIALIZE() ::GE::initialize()
-#define GE_SHUTDOWN()   ::GE::shutdown()
+#include <sstream>
 
 namespace GE {
+class GE_API WindowResizedEvent: public Event
+{
+public:
+    WindowResizedEvent(uint32_t width = 0, uint32_t height = 0)
+        : m_width{width}
+        , m_height{height}
+    {}
 
-void initialize();
-void shutdown();
+    uint32_t getWidth() const { return m_width; }
+    uint32_t getHeight() const { return m_height; }
+
+    std::string toString() const override
+    {
+        std::stringstream ss;
+        ss << "WindowResizedEvent: " << m_width << ", " << m_height;
+        return ss.str();
+    }
+
+    DECLARE_EVENT_TYPE(WINDOW_RESIZED)
+
+private:
+    uint32_t m_width{};
+    uint32_t m_height{};
+};
+
+class GE_API WindowClosedEvent: public Event
+{
+public:
+    WindowClosedEvent() = default;
+
+    std::string toString() const override { return "WindowClosedEvent:"; }
+
+    DECLARE_EVENT_TYPE(WINDOW_CLOSED)
+};
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_WINDOW_WINDOW_EVENT_H_
