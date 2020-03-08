@@ -2,6 +2,7 @@ default:
     image: ubuntu:bionic
 
 stages:
+    - lint
     - build
     - test
 
@@ -30,6 +31,15 @@ stages:
             - build/tests/test_*
             - build/lib/*.so
         expire_in: 1 hrs
+
+# Lint step
+lint:
+    stage: lint
+    before_script:
+        - apt-get update
+        - apt-get install -y clang-format-9
+    script:
+        - tools/clang_format.sh --clang-format-bin clang-format-9
 
 # Build step
 build:release:
