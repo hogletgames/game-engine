@@ -30,20 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
-
-#include <ge/application.h>
-#include <ge/log.h>
-
-#define GE_INITIALIZE() ::GE::initialize()
-#define GE_SHUTDOWN()   ::GE::shutdown()
+#include "ge.h"
 
 namespace GE {
 
-void initialize();
-void shutdown();
+void initialize()
+{
+    Log::initialize();
+}
+
+void shutdown()
+{
+    Log::shutdown();
+}
 
 } // namespace GE
-
-#endif // GE_GE_H_

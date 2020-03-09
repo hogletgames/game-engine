@@ -24,10 +24,17 @@ else()
     set(GE_LIB_TYPE SHARED)
 endif()
 
+if (GE_INSTALL_PREFIX)
+    message("Install prefix: '${GE_INSTALL_PREFIX}'")
+    set(CMAKE_INSTALL_PREFIX ${GE_INSTALL_PREFIX})
+endif()
+
 # Include directories
 include_directories(include)
+include_directories(third-party/spdlog/include)
 
 # Subdirectories
+add_subdirectory(src)
 if(GE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
