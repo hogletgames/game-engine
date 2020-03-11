@@ -2,11 +2,13 @@
 
 CLANG_FORMAT_BIN=clang-format
 EXIT_CODE=0
-FILES=$(ls  examples/*.cpp        \
-            include/ge/*.h        \
-            include/ge/window/*.h \
-            src/ge/*.cpp          \
-            tests/*.cpp           \
+FILES=$(ls  examples/*.cpp              \
+            include/ge/*.h              \
+            include/ge/window/*.h       \
+            src/ge/*.cpp                \
+            src/ge/window/*.h           \
+            src/ge/window/*.cpp         \
+            tests/*.cpp                 \
         )
 
 while [ ! -z $1 ]; do

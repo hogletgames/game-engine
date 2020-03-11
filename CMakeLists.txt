@@ -53,10 +53,25 @@ else()
     set(GE_LIB_TYPE SHARED)
 endif()
 
-if (GE_INSTALL_PREFIX)
+if(GE_INSTALL_PREFIX)
     message("Install prefix: '${GE_INSTALL_PREFIX}'")
     set(CMAKE_INSTALL_PREFIX ${GE_INSTALL_PREFIX})
 endif()
+
+if(UNIX)
+    message("Platform: unix")
+    option(GE_PLATFORM_UNIX ON)
+    add_definitions(-DGE_PLATFORM_UNIX)
+elseif(WIN32)
+    message("Platform: windows")
+    option(GE_PLATFORM_WINDOWS ON)
+    add_definitions(-DGE_PLATFORM_WINDOWS)
+endif()
+
+# Install
+install(DIRECTORY include/ge
+    DESTINATION include
+)
 
 # Include directories
 include_directories(include)

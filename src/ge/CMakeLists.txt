@@ -13,7 +13,3 @@ install(TARGETS ge
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
-
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ge
-    DESTINATION include
-)

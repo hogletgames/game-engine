@@ -30,24 +30,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_WINDOW_WINDOW_H_
+#define GE_WINDOW_WINDOW_H_
 
-#include <ge/application.h>
-#include <ge/log.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+#include <ge/core.h>
 
-#define GE_INITIALIZE() ::GE::initialize()
-#define GE_SHUTDOWN()   ::GE::shutdown()
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+
+#define WINDOW_TITLE_DEF  "Game Engine"
+#define WINDOW_WIDTH_DEF  1280
+#define WINDOW_HEIGHT_DEF 720
 
 namespace GE {
 
-void initialize();
-void shutdown();
+class Event;
+
+class GE_API Window
+{
+public:
+    using WinEventCallback = std::function<void(Event&)>;
+
+    struct properties_t {
+        std::string title{};
+        uint32_t width{};
+        uint32_t height{};
+
+        properties_t(const std::string& title = WINDOW_TITLE_DEF,
+                     uint32_t width = WINDOW_WIDTH_DEF,
+                     uint32_t height = WINDOW_HEIGHT_DEF)
+            : title{title}
+            , width{width}
+            , height{height}
+        {}
+    };
+
+    virtual ~Window() = default;
+
+    static std::unique_ptr<Window> create(const properties_t& properties = {});
+
+    virtual void setVSync(bool enabled) = 0;
+    virtual bool isVSync() const = 0;
+
+    virtual uint32_t getWidth() const = 0;
+    virtual uint32_t getHeight() const = 0;
+
+    virtual void onUpdate() = 0;
+    virtual void setEventCallback(WinEventCallback callback) = 0;
+};
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_WINDOW_WINDOW_H_
