@@ -33,7 +33,7 @@
 #ifndef GE_WINDOW_WINDOW_H_
 #define GE_WINDOW_WINDOW_H_
 
-#include <ge/core.h>
+#include <ge/core/core.h>
 
 #include <cstdint>
 #include <functional>

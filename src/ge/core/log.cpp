@@ -30,24 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#include "log.h"
 
-#include <ge/application.h>
-#include <ge/core/log.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
-#define GE_INITIALIZE() ::GE::initialize()
-#define GE_SHUTDOWN()   ::GE::shutdown()
+#define CORE_LOGGER   "CORE"
+#define CLIENT_LOGGER "APP"
 
 namespace GE {
 
-void initialize();
-void shutdown();
+std::shared_ptr<spdlog::logger> Log::m_core_logger;
+std::shared_ptr<spdlog::logger> Log::m_client_logger;
+
+void Log::initialize()
+{
+    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$");
+    spdlog::set_level(spdlog::level::trace);
+
+    m_core_logger = spdlog::stdout_color_st(CORE_LOGGER);
+    m_client_logger = spdlog::stdout_color_st(CLIENT_LOGGER);
+}
+
+void Log::shutdown()
+{
+    spdlog::drop(CLIENT_LOGGER);
+    spdlog::drop(CORE_LOGGER);
+
+    m_client_logger.reset();
+    m_core_logger.reset();
+}
 
 } // namespace GE
-
-#endif // GE_GE_H_

@@ -33,7 +33,7 @@
 #ifndef GE_APPLICATION_H_
 #define GE_APPLICATION_H_
 
-#include <ge/core.h>
+#include <ge/core/core.h>
 
 namespace GE {
 

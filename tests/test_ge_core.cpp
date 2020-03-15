@@ -1,4 +1,5 @@
-#include <ge/ge.h>
+#include <ge/core/core.h>
+#include <ge/core/log.h>
 
 #include "gtest/gtest.h"
 
@@ -7,8 +8,8 @@ namespace {
 class TestGECore: public ::testing::Test
 {
 protected:
-    void SetUp() override { GE_INITIALIZE(); }
-    void TearDown() override { GE_SHUTDOWN(); }
+    void SetUp() override { GE::Log::initialize(); }
+    void TearDown() override { GE::Log::shutdown(); }
 };
 
 TEST_F(TestGECore, CoreLogger)

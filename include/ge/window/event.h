@@ -36,7 +36,7 @@
 #include <functional>
 #include <iostream>
 
-#include <ge/core.h>
+#include <ge/core/core.h>
 
 #define DECLARE_EVENT_TYPE(type)                                                 \
     static ::GE::Event::Type getStaticType() { return ::GE::Event::Type::type; } \

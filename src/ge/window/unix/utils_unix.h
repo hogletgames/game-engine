@@ -30,34 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "log.h"
+#ifndef GE_WINDOW_UNIX_UTILS_H_
+#define GE_WINDOW_UNIX_UTILS_H_
 
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include "ge/core/core.h"
 
-#define CORE_LOGGER   "CORE"
-#define CLIENT_LOGGER "APP"
+#if defined(GE_DEBUG)
+    #define SDLCall(x)                                 \
+        do {                                           \
+            GE_CORE_ASSERT((x) != -1, SDL_GetError()); \
+        } while (false)
+#else
+    #define SDLCall(x) (x)
+#endif
 
-namespace GE {
-
-std::shared_ptr<spdlog::logger> Log::m_core_logger;
-std::shared_ptr<spdlog::logger> Log::m_client_logger;
-
-void Log::initialize()
-{
-    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %!:%# %v%$");
-    spdlog::set_level(spdlog::level::trace);
-
-    m_core_logger = spdlog::stdout_color_st(CORE_LOGGER);
-    m_client_logger = spdlog::stdout_color_st(CLIENT_LOGGER);
-}
-
-void Log::shutdown()
-{
-    spdlog::drop(CLIENT_LOGGER);
-    spdlog::drop(CORE_LOGGER);
-
-    m_client_logger.reset();
-    m_core_logger.reset();
-}
-
-} // namespace GE
+#endif // GE_WINDOW_UNIX_UTILS_H_

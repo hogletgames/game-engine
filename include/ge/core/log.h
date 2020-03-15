@@ -33,7 +33,7 @@
 #ifndef GE_LOG_H_
 #define GE_LOG_H_
 
-#include <ge/core.h>
+#include <ge/core/core.h>
 
 #if !defined(SPDLOG_ACTIVE_LEVEL)
     #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
