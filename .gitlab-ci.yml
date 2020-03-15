@@ -29,7 +29,7 @@ stages:
     artifacts:
         paths:
             - build/tests/test_*
-            - build/lib/*.so
+            - build/lib/*.so*
         expire_in: 1 hrs
 
 # Lint step

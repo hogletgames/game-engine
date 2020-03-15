@@ -85,6 +85,7 @@ include_directories(third-party/spdlog/include)
 
 # Subdirectories
 add_subdirectory(src)
+add_subdirectory(third-party)
 if(GE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()

@@ -5,6 +5,7 @@
 ### Dependencies
 - [spdlog](https://github.com/gabime/spdlog)
 - [Google Test](https://github.com/google/googletest)
+- [SDL](https://www.libsdl.org/)
 
 ### How to build library
 Build shared library:

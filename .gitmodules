@@ -1,3 +1,6 @@
 [submodule "third-party/spdlog"]
 	path = third-party/spdlog
 	url = git@gitlab.com:hogletgame/spdlog-mirror.git
+[submodule "third-party/SDL2"]
+	path = third-party/SDL2
+	url = git@gitlab.com:hogletgame/sdl-mirror.git
