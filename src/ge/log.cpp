@@ -44,7 +44,7 @@ std::shared_ptr<spdlog::logger> Log::m_client_logger;
 
 void Log::initialize()
 {
-    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %!:%#: %v%$");
+    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %!:%# %v%$");
     spdlog::set_level(spdlog::level::trace);
 
     m_core_logger = spdlog::stdout_color_st(CORE_LOGGER);

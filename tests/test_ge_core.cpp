@@ -31,4 +31,12 @@ TEST_F(TestGECore, ClientLogger)
     GE_CRIT("crit =(");
 }
 
+TEST_F(TestGECore, Asserts)
+{
+    EXPECT_DEATH(GE_CORE_ASSERT(2 * 2 == 5, "core assert"), "");
+    EXPECT_DEATH(GE_ASSERT(2 < 0, "client assert"), "");
+    GE_CORE_ASSERT(true, "True =)");
+    GE_ASSERT(2 * 2 == 4, "Yes");
+}
+
 } // namespace

@@ -2,12 +2,13 @@ cmake_minimum_required(VERSION 3.9)
 project(game_engine)
 
 # Project options
-option(GE_STATIC "Build static library" OFF)
-option(GE_BUILD_EXAMPLES "Build examples" OFF)
-option(GE_BUILD_TEST "Build tests" OFF)
-option(GE_ENABLE_ASAN "Build with ASAN" OFF)
-option(GE_ENABLE_USAN "Build with USAN" OFF)
-option(GE_ENABLE_TSAN "Build with TSAN" OFF)
+option(GE_STATIC            "Build static library"  OFF)
+option(GE_BUILD_EXAMPLES    "Build examples"        OFF)
+option(GE_BUILD_TEST        "Build tests"           OFF)
+option(GE_ENABLE_ASAN       "Build with ASAN"       OFF)
+option(GE_ENABLE_USAN       "Build with USAN"       OFF)
+option(GE_ENABLE_TSAN       "Build with TSAN"       OFF)
+option(GE_ENABLE_ASSERTS    "Enable asserts"        OFF)
 
 # Compile options
 set(GE_COMPILER_FLAGS "-Wall -Wextra -Werror -pedantic")
@@ -56,6 +57,11 @@ endif()
 if(GE_INSTALL_PREFIX)
     message("Install prefix: '${GE_INSTALL_PREFIX}'")
     set(CMAKE_INSTALL_PREFIX ${GE_INSTALL_PREFIX})
+endif()
+
+if(GE_ENABLE_ASSERTS)
+    message("Enable asserts")
+    add_definitions(-DGE_ENABLE_ASSERTS)
 endif()
 
 if(UNIX)

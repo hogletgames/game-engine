@@ -43,4 +43,24 @@
     #define GE_API
 #endif
 
+#if defined(GE_ENABLE_ASSERTS)
+    #define GE_CORE_ASSERT(x, message)                                       \
+        do {                                                                 \
+            if (!(x)) {                                                      \
+                GE_CORE_CRIT("assert failed: {}, message: {}", #x, message); \
+                std::terminate();                                            \
+            }                                                                \
+        } while (false)
+    #define GE_ASSERT(x, message)                                       \
+        do {                                                            \
+            if (!(x)) {                                                 \
+                GE_CRIT("assert failed: {}, message: {}", #x, message); \
+                std::terminate();                                       \
+            }                                                           \
+        } while (false)
+#else
+    #define GE_CORE_ASSERT(x, message)
+    #define GE_ASSERT(x, message)
+#endif
+
 #endif // GE_CORE_H_
