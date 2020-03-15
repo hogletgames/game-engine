@@ -70,6 +70,8 @@ public:
     virtual ~Window() = default;
 
     static std::unique_ptr<Window> create(const properties_t& properties = {});
+    static void initialize();
+    static void shutdown();
 
     virtual void setVSync(bool enabled) = 0;
     virtual bool isVSync() const = 0;

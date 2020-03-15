@@ -35,22 +35,15 @@
 namespace {
 
 class Sandbox: public GE::Application
-{
-public:
-    void run() override;
-};
-
-void Sandbox::run()
-{
-    while (true)
-        ;
-}
+{};
 
 } // namespace
 
 int main()
 {
+    GE_INITIALIZE();
     Sandbox app;
     app.run();
+    GE_SHUTDOWN();
     return 0;
 }

@@ -30,20 +30,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ge.h"
+#ifndef GE_WINDOW_UNIX_WINDOW_H_
+#define GE_WINDOW_UNIX_WINDOW_H_
 
-namespace GE {
+#include "window.h"
 
-void initialize()
+#include "SDL.h"
+
+namespace GE::priv {
+
+class GE_API WindowUnix: public Window
 {
-    Log::initialize();
-    Window::initialize();
-}
+public:
+    WindowUnix(const properties_t& prop);
+    ~WindowUnix();
 
-void shutdown()
-{
-    Window::shutdown();
-    Log::shutdown();
-}
+    static void initialize();
+    static void shutdown();
 
-} // namespace GE
+    void setVSync(bool enabled) override;
+    bool isVSync() const override { return m_vsync; }
+
+    uint32_t getWidth() const { return m_prop.width; }
+    uint32_t getHeight() const { return m_prop.height; }
+
+    void onUpdate();
+    void setEventCallback(WinEventCallback callback) { m_event_callback = callback; }
+
+private:
+    static bool m_initialized;
+
+    SDL_Window* m_window{nullptr};
+    SDL_GLContext m_gl_contex{nullptr};
+
+    WinEventCallback m_event_callback;
+    properties_t m_prop;
+    bool m_vsync{false};
+};
+
+} // namespace GE::priv
+
+#endif // GE_WINDOW_UNIX_WINDOW_H_

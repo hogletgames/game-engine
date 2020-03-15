@@ -34,15 +34,23 @@
 #define GE_APPLICATION_H_
 
 #include <ge/core/core.h>
+#include <ge/window/window.h>
+
+#include <memory>
 
 namespace GE {
 
 class GE_API Application
 {
 public:
+    Application();
     virtual ~Application() = default;
 
-    virtual void run() = 0;
+    void run();
+
+private:
+    std::unique_ptr<Window> m_window;
+    bool m_runnign{true};
 };
 
 } // namespace GE

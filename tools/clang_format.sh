@@ -8,6 +8,8 @@ FILES=$(ls  examples/*.cpp              \
             src/ge/*.cpp                \
             src/ge/window/*.h           \
             src/ge/window/*.cpp         \
+            src/ge/window/unix/*.h      \
+            src/ge/window/unix/*.cpp    \
             tests/*.cpp                 \
         )
 

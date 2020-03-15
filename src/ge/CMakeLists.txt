@@ -1,10 +1,12 @@
 set(GE_SRC
+    application.cpp
     ge.cpp
 )
 
 add_library(ge ${GE_LIB_TYPE} ${GE_SRC})
 target_link_libraries(ge PUBLIC
     ge-core
+    ge-window
 )
 target_include_directories(ge PRIVATE
     ${CMAKE_SOURCE_DIR}/include/ge
@@ -17,3 +19,4 @@ install(TARGETS ge
 )
 
 add_subdirectory(core)
+add_subdirectory(window)

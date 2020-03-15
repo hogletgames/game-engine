@@ -30,20 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ge.h"
+#include "window.h"
+
+#if defined(GE_PLATFORM_UNIX)
+    #include "unix/window_unix.h"
+using PlatformWindow = ::GE::priv::WindowUnix;
+#else
+    #error "Unsupported platform"
+#endif
 
 namespace GE {
 
-void initialize()
+std::unique_ptr<Window> Window::create(const properties_t& prop)
 {
-    Log::initialize();
-    Window::initialize();
+    return std::make_unique<PlatformWindow>(prop);
 }
 
-void shutdown()
+void Window::initialize()
 {
-    Window::shutdown();
-    Log::shutdown();
+    PlatformWindow::initialize();
+}
+
+void Window::shutdown()
+{
+    PlatformWindow::shutdown();
 }
 
 } // namespace GE

@@ -66,11 +66,11 @@ endif()
 
 if(UNIX)
     message("Platform: unix")
-    option(GE_PLATFORM_UNIX ON)
+    set(GE_PLATFORM_UNIX ON)
     add_definitions(-DGE_PLATFORM_UNIX)
 elseif(WIN32)
     message("Platform: windows")
-    option(GE_PLATFORM_WINDOWS ON)
+    set(GE_PLATFORM_WINDOWS ON)
     add_definitions(-DGE_PLATFORM_WINDOWS)
 endif()
 

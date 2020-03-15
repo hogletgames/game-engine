@@ -30,20 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ge.h"
+#include "application.h"
 
 namespace GE {
 
-void initialize()
-{
-    Log::initialize();
-    Window::initialize();
-}
+Application::Application()
+    : m_window(Window::create())
+{}
 
-void shutdown()
+void Application::run()
 {
-    Window::shutdown();
-    Log::shutdown();
+    while (m_runnign) {
+        m_window->onUpdate();
+    }
 }
 
 } // namespace GE
