@@ -31,7 +31,10 @@
  */
 
 #include "window_unix.h"
+#include "key_event.h"
+#include "mouse_event.h"
 #include "utils_unix.h"
+#include "window_event.h"
 
 #include "ge/core/log.h"
 
@@ -107,8 +110,125 @@ void WindowUnix::setVSync(bool enabled)
 
 void WindowUnix::onUpdate()
 {
-    // TODO poll events
+    pollEvents();
     SDL_GL_SwapWindow(m_window);
+}
+
+void WindowUnix::pollEvents()
+{
+    SDL_Event sdl_event;
+
+    while (SDL_PollEvent(&sdl_event) != 0) {
+        switch (sdl_event.type) {
+            case SDL_MOUSEMOTION:
+            case SDL_MOUSEWHEEL:
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                onSDLMouseEvent(sdl_event);
+                break;
+
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                onSDLKeyEvent(sdl_event);
+                break;
+
+            case SDL_WINDOWEVENT:
+                onSDLWindowEvent(sdl_event);
+                break;
+
+            case SDL_QUIT: {
+                WindowClosedEvent event{};
+                m_event_callback(event);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+}
+
+void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
+{
+    switch (sdl_event.type) {
+        case SDL_MOUSEMOTION: {
+            float x = sdl_event.motion.x;
+            float y = sdl_event.motion.y;
+            MouseMovedEvent event{x, y};
+            m_event_callback(event);
+            break;
+        }
+
+        case SDL_MOUSEWHEEL: {
+            float offset_x = sdl_event.wheel.x;
+            float offset_y = sdl_event.wheel.y;
+            MouseScrolledEvent event{offset_x, offset_y};
+            m_event_callback(event);
+            break;
+        }
+
+        case SDL_MOUSEBUTTONDOWN: {
+            uint8_t button = sdl_event.button.button;
+            MouseButtonPressedEvent event{button};
+            m_event_callback(event);
+            break;
+        }
+
+        case SDL_MOUSEBUTTONUP: {
+            uint8_t button = sdl_event.button.button;
+            MouseButtonReleasedEvent event{button};
+            m_event_callback(event);
+            break;
+        }
+
+        default:
+            break;
+    }
+}
+
+void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
+{
+    switch (sdl_event.type) {
+        case SDL_KEYDOWN: {
+            uint16_t code = sdl_event.key.keysym.scancode;
+            uint32_t repeat_count = sdl_event.key.repeat;
+            KeyPressedEvent event{code, repeat_count};
+            m_event_callback(event);
+            break;
+        }
+
+        case SDL_KEYUP: {
+            uint16_t code = sdl_event.key.keysym.scancode;
+            KeyReleasedEvent event{code};
+            m_event_callback(event);
+            break;
+        }
+
+        default:
+            break;
+    }
+}
+
+void WindowUnix::onSDLWindowEvent(const SDL_Event& sdl_event)
+{
+    switch (sdl_event.window.event) {
+        case SDL_WINDOWEVENT_RESIZED: {
+            uint32_t width = sdl_event.window.data1;
+            uint32_t height = sdl_event.window.data2;
+            WindowResizedEvent event{width, height};
+            m_event_callback(event);
+            break;
+        }
+
+        case SDL_WINDOWEVENT_CLOSE: {
+            WindowClosedEvent event{};
+            m_event_callback(event);
+            break;
+        }
+
+        default:
+            break;
+    }
 }
 
 } // namespace GE::priv

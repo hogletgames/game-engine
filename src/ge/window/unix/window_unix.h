@@ -58,6 +58,11 @@ public:
     void setEventCallback(WinEventCallback callback) { m_event_callback = callback; }
 
 private:
+    void pollEvents();
+    void onSDLMouseEvent(const SDL_Event& sdl_event);
+    void onSDLKeyEvent(const SDL_Event& sdl_event);
+    void onSDLWindowEvent(const SDL_Event& sdl_event);
+
     static bool m_initialized;
 
     SDL_Window* m_window{nullptr};
