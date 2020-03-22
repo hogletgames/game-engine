@@ -32,17 +32,35 @@
 
 #include "application.h"
 
+#include "ge/ge.h"
+
+#define BIND_MEM_FN(fn) std::bind(&Application::fn, this, std::placeholders::_1)
+
 namespace GE {
 
 Application::Application()
     : m_window(Window::create())
-{}
+{
+    m_window->setEventCallback(BIND_MEM_FN(onEvent));
+}
 
 void Application::run()
 {
     while (m_runnign) {
         m_window->onUpdate();
     }
+}
+
+void Application::onEvent(Event& event)
+{
+    EventDispatcher dispatcher{event};
+    dispatcher.dispatch<WindowClosedEvent>(BIND_MEM_FN(onWindowClosed));
+}
+
+bool Application::onWindowClosed([[maybe_unused]] WindowClosedEvent& event)
+{
+    m_runnign = false;
+    return true;
 }
 
 } // namespace GE
