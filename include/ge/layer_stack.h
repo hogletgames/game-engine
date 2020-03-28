@@ -30,42 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_LAYER_STACK_H_
+#define GE_LAYER_STACK_H_
 
-#include <ge/application.h>
-#include <ge/core/log.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+#include <ge/core/core.h>
 
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#include <deque>
+#include <memory>
 
 namespace GE {
 
-class GE_API FrameworkManager
+class Layer;
+
+class GE_API LayerStack
 {
 public:
-    FrameworkManager() { initialize(); }
-    ~FrameworkManager() { shutdown(); }
+    using Container = std::deque<std::shared_ptr<Layer>>;
+    using iterator = typename Container::iterator;
+    using reverse_iterator = typename Container::reverse_iterator;
+    using const_iterator = typename Container::const_iterator;
+    using const_reverse_iterator = typename Container::const_reverse_iterator;
 
-    FrameworkManager(const FrameworkManager&) = delete;
-    FrameworkManager(FrameworkManager&&) = delete;
-    FrameworkManager& operator=(const FrameworkManager&) = delete;
-    FrameworkManager& operator=(FrameworkManager&&) = delete;
+    ~LayerStack();
 
-    static void initialize();
-    static void shutdown();
+    void pushLayer(std::shared_ptr<Layer> layer);
+    void popLayer(std::shared_ptr<Layer> layer);
+
+    void pushOverlay(std::shared_ptr<Layer> overlay);
+    void popOverlay(std::shared_ptr<Layer> overlay);
+
+    iterator begin() { return m_stack.begin(); }
+    iterator end() { return m_stack.end(); }
+    const_iterator begin() const { return m_stack.begin(); }
+    const_iterator end() const { return m_stack.end(); }
+
+    reverse_iterator rbegin() { return m_stack.rbegin(); }
+    reverse_iterator rend() { return m_stack.rend(); }
+    const_reverse_iterator rbegin() const { return m_stack.rbegin(); }
+    const_reverse_iterator rend() const { return m_stack.rend(); }
 
 private:
-    static bool initialized;
+    Container m_stack;
+    size_t m_last_layer_idx{0};
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_LAYER_STACK_H_

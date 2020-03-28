@@ -30,42 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_LAYER_H
+#define GE_LAYER_H
 
-#include <ge/application.h>
-#include <ge/core/log.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#include <ge/core/core.h>
 
 namespace GE {
 
-class GE_API FrameworkManager
+class Event;
+
+class GE_API Layer
 {
 public:
-    FrameworkManager() { initialize(); }
-    ~FrameworkManager() { shutdown(); }
+    explicit Layer(const char* name = "Layer")
+        : m_name{name}
+    {}
 
-    FrameworkManager(const FrameworkManager&) = delete;
-    FrameworkManager(FrameworkManager&&) = delete;
-    FrameworkManager& operator=(const FrameworkManager&) = delete;
-    FrameworkManager& operator=(FrameworkManager&&) = delete;
+    virtual ~Layer() = default;
 
-    static void initialize();
-    static void shutdown();
+    virtual void onAttach() = 0;
+    virtual void onDetach() = 0;
+    virtual void onUpdate() = 0;
+    virtual void onEvent(Event& event) = 0;
+
+    const char* getName() const { return m_name; }
 
 private:
-    static bool initialized;
+    const char* m_name{nullptr};
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_LAYER_H

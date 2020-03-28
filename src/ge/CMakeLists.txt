@@ -1,6 +1,7 @@
 set(GE_SRC
     application.cpp
     ge.cpp
+    layer_stack.cpp
 )
 
 add_library(ge ${GE_LIB_TYPE} ${GE_SRC})

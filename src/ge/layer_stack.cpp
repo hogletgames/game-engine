@@ -30,42 +30,52 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#include "layer_stack.h"
+#include "layer.h"
 
-#include <ge/application.h>
-#include <ge/core/log.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#include <algorithm>
 
 namespace GE {
 
-class GE_API FrameworkManager
+LayerStack::~LayerStack()
 {
-public:
-    FrameworkManager() { initialize(); }
-    ~FrameworkManager() { shutdown(); }
+    for (auto& layer : m_stack) {
+        layer->onDetach();
+    }
+}
 
-    FrameworkManager(const FrameworkManager&) = delete;
-    FrameworkManager(FrameworkManager&&) = delete;
-    FrameworkManager& operator=(const FrameworkManager&) = delete;
-    FrameworkManager& operator=(FrameworkManager&&) = delete;
+void LayerStack::pushLayer(std::shared_ptr<Layer> layer)
+{
+    m_stack.emplace(std::next(m_stack.begin(), m_last_layer_idx), std::move(layer));
+    m_last_layer_idx++;
+}
 
-    static void initialize();
-    static void shutdown();
+void LayerStack::popLayer(std::shared_ptr<Layer> layer)
+{
+    auto layer_end = std::next(m_stack.begin(), m_last_layer_idx);
+    auto layer_in_stack = std::find(m_stack.begin(), layer_end, layer);
 
-private:
-    static bool initialized;
-};
+    if (layer_in_stack != layer_end) {
+        (*layer_in_stack)->onDetach();
+        m_stack.erase(layer_in_stack);
+        m_last_layer_idx--;
+    }
+}
+
+void LayerStack::pushOverlay(std::shared_ptr<Layer> overlay)
+{
+    m_stack.emplace_back(std::move(overlay));
+}
+
+void LayerStack::popOverlay(std::shared_ptr<Layer> overlay)
+{
+    auto overlay_begin = std::next(m_stack.begin(), m_last_layer_idx);
+    auto overlay_in_stack = std::find(overlay_begin, m_stack.end(), overlay);
+
+    if (overlay_in_stack != m_stack.end()) {
+        (*overlay_in_stack)->onDetach();
+        m_stack.erase(overlay_in_stack);
+    }
+}
 
 } // namespace GE
-
-#endif // GE_GE_H_
