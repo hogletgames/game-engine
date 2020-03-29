@@ -62,10 +62,10 @@ WindowUnix::WindowUnix(const properties_t& prop)
 
     m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
                                 m_prop.height, flags);
-    GE_CORE_ASSERT(m_window, "Failed to create SDL window");
+    GE_CORE_ASSERT(m_window, SDL_GetError());
 
     m_gl_contex = SDL_GL_CreateContext(m_window);
-    GE_CORE_ASSERT(m_gl_contex, "Failed to create GL context");
+    GE_CORE_ASSERT(m_gl_contex, SDL_GetError());
 
     SDLCall(SDL_GL_MakeCurrent(m_window, m_gl_contex));
 
