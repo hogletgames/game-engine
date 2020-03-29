@@ -142,6 +142,7 @@ void WindowUnix::pollEvents()
 
             case SDL_KEYDOWN:
             case SDL_KEYUP:
+            case SDL_TEXTINPUT:
                 onSDLKeyEvent(sdl_event);
                 break;
 
@@ -213,6 +214,12 @@ void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
         case SDL_KEYUP: {
             uint16_t code = sdl_event.key.keysym.scancode;
             KeyReleasedEvent event{code};
+            m_event_callback(event);
+            break;
+        }
+
+        case SDL_TEXTINPUT: {
+            KeyTypedEvent event{sdl_event.text.text};
             m_event_callback(event);
             break;
         }

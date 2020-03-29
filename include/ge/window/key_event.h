@@ -92,6 +92,28 @@ public:
     DECLARE_EVENT_TYPE(KEY_RELEASED)
 };
 
+class GE_API KeyTypedEvent: public Event
+{
+public:
+    explicit KeyTypedEvent(const char* text = nullptr)
+        : m_text{text}
+    {}
+
+    std::string toString() const override
+    {
+        std::stringstream ss;
+        ss << "KeyTypedEvent: " << m_text;
+        return ss.str();
+    }
+
+    const char* getText() const { return m_text; }
+
+    DECLARE_EVENT_TYPE(KEY_TYPED)
+
+private:
+    const char* m_text{nullptr};
+};
+
 } // namespace GE
 
 #endif // GE_WINDOWS_KEY_EVENT_H_

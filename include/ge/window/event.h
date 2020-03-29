@@ -57,6 +57,7 @@ public:
         // Key events
         KEY_PRESSED,
         KEY_RELEASED,
+        KEY_TYPED,
         // Mouse events
         MOUSE_MOVED,
         MOUSE_SCROLLED,
