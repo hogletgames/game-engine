@@ -30,24 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ge/ge.h>
+#ifndef GE_IMGUI_IMGUI_LAYER_H_
+#define GE_IMGUI_IMGUI_LAYER_H_
 
-namespace {
+#include <ge/core/core.h>
+#include <ge/layer.h>
 
-class Sandbox: public GE::Application
+namespace GE {
+
+class GE_API ImGuiLayer: public Layer
 {
 public:
-    Sandbox() { pushOverlay(std::make_shared<GE::ImGuiLayer>()); }
+    ImGuiLayer()
+        : Layer("ImGui layer")
+    {}
+
+    void onAttach() override;
+    void onDetach() override;
+    void onUpdate() override;
+    void onEvent(Event& event) override;
 };
 
-} // namespace
+} // namespace GE
 
-int main()
-{
-    GE_CREATE_FW_MANAGER();
-
-    Sandbox app{};
-    app.run();
-
-    return 0;
-}
+#endif // GE_IMGUI_IMGUI_LAYER_H_

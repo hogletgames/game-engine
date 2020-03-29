@@ -30,24 +30,61 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ge/ge.h>
+#include "imgui_layer.h"
 
-namespace {
+#include "ge/application.h"
+#include "ge/core/log.h"
 
-class Sandbox: public GE::Application
+#include "imgui.h"
+
+#if defined(GE_PLATFORM_UNIX)
+    #include "unix/imgui_unix.h"
+using ImGuiPlatform = ::GE::priv::ImGuiUnix;
+#else
+    #error "Unsupported platform"
+#endif
+
+namespace GE {
+
+void ImGuiLayer::onAttach()
 {
-public:
-    Sandbox() { pushOverlay(std::make_shared<GE::ImGuiLayer>()); }
-};
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
 
-} // namespace
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
-int main()
-{
-    GE_CREATE_FW_MANAGER();
-
-    Sandbox app{};
-    app.run();
-
-    return 0;
+    ImGui::StyleColorsDark();
+    ImGuiPlatform::initialize();
+    GE_CORE_TRACE("'{}' attached", getName());
 }
+
+void ImGuiLayer::onDetach()
+{
+    ImGuiPlatform::shutdown();
+    ImGui::DestroyContext();
+    GE_CORE_TRACE("'{}' detached", getName());
+}
+
+void ImGuiLayer::onUpdate()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    Application& app = Application::instance();
+    io.DisplaySize = ImVec2(app.getWindow().getWidth(), app.getWindow().getHeight());
+
+    io.DeltaTime = 1.0f / 60.0f;
+
+    ImGuiPlatform::newFrame();
+    ImGui::NewFrame();
+
+    bool show_demo_window{true};
+    ImGui::ShowDemoWindow(&show_demo_window);
+
+    ImGui::Render();
+    ImGuiPlatform::render();
+}
+
+void ImGuiLayer::onEvent(Event&) {}
+
+} // namespace GE

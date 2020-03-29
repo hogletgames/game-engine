@@ -30,24 +30,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ge/ge.h>
+#include "imgui_unix.h"
+#include "imgui.h"
 
-namespace {
+#include "ge/application.h"
+#include "ge/core/log.h"
 
-class Sandbox: public GE::Application
+#include "examples/imgui_impl_opengl3.h"
+#include "examples/imgui_impl_sdl.h"
+
+#define GLSL_VERSION "#version 450"
+
+namespace GE::priv {
+
+void ImGuiUnix::initialize()
 {
-public:
-    Sandbox() { pushOverlay(std::make_shared<GE::ImGuiLayer>()); }
-};
+    GE_CORE_TRACE("Initialize ImGuiUnix");
+    auto* window = static_cast<SDL_Window*>(Application::instance().getNativeWindow());
 
-} // namespace
-
-int main()
-{
-    GE_CREATE_FW_MANAGER();
-
-    Sandbox app{};
-    app.run();
-
-    return 0;
+    ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
+    ImGui_ImplOpenGL3_Init(GLSL_VERSION);
 }
+
+void ImGuiUnix::shutdown()
+{
+    GE_CORE_TRACE("Shutdown ImGuiUnix");
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+}
+
+void ImGuiUnix::newFrame()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+}
+
+void ImGuiUnix::render()
+{
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+} // namespace GE::priv

@@ -30,24 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ge/ge.h>
+namespace GE::priv {
 
-namespace {
-
-class Sandbox: public GE::Application
+class ImGuiUnix
 {
 public:
-    Sandbox() { pushOverlay(std::make_shared<GE::ImGuiLayer>()); }
+    ImGuiUnix() = delete;
+
+    static void initialize();
+    static void shutdown();
+
+    static void newFrame();
+    static void render();
 };
 
-} // namespace
-
-int main()
-{
-    GE_CREATE_FW_MANAGER();
-
-    Sandbox app{};
-    app.run();
-
-    return 0;
-}
+} // namespace GE::priv

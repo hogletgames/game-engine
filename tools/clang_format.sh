@@ -4,8 +4,14 @@ CLANG_FORMAT_BIN=clang-format
 EXIT_CODE=0
 FILES=$(ls  examples/*.cpp              \
             include/ge/*.h              \
+            include/ge/core/*.h         \
+            include/ge/imgui/*.h        \
             include/ge/window/*.h       \
             src/ge/*.cpp                \
+            src/ge/core/*.cpp           \
+            src/ge/imgui/*.cpp          \
+            src/ge/imgui/unix/*.h       \
+            src/ge/imgui/unix/*.cpp     \
             src/ge/window/*.h           \
             src/ge/window/*.cpp         \
             src/ge/window/unix/*.h      \

@@ -35,6 +35,7 @@
 
 #include <ge/application.h>
 #include <ge/core/log.h>
+#include <ge/imgui/imgui_layer.h>
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
 #include <ge/window/key_event.h>
