@@ -38,6 +38,8 @@
 
 #include "ge/core/log.h"
 
+#include "glad/glad.h"
+
 #define VSYNC_OFF       0
 #define VSYNC_ON        1
 #define GE_GL_MAJOR_VER 4
@@ -66,6 +68,15 @@ WindowUnix::WindowUnix(const properties_t& prop)
     GE_CORE_ASSERT(m_gl_contex, "Failed to create GL context");
 
     SDLCall(SDL_GL_MakeCurrent(m_window, m_gl_contex));
+
+    auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
+    GE_CORE_ASSERT(gladLoadGLLoader(glad_load_proc), "Failed to initialize GLAD");
+
+    GE_CORE_INFO("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
+    GE_CORE_INFO("OpenGL SHading Language Version: {}",
+                 glGetString(GL_SHADING_LANGUAGE_VERSION));
+    GE_CORE_INFO("OpenGL Vendor: {}", glGetString(GL_VENDOR));
+    GE_CORE_INFO("OpenGL Renderer: {}", glGetString(GL_RENDERER));
 
     setVSync(true);
     GE_CORE_TRACE("Window '{}' created", m_prop.title);
