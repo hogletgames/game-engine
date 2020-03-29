@@ -34,16 +34,26 @@
 
 namespace GE {
 
-void initialize()
+bool FrameworkManager::initialized{false};
+
+void FrameworkManager::initialize()
 {
-    Log::initialize();
-    Window::initialize();
+    if (!initialized) {
+        GE_CORE_TRACE("FM initialize");
+        Log::initialize();
+        Window::initialize();
+        initialized = true;
+    }
 }
 
-void shutdown()
+void FrameworkManager::shutdown()
 {
-    Window::shutdown();
-    Log::shutdown();
+    if (initialized) {
+        GE_CORE_TRACE("FM shutdown");
+        Window::shutdown();
+        Log::shutdown();
+        initialized = false;
+    }
 }
 
 } // namespace GE

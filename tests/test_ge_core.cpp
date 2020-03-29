@@ -1,5 +1,5 @@
-#include <ge/core/core.h>
-#include <ge/core/log.h>
+#include "ge/core/core.h"
+#include "ge/core/log.h"
 
 #include "gtest/gtest.h"
 

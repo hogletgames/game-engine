@@ -75,10 +75,12 @@ WindowUnix::~WindowUnix()
 {
     if (m_gl_contex) {
         SDL_GL_DeleteContext(m_gl_contex);
+        GE_CORE_TRACE("SDL GL context has been deleted");
     }
 
     if (m_window) {
         SDL_DestroyWindow(m_window);
+        GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
     }
 }
 

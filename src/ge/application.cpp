@@ -32,7 +32,9 @@
 
 #include "application.h"
 
-#include "ge/ge.h"
+#include "ge/core/log.h"
+#include "ge/window/window.h"
+#include "ge/window/window_event.h"
 
 #define BIND_MEM_FN(fn) std::bind(&Application::fn, this, std::placeholders::_1)
 

@@ -41,9 +41,10 @@ class Sandbox: public GE::Application
 
 int main()
 {
-    GE_INITIALIZE();
+    GE_CREATE_FW_MANAGER();
+
     Sandbox app;
     app.run();
-    GE_SHUTDOWN();
+
     return 0;
 }

@@ -1,4 +1,6 @@
-#include <ge/ge.h>
+#include "ge/window/key_event.h"
+#include "ge/window/mouse_event.h"
+#include "ge/window/window_event.h"
 
 #include "gtest/gtest.h"
 
