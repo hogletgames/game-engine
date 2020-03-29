@@ -34,6 +34,9 @@
 
 #include "ge/application.h"
 #include "ge/core/log.h"
+#include "ge/window/key_event.h"
+#include "ge/window/mouse_event.h"
+#include "ge/window/window_event.h"
 
 #include "imgui.h"
 
@@ -85,6 +88,82 @@ void ImGuiLayer::onUpdate()
     ImGuiPlatform::render();
 }
 
-void ImGuiLayer::onEvent(Event&) {}
+void ImGuiLayer::onEvent(Event& event)
+{
+    EventDispatcher dispatcher(event);
+
+    dispatcher.dispatch<KeyPressedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onKeyPressed));
+    dispatcher.dispatch<KeyReleasedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onKeyReleased));
+    dispatcher.dispatch<KeyTypedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onKeyTyped));
+    dispatcher.dispatch<MouseMovedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onMouseMoved));
+    dispatcher.dispatch<MouseScrolledEvent>(GE_BIND_MEM_FN(ImGuiLayer::onMouseScrolled));
+    dispatcher.dispatch<MouseButtonPressedEvent>(
+        GE_BIND_MEM_FN(ImGuiLayer::onMouseButtonPressed));
+    dispatcher.dispatch<MouseButtonReleasedEvent>(
+        GE_BIND_MEM_FN(ImGuiLayer::onMouseButtonReleased));
+    dispatcher.dispatch<WindowResizedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onWindowResized));
+}
+
+bool ImGuiLayer::onKeyPressed([[maybe_unused]] KeyPressedEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeysDown[event.getKeyCode()] = true;
+    ImGuiPlatform::setControlKey();
+    return false;
+}
+
+bool ImGuiLayer::onKeyReleased([[maybe_unused]] KeyReleasedEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeysDown[event.getKeyCode()] = false;
+    ImGuiPlatform::setControlKey();
+    return false;
+}
+
+bool ImGuiLayer::onKeyTyped(KeyTypedEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddInputCharactersUTF8(event.getText());
+    return false;
+}
+
+bool ImGuiLayer::onMouseMoved(MouseMovedEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(event.getPosX(), event.getPosY());
+    return false;
+}
+
+bool ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseWheelH = event.getOffsetX();
+    io.MouseWheel = event.getOffsetY();
+    return false;
+}
+
+bool ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDown[event.getMouseButton()] = true;
+    return false;
+}
+
+bool ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDown[event.getMouseButton()] = false;
+    return false;
+}
+
+bool ImGuiLayer::onWindowResized([[maybe_unused]] WindowResizedEvent& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec2 window_size = ImVec2(event.getWidth(), event.getHeight());
+    io.DisplaySize = window_size;
+    io.DisplayFramebufferScale = ImVec2{1.0f, 1.0f};
+    ImGuiPlatform::changeViewport(window_size);
+    return false;
+}
 
 } // namespace GE

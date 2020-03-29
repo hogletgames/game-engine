@@ -37,8 +37,6 @@
 #include "ge/window/window.h"
 #include "ge/window/window_event.h"
 
-#define BIND_MEM_FN(fn) std::bind(&Application::fn, this, std::placeholders::_1)
-
 namespace GE {
 
 Application* Application::m_instance{nullptr};
@@ -48,7 +46,7 @@ Application::Application()
 {
     GE_ASSERT(!m_instance, "Application already exists");
     m_instance = this;
-    m_window->setEventCallback(BIND_MEM_FN(onEvent));
+    m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
 }
 
 void Application::run()
@@ -77,7 +75,7 @@ void Application::pushOverlay(std::shared_ptr<Layer> overlay)
 void Application::onEvent(Event& event)
 {
     EventDispatcher dispatcher{event};
-    dispatcher.dispatch<WindowClosedEvent>(BIND_MEM_FN(onWindowClosed));
+    dispatcher.dispatch<WindowClosedEvent>(GE_BIND_MEM_FN(Application::onWindowClosed));
 
     for (auto layer = m_layer_stack.rbegin(); layer != m_layer_stack.rend(); ++layer) {
         (*layer)->onEvent(event);

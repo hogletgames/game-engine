@@ -183,6 +183,7 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
 
         case SDL_MOUSEBUTTONDOWN: {
             uint8_t button = sdl_event.button.button;
+            GE_CONVERT_MOUSE_BUTTON(button);
             MouseButtonPressedEvent event{button};
             m_event_callback(event);
             break;
@@ -190,6 +191,7 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
 
         case SDL_MOUSEBUTTONUP: {
             uint8_t button = sdl_event.button.button;
+            GE_CONVERT_MOUSE_BUTTON(button);
             MouseButtonReleasedEvent event{button};
             m_event_callback(event);
             break;

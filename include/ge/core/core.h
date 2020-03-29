@@ -33,6 +33,8 @@
 #ifndef GE_CORE_H_
 #define GE_CORE_H_
 
+#include <functional>
+
 #if defined(GE_PLATFORM_WINDOWS)
     #if !defined(GE_STATIC)
         #define GE_API __declspec(dllexport)
@@ -64,5 +66,7 @@
     #define GE_CORE_ASSERT(x, ...)
     #define GE_ASSERT(x, ...)
 #endif
+
+#define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
 #endif // GE_CORE_H_

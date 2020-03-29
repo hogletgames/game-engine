@@ -30,6 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+class ImVec2;
+
 namespace GE::priv {
 
 class ImGuiUnix
@@ -42,6 +44,9 @@ public:
 
     static void newFrame();
     static void render();
+
+    static void changeViewport(const ImVec2& window_size);
+    static void setControlKey();
 };
 
 } // namespace GE::priv

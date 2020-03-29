@@ -39,6 +39,9 @@
 #include "examples/imgui_impl_opengl3.h"
 #include "examples/imgui_impl_sdl.h"
 
+#include "glad/glad.h"
+#include "SDL.h"
+
 #define GLSL_VERSION "#version 450"
 
 namespace GE::priv {
@@ -67,6 +70,20 @@ void ImGuiUnix::newFrame()
 void ImGuiUnix::render()
 {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void ImGuiUnix::changeViewport(const ImVec2& window_size)
+{
+    glViewport(0, 0, window_size.x, window_size.y);
+}
+
+void ImGuiUnix::setControlKey()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeyCtrl = io.KeysDown[SDL_SCANCODE_LCTRL] || io.KeysDown[SDL_SCANCODE_RCTRL];
+    io.KeyShift = io.KeysDown[SDL_SCANCODE_LSHIFT] || io.KeysDown[SDL_SCANCODE_RSHIFT];
+    io.KeyAlt = io.KeysDown[SDL_SCANCODE_LALT] || io.KeysDown[SDL_SCANCODE_RALT];
+    io.KeySuper = io.KeysDown[SDL_SCANCODE_LGUI] || io.KeysDown[SDL_SCANCODE_RGUI];
 }
 
 } // namespace GE::priv

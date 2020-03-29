@@ -38,6 +38,15 @@
 
 namespace GE {
 
+class KeyPressedEvent;
+class KeyReleasedEvent;
+class KeyTypedEvent;
+class MouseMovedEvent;
+class MouseScrolledEvent;
+class MouseButtonPressedEvent;
+class MouseButtonReleasedEvent;
+class WindowResizedEvent;
+
 class GE_API ImGuiLayer: public Layer
 {
 public:
@@ -49,6 +58,16 @@ public:
     void onDetach() override;
     void onUpdate() override;
     void onEvent(Event& event) override;
+
+private:
+    bool onKeyPressed(KeyPressedEvent& event);
+    bool onKeyReleased(KeyReleasedEvent& event);
+    bool onKeyTyped(KeyTypedEvent& event);
+    bool onMouseMoved(MouseMovedEvent& event);
+    bool onMouseScrolled(MouseScrolledEvent& event);
+    bool onMouseButtonPressed(MouseButtonPressedEvent& event);
+    bool onMouseButtonReleased(MouseButtonReleasedEvent& event);
+    bool onWindowResized(WindowResizedEvent& event);
 };
 
 } // namespace GE
