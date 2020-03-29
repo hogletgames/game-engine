@@ -9,6 +9,7 @@ option(GE_ENABLE_ASAN       "Build with ASAN"       OFF)
 option(GE_ENABLE_USAN       "Build with USAN"       OFF)
 option(GE_ENABLE_TSAN       "Build with TSAN"       OFF)
 option(GE_ENABLE_ASSERTS    "Enable asserts"        OFF)
+option(GE_DEBUG             "Enable debug"          OFF)
 
 # Compile options
 set(GE_COMPILER_FLAGS "-Wall -Wextra -Werror -pedantic")
@@ -62,6 +63,11 @@ endif()
 if(GE_ENABLE_ASSERTS)
     message("Enable asserts")
     add_definitions(-DGE_ENABLE_ASSERTS)
+endif()
+
+if(GE_DEBUG)
+    message("Enable debug")
+    add_definitions(-DGE_DEBUG)
 endif()
 
 if(UNIX)
