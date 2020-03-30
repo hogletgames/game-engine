@@ -1,0 +1,28 @@
+language: cpp
+
+os: linux
+dist: bionic
+compiler: gcc
+addons:
+  apt:
+    packages:
+      - cmake
+      - clang-format-9
+      - valgrind
+
+env:
+  - MATRIX_EVAL="export BUILD_EXAMPLES=ON"
+  - MATRIX_EVAL="export VALGRIND='valgrind --leak-check=full --error-exitcode=1'"
+  - MATRIX_EVAL="export ENABLE_ASAN=ON"
+  - MATRIX_EVAL="export ENABLE_USAN=ON"
+  - MATRIX_EVAL="export ENABLE_TSAN=ON"
+
+script:
+  - eval "${MATRIX_EVAL}"
+  - make BUILD_TESTS=ON -j$(nproc)
+  - make test
+
+jobs:
+  include:
+    - name: clang-format
+      script: bash tools/clang_format.sh --clang-format-bin clang-format-9
