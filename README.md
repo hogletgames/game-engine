@@ -1,4 +1,4 @@
-[![pipeline status](https://gitlab.com/hogletgame/game-engine/badges/master/pipeline.svg)](https://gitlab.com/hogletgame/game-engine/-/commits/master)
+[![Build Status](https://travis-ci.com/hogletgames/game-engine.svg?branch=master)](https://travis-ci.com/hogletgames/game-engine)
 
 ## Game Engine
 
