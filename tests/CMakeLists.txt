@@ -40,5 +40,6 @@ set(GE_CORE_TEST_SRC
 add_executable(test_ge_core ${GE_CORE_TEST_SRC})
 target_link_libraries(test_ge_core
     ge
+    gmock
     gtest_main
 )
