@@ -76,6 +76,7 @@ public:
     virtual void setVSync(bool enabled) = 0;
     virtual bool isVSync() const = 0;
 
+    virtual void* getNativeWindow() = 0;
     virtual uint32_t getWidth() const = 0;
     virtual uint32_t getHeight() const = 0;
 

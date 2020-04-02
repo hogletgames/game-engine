@@ -41,9 +41,13 @@
 
 namespace GE {
 
+Application* Application::m_instance{nullptr};
+
 Application::Application()
     : m_window(Window::create())
 {
+    GE_ASSERT(!m_instance, "Application already exists");
+    m_instance = this;
     m_window->setEventCallback(BIND_MEM_FN(onEvent));
 }
 
