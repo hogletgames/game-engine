@@ -30,44 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_WINDOW_UNIX_INPUT_H_
+#define GE_WINDOW_UNIX_INPUT_H_
 
-#include <ge/application.h>
-#include <ge/core/log.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/non_copyble.h>
+#include "input.h"
+#include "key_codes.h"
+#include "mouse_button_codes.h"
 
-#include <ge/imgui/imgui_layer.h>
+#include <unordered_map>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+namespace GE::priv {
 
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
-
-namespace GE {
-
-class GE_API FrameworkManager: public NonCopyable
+class InputUnix: public Input
 {
-public:
-    FrameworkManager() { initialize(); }
-    ~FrameworkManager() { shutdown(); }
+protected:
+    void initializeImpl() override;
+    void shutdownImpl() override {}
 
-    static void initialize();
-    static void shutdown();
+    int32_t toNativeKeyCodeImpl(KeyCode key_code) const override;
+    KeyCode toGEKeyCodeImpl(int32_t key_code) const override;
+    bool isKeyPressedImpl(KeyCode key_code) const override;
+
+    uint8_t toNativeButtonImpl(MouseButton button) const override;
+    MouseButton toGEMouseButtonImpl(uint8_t button) const override;
+    bool isMouseButtonPressedImpl(MouseButton button) const override;
+    std::pair<float, float> getMousePosImpl() const override;
+    float getMousePosXImpl() const override;
+    float getMousePosYImpl() const override;
 
 private:
-    static bool initialized;
+    void mapKeyCodes();
+    void mapMouseButtons();
+
+    std::unordered_map<int32_t, KeyCode> m_sdl_to_ge_keys;
+    std::unordered_map<KeyCode, int32_t> m_ge_to_sdl_keys;
+
+    std::unordered_map<uint8_t, MouseButton> m_sdl_to_ge_buttons;
+    std::unordered_map<MouseButton, uint8_t> m_ge_to_sdl_buttons;
 };
 
-} // namespace GE
+} // namespace GE::priv
 
-#endif // GE_GE_H_
+#endif // GE_WINDOW_UNIX_INPUT_H_

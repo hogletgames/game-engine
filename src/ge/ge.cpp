@@ -40,6 +40,7 @@ void FrameworkManager::initialize()
 {
     if (!initialized) {
         Log::initialize();
+        Input::initialize();
         Window::initialize();
         initialized = true;
         GE_CORE_TRACE("FM initialized");
@@ -51,6 +52,7 @@ void FrameworkManager::shutdown()
     if (initialized) {
         GE_CORE_TRACE("FM shutdown");
         Window::shutdown();
+        Input::shutdown();
         Log::shutdown();
         initialized = false;
     }
