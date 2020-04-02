@@ -1,4 +1,6 @@
-#include <ge/ge.h>
+#include "ge/window/key_event.h"
+#include "ge/window/mouse_event.h"
+#include "ge/window/window_event.h"
 
 #include "gtest/gtest.h"
 
@@ -9,19 +11,24 @@ TEST(EventTest, Key)
     constexpr uint16_t pressed_key_code{12};
     constexpr uint32_t repeat_count{49};
     constexpr uint16_t released_key_code{62};
+    const char* typed_text = "key typed event test";
 
     GE::KeyPressedEvent key_pressed{pressed_key_code, repeat_count};
     GE::KeyReleasedEvent key_released{released_key_code};
+    GE::KeyTypedEvent key_typed{typed_text};
 
     EXPECT_EQ(GE::KeyPressedEvent::getStaticType(), GE::Event::Type::KEY_PRESSED);
     EXPECT_EQ(GE::KeyReleasedEvent::getStaticType(), GE::Event::Type::KEY_RELEASED);
+    EXPECT_EQ(GE::KeyTypedEvent::getStaticType(), GE::Event::Type::KEY_TYPED);
 
     EXPECT_EQ(key_pressed.getType(), GE::Event::Type::KEY_PRESSED);
     EXPECT_EQ(key_released.getType(), GE::Event::Type::KEY_RELEASED);
+    EXPECT_EQ(key_typed.getType(), GE::Event::Type::KEY_TYPED);
 
     EXPECT_EQ(key_pressed.getKeyCode(), pressed_key_code);
     EXPECT_EQ(key_pressed.getRepeatCount(), repeat_count);
     EXPECT_EQ(key_released.getKeyCode(), released_key_code);
+    EXPECT_STREQ(key_typed.getText(), typed_text);
 }
 
 TEST(EventTest, Mouse)
@@ -82,7 +89,7 @@ class EventDispatcherTest: public ::testing::Test
 
 using EventTypeList = ::testing::Types<
     // Key events
-    GE::KeyPressedEvent, GE::KeyReleasedEvent,
+    GE::KeyPressedEvent, GE::KeyReleasedEvent, GE::KeyTypedEvent,
     // Mouse events
     GE::MouseMovedEvent, GE::MouseScrolledEvent, GE::MouseButtonPressedEvent,
     GE::MouseButtonReleasedEvent,

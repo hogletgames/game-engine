@@ -30,60 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOW_WINDOW_H_
-#define GE_WINDOW_WINDOW_H_
+#ifndef GE_LAYER_STACK_H_
+#define GE_LAYER_STACK_H_
 
 #include <ge/core/core.h>
 
-#include <cstdint>
-#include <functional>
+#include <deque>
 #include <memory>
-#include <string>
-
-#define WINDOW_TITLE_DEF  "Game Engine"
-#define WINDOW_WIDTH_DEF  1280
-#define WINDOW_HEIGHT_DEF 720
 
 namespace GE {
 
-class Event;
+class Layer;
 
-class GE_API Window
+class GE_API LayerStack
 {
 public:
-    using WinEventCallback = std::function<void(Event&)>;
+    using Container = std::deque<std::shared_ptr<Layer>>;
+    using iterator = typename Container::iterator;
+    using reverse_iterator = typename Container::reverse_iterator;
+    using const_iterator = typename Container::const_iterator;
+    using const_reverse_iterator = typename Container::const_reverse_iterator;
 
-    struct properties_t {
-        std::string title{};
-        uint32_t width{};
-        uint32_t height{};
+    ~LayerStack();
 
-        properties_t(const std::string& title = WINDOW_TITLE_DEF,
-                     uint32_t width = WINDOW_WIDTH_DEF,
-                     uint32_t height = WINDOW_HEIGHT_DEF)
-            : title{title}
-            , width{width}
-            , height{height}
-        {}
-    };
+    void pushLayer(std::shared_ptr<Layer> layer);
+    void popLayer(std::shared_ptr<Layer> layer);
 
-    virtual ~Window() = default;
+    void pushOverlay(std::shared_ptr<Layer> overlay);
+    void popOverlay(std::shared_ptr<Layer> overlay);
 
-    static std::unique_ptr<Window> create(const properties_t& properties = {});
-    static void initialize();
-    static void shutdown();
+    iterator begin() { return m_stack.begin(); }
+    iterator end() { return m_stack.end(); }
+    const_iterator begin() const { return m_stack.begin(); }
+    const_iterator end() const { return m_stack.end(); }
 
-    virtual void setVSync(bool enabled) = 0;
-    virtual bool isVSync() const = 0;
+    reverse_iterator rbegin() { return m_stack.rbegin(); }
+    reverse_iterator rend() { return m_stack.rend(); }
+    const_reverse_iterator rbegin() const { return m_stack.rbegin(); }
+    const_reverse_iterator rend() const { return m_stack.rend(); }
 
-    virtual void* getNativeWindow() = 0;
-    virtual uint32_t getWidth() const = 0;
-    virtual uint32_t getHeight() const = 0;
-
-    virtual void onUpdate() = 0;
-    virtual void setEventCallback(WinEventCallback callback) = 0;
+private:
+    Container m_stack;
+    size_t m_last_layer_idx{0};
 };
 
 } // namespace GE
 
-#endif // GE_WINDOW_WINDOW_H_
+#endif // GE_LAYER_STACK_H_

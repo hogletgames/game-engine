@@ -38,6 +38,7 @@
 #include <sstream>
 
 namespace GE {
+
 class GE_API WindowResizedEvent: public Event
 {
 public:

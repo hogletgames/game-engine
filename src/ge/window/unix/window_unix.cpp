@@ -38,6 +38,8 @@
 
 #include "ge/core/log.h"
 
+#include "glad/glad.h"
+
 #define VSYNC_OFF       0
 #define VSYNC_ON        1
 #define GE_GL_MAJOR_VER 4
@@ -60,12 +62,21 @@ WindowUnix::WindowUnix(const properties_t& prop)
 
     m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
                                 m_prop.height, flags);
-    GE_CORE_ASSERT(m_window, "Failed to create SDL window");
+    GE_CORE_ASSERT(m_window, SDL_GetError());
 
     m_gl_contex = SDL_GL_CreateContext(m_window);
-    GE_CORE_ASSERT(m_gl_contex, "Failed to create GL context");
+    GE_CORE_ASSERT(m_gl_contex, SDL_GetError());
 
     SDLCall(SDL_GL_MakeCurrent(m_window, m_gl_contex));
+
+    auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
+    GE_CORE_ASSERT(gladLoadGLLoader(glad_load_proc), "Failed to initialize GLAD");
+
+    GE_CORE_INFO("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
+    GE_CORE_INFO("OpenGL SHading Language Version: {}",
+                 glGetString(GL_SHADING_LANGUAGE_VERSION));
+    GE_CORE_INFO("OpenGL Vendor: {}", glGetString(GL_VENDOR));
+    GE_CORE_INFO("OpenGL Renderer: {}", glGetString(GL_RENDERER));
 
     setVSync(true);
     GE_CORE_TRACE("Window '{}' created", m_prop.title);
@@ -75,10 +86,12 @@ WindowUnix::~WindowUnix()
 {
     if (m_gl_contex) {
         SDL_GL_DeleteContext(m_gl_contex);
+        GE_CORE_TRACE("SDL GL context has been deleted");
     }
 
     if (m_window) {
         SDL_DestroyWindow(m_window);
+        GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
     }
 }
 
@@ -129,6 +142,7 @@ void WindowUnix::pollEvents()
 
             case SDL_KEYDOWN:
             case SDL_KEYUP:
+            case SDL_TEXTINPUT:
                 onSDLKeyEvent(sdl_event);
                 break;
 
@@ -169,6 +183,7 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
 
         case SDL_MOUSEBUTTONDOWN: {
             uint8_t button = sdl_event.button.button;
+            GE_CONVERT_MOUSE_BUTTON(button);
             MouseButtonPressedEvent event{button};
             m_event_callback(event);
             break;
@@ -176,6 +191,7 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
 
         case SDL_MOUSEBUTTONUP: {
             uint8_t button = sdl_event.button.button;
+            GE_CONVERT_MOUSE_BUTTON(button);
             MouseButtonReleasedEvent event{button};
             m_event_callback(event);
             break;
@@ -200,6 +216,12 @@ void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
         case SDL_KEYUP: {
             uint16_t code = sdl_event.key.keysym.scancode;
             KeyReleasedEvent event{code};
+            m_event_callback(event);
+            break;
+        }
+
+        case SDL_TEXTINPUT: {
+            KeyTypedEvent event{sdl_event.text.text};
             m_event_callback(event);
             break;
         }

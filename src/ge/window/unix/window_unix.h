@@ -51,11 +51,15 @@ public:
     void setVSync(bool enabled) override;
     bool isVSync() const override { return m_vsync; }
 
-    uint32_t getWidth() const { return m_prop.width; }
-    uint32_t getHeight() const { return m_prop.height; }
+    virtual void* getNativeWindow() override { return m_window; };
+    uint32_t getWidth() const override { return m_prop.width; }
+    uint32_t getHeight() const override { return m_prop.height; }
 
-    void onUpdate();
-    void setEventCallback(WinEventCallback callback) { m_event_callback = callback; }
+    void onUpdate() override;
+    void setEventCallback(WinEventCallback callback) override
+    {
+        m_event_callback = callback;
+    }
 
 private:
     void pollEvents();

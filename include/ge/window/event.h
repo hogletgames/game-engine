@@ -41,7 +41,7 @@
 #define DECLARE_EVENT_TYPE(type)                                                 \
     static ::GE::Event::Type getStaticType() { return ::GE::Event::Type::type; } \
     ::GE::Event::Type getType() const override { return getStaticType(); }       \
-    std::string getName() const override { return #type; }
+    const char* getName() const override { return #type; }
 
 namespace GE {
 
@@ -57,6 +57,7 @@ public:
         // Key events
         KEY_PRESSED,
         KEY_RELEASED,
+        KEY_TYPED,
         // Mouse events
         MOUSE_MOVED,
         MOUSE_SCROLLED,
@@ -70,7 +71,7 @@ public:
     virtual ~Event() = default;
 
     virtual Type getType() const = 0;
-    virtual std::string getName() const = 0;
+    virtual const char* getName() const = 0;
     virtual std::string toString() const { return getName(); }
 
     bool handled() const { return m_handled; }

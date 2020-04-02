@@ -30,60 +30,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOW_WINDOW_H_
-#define GE_WINDOW_WINDOW_H_
+#include "imgui_unix.h"
+#include "imgui.h"
 
-#include <ge/core/core.h>
+#include "ge/application.h"
+#include "ge/core/log.h"
 
-#include <cstdint>
-#include <functional>
-#include <memory>
-#include <string>
+#include "examples/imgui_impl_opengl3.h"
+#include "examples/imgui_impl_sdl.h"
 
-#define WINDOW_TITLE_DEF  "Game Engine"
-#define WINDOW_WIDTH_DEF  1280
-#define WINDOW_HEIGHT_DEF 720
+#include "glad/glad.h"
+#include "SDL.h"
 
-namespace GE {
+#define GLSL_VERSION "#version 450"
 
-class Event;
+namespace GE::priv {
 
-class GE_API Window
+void ImGuiUnix::initialize()
 {
-public:
-    using WinEventCallback = std::function<void(Event&)>;
+    GE_CORE_TRACE("Initialize ImGuiUnix");
+    auto* window = static_cast<SDL_Window*>(Application::instance().getNativeWindow());
 
-    struct properties_t {
-        std::string title{};
-        uint32_t width{};
-        uint32_t height{};
+    ImGui_ImplSDL2_InitForOpenGL(window, nullptr);
+    ImGui_ImplOpenGL3_Init(GLSL_VERSION);
+}
 
-        properties_t(const std::string& title = WINDOW_TITLE_DEF,
-                     uint32_t width = WINDOW_WIDTH_DEF,
-                     uint32_t height = WINDOW_HEIGHT_DEF)
-            : title{title}
-            , width{width}
-            , height{height}
-        {}
-    };
+void ImGuiUnix::shutdown()
+{
+    GE_CORE_TRACE("Shutdown ImGuiUnix");
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+}
 
-    virtual ~Window() = default;
+void ImGuiUnix::newFrame()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+}
 
-    static std::unique_ptr<Window> create(const properties_t& properties = {});
-    static void initialize();
-    static void shutdown();
+void ImGuiUnix::render()
+{
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
-    virtual void setVSync(bool enabled) = 0;
-    virtual bool isVSync() const = 0;
+void ImGuiUnix::changeViewport(const ImVec2& window_size)
+{
+    glViewport(0, 0, window_size.x, window_size.y);
+}
 
-    virtual void* getNativeWindow() = 0;
-    virtual uint32_t getWidth() const = 0;
-    virtual uint32_t getHeight() const = 0;
+void ImGuiUnix::setControlKey()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeyCtrl = io.KeysDown[SDL_SCANCODE_LCTRL] || io.KeysDown[SDL_SCANCODE_RCTRL];
+    io.KeyShift = io.KeysDown[SDL_SCANCODE_LSHIFT] || io.KeysDown[SDL_SCANCODE_RSHIFT];
+    io.KeyAlt = io.KeysDown[SDL_SCANCODE_LALT] || io.KeysDown[SDL_SCANCODE_RALT];
+    io.KeySuper = io.KeysDown[SDL_SCANCODE_LGUI] || io.KeysDown[SDL_SCANCODE_RGUI];
+}
 
-    virtual void onUpdate() = 0;
-    virtual void setEventCallback(WinEventCallback callback) = 0;
-};
-
-} // namespace GE
-
-#endif // GE_WINDOW_WINDOW_H_
+} // namespace GE::priv

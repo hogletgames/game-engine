@@ -1,3 +1,5 @@
+add_compile_options(-Wno-pedantic)
+
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -38,5 +40,6 @@ set(GE_CORE_TEST_SRC
 add_executable(test_ge_core ${GE_CORE_TEST_SRC})
 target_link_libraries(test_ge_core
     ge
+    gmock
     gtest_main
 )

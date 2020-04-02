@@ -30,60 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOW_WINDOW_H_
-#define GE_WINDOW_WINDOW_H_
+#ifndef GE_IMGUI_IMGUI_LAYER_H_
+#define GE_IMGUI_IMGUI_LAYER_H_
 
 #include <ge/core/core.h>
-
-#include <cstdint>
-#include <functional>
-#include <memory>
-#include <string>
-
-#define WINDOW_TITLE_DEF  "Game Engine"
-#define WINDOW_WIDTH_DEF  1280
-#define WINDOW_HEIGHT_DEF 720
+#include <ge/layer.h>
 
 namespace GE {
 
-class Event;
+class KeyPressedEvent;
+class KeyReleasedEvent;
+class KeyTypedEvent;
+class MouseMovedEvent;
+class MouseScrolledEvent;
+class MouseButtonPressedEvent;
+class MouseButtonReleasedEvent;
+class WindowResizedEvent;
 
-class GE_API Window
+class GE_API ImGuiLayer: public Layer
 {
 public:
-    using WinEventCallback = std::function<void(Event&)>;
+    ImGuiLayer()
+        : Layer("ImGui layer")
+    {}
 
-    struct properties_t {
-        std::string title{};
-        uint32_t width{};
-        uint32_t height{};
+    void onAttach() override;
+    void onDetach() override;
+    void onUpdate() override;
+    void onEvent(Event& event) override;
 
-        properties_t(const std::string& title = WINDOW_TITLE_DEF,
-                     uint32_t width = WINDOW_WIDTH_DEF,
-                     uint32_t height = WINDOW_HEIGHT_DEF)
-            : title{title}
-            , width{width}
-            , height{height}
-        {}
-    };
-
-    virtual ~Window() = default;
-
-    static std::unique_ptr<Window> create(const properties_t& properties = {});
-    static void initialize();
-    static void shutdown();
-
-    virtual void setVSync(bool enabled) = 0;
-    virtual bool isVSync() const = 0;
-
-    virtual void* getNativeWindow() = 0;
-    virtual uint32_t getWidth() const = 0;
-    virtual uint32_t getHeight() const = 0;
-
-    virtual void onUpdate() = 0;
-    virtual void setEventCallback(WinEventCallback callback) = 0;
+private:
+    bool onKeyPressed(KeyPressedEvent& event);
+    bool onKeyReleased(KeyReleasedEvent& event);
+    bool onKeyTyped(KeyTypedEvent& event);
+    bool onMouseMoved(MouseMovedEvent& event);
+    bool onMouseScrolled(MouseScrolledEvent& event);
+    bool onMouseButtonPressed(MouseButtonPressedEvent& event);
+    bool onMouseButtonReleased(MouseButtonReleasedEvent& event);
+    bool onWindowResized(WindowResizedEvent& event);
 };
 
 } // namespace GE
 
-#endif // GE_WINDOW_WINDOW_H_
+#endif // GE_IMGUI_IMGUI_LAYER_H_

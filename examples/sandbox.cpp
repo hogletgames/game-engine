@@ -35,15 +35,19 @@
 namespace {
 
 class Sandbox: public GE::Application
-{};
+{
+public:
+    Sandbox() { pushOverlay(std::make_shared<GE::ImGuiLayer>()); }
+};
 
 } // namespace
 
 int main()
 {
-    GE_INITIALIZE();
-    Sandbox app;
+    GE_CREATE_FW_MANAGER();
+
+    Sandbox app{};
     app.run();
-    GE_SHUTDOWN();
+
     return 0;
 }

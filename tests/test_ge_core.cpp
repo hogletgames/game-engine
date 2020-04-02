@@ -1,18 +1,22 @@
-#include <ge/core/core.h>
-#include <ge/core/log.h>
+#include "ge/core/core.h"
+#include "ge/core/log.h"
+#include "ge/layer.h"
+#include "ge/layer_stack.h"
+#include "ge/window/key_event.h"
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 namespace {
 
-class TestGECore: public ::testing::Test
+class GECoreTest: public ::testing::Test
 {
 protected:
     void SetUp() override { GE::Log::initialize(); }
     void TearDown() override { GE::Log::shutdown(); }
 };
 
-TEST_F(TestGECore, CoreLogger)
+TEST_F(GECoreTest, CoreLogger)
 {
     GE_CORE_TRACE("{}", "trace");
     GE_CORE_DBG("{1} {0}", "debug", "^^");
@@ -22,7 +26,7 @@ TEST_F(TestGECore, CoreLogger)
     GE_CORE_CRIT("crit =(");
 }
 
-TEST_F(TestGECore, ClientLogger)
+TEST_F(GECoreTest, ClientLogger)
 {
     GE_TRACE("{}", "trace");
     GE_DBG("{1} {0}", "debug", "^^");
@@ -32,12 +36,146 @@ TEST_F(TestGECore, ClientLogger)
     GE_CRIT("crit =(");
 }
 
-TEST_F(TestGECore, Asserts)
+TEST_F(GECoreTest, Asserts)
 {
     EXPECT_DEATH(GE_CORE_ASSERT(2 * 2 == 5, "core assert"), "");
     EXPECT_DEATH(GE_ASSERT(2 < 0, "client assert"), "");
     GE_CORE_ASSERT(true, "True =)");
     GE_ASSERT(2 * 2 == 4, "Yes");
+}
+
+class LayerMock: public GE::Layer
+{
+public:
+    MOCK_METHOD(void, onAttach, (), (override));
+    MOCK_METHOD(void, onDetach, (), (override));
+    MOCK_METHOD(void, onUpdate, (), (override));
+    MOCK_METHOD(void, onEvent, (GE::Event & event), (override));
+};
+
+class LayerStackTest: public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+        layer_1 = std::make_shared<LayerMock>();
+        layer_2 = std::make_shared<LayerMock>();
+        overlay_1 = std::make_shared<LayerMock>();
+        overlay_2 = std::make_shared<LayerMock>();
+
+        layer_stack.pushLayer(layer_1);
+        layer_stack.pushOverlay(overlay_1);
+        layer_stack.pushLayer(layer_2);
+        layer_stack.pushOverlay(overlay_2);
+
+        EXPECT_CALL(*layer_1, onDetach());
+        EXPECT_CALL(*layer_2, onDetach());
+        EXPECT_CALL(*overlay_1, onDetach());
+        EXPECT_CALL(*overlay_2, onDetach());
+    }
+
+    GE::LayerStack layer_stack;
+
+    std::shared_ptr<LayerMock> layer_1;
+    std::shared_ptr<LayerMock> layer_2;
+    std::shared_ptr<LayerMock> overlay_1;
+    std::shared_ptr<LayerMock> overlay_2;
+};
+
+TEST_F(LayerStackTest, ReplaceLayerForwardOrder)
+{
+    auto layer_3 = std::make_shared<LayerMock>();
+
+    EXPECT_CALL(*layer_3, onDetach());
+
+    layer_stack.popLayer(layer_2);
+    layer_stack.pushLayer(layer_3);
+
+    {
+        testing::InSequence seq;
+
+        EXPECT_CALL(*layer_1, onUpdate());
+        EXPECT_CALL(*layer_2, onUpdate()).Times(0);
+        EXPECT_CALL(*layer_3, onUpdate());
+        EXPECT_CALL(*overlay_1, onUpdate());
+        EXPECT_CALL(*overlay_2, onUpdate());
+    }
+
+    for (auto& layer : layer_stack) {
+        layer->onUpdate();
+    }
+}
+
+TEST_F(LayerStackTest, ReplaceLayerReverseOrder)
+{
+    auto layer_3 = std::make_shared<LayerMock>();
+
+    EXPECT_CALL(*layer_3, onDetach());
+
+    layer_stack.popLayer(layer_2);
+    layer_stack.pushLayer(layer_3);
+
+    {
+        testing::InSequence seq;
+
+        EXPECT_CALL(*overlay_2, onUpdate());
+        EXPECT_CALL(*overlay_1, onUpdate());
+        EXPECT_CALL(*layer_3, onUpdate());
+        EXPECT_CALL(*layer_2, onUpdate()).Times(0);
+        EXPECT_CALL(*layer_1, onUpdate());
+    }
+
+    for (auto layer = layer_stack.rbegin(); layer != layer_stack.rend(); ++layer) {
+        (*layer)->onUpdate();
+    }
+}
+
+TEST_F(LayerStackTest, ReplaceOverlayForwardOrder)
+{
+    auto overlay_3 = std::make_shared<LayerMock>();
+
+    EXPECT_CALL(*overlay_3, onDetach());
+
+    layer_stack.popOverlay(overlay_1);
+    layer_stack.pushOverlay(overlay_3);
+
+    {
+        testing::InSequence seq;
+
+        EXPECT_CALL(*layer_1, onUpdate());
+        EXPECT_CALL(*layer_2, onUpdate());
+        EXPECT_CALL(*overlay_1, onUpdate()).Times(0);
+        EXPECT_CALL(*overlay_2, onUpdate());
+        EXPECT_CALL(*overlay_3, onUpdate());
+    }
+
+    for (auto& layer : layer_stack) {
+        layer->onUpdate();
+    }
+}
+
+TEST_F(LayerStackTest, ReplaceOverlayReverseOrder)
+{
+    auto overlay_3 = std::make_shared<LayerMock>();
+
+    EXPECT_CALL(*overlay_3, onDetach());
+
+    layer_stack.popOverlay(overlay_1);
+    layer_stack.pushOverlay(overlay_3);
+
+    {
+        testing::InSequence seq;
+
+        EXPECT_CALL(*overlay_3, onUpdate());
+        EXPECT_CALL(*overlay_2, onUpdate());
+        EXPECT_CALL(*overlay_1, onUpdate()).Times(0);
+        EXPECT_CALL(*layer_2, onUpdate());
+        EXPECT_CALL(*layer_1, onUpdate());
+    }
+
+    for (auto layer = layer_stack.rbegin(); layer != layer_stack.rend(); ++layer) {
+        (*layer)->onUpdate();
+    }
 }
 
 } // namespace

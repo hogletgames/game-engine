@@ -34,13 +34,14 @@
 #define GE_APPLICATION_H_
 
 #include <ge/core/core.h>
+#include <ge/layer_stack.h>
+#include <ge/window/window.h>
 
 #include <memory>
 
 namespace GE {
 
 class Event;
-class Window;
 class WindowClosedEvent;
 
 class GE_API Application
@@ -51,11 +52,22 @@ public:
 
     void run();
 
+    void pushLayer(std::shared_ptr<Layer> layer);
+    void pushOverlay(std::shared_ptr<Layer> overlay);
+
+    const Window& getWindow() { return *m_window; }
+    void* getNativeWindow() { return m_window->getNativeWindow(); }
+
+    static Application& instance() { return *m_instance; }
+
 private:
     void onEvent(Event& event);
     bool onWindowClosed(WindowClosedEvent& event);
 
+    static Application* m_instance;
+
     std::unique_ptr<Window> m_window;
+    LayerStack m_layer_stack;
     bool m_runnign{true};
 };
 

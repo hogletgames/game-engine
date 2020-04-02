@@ -32,29 +32,58 @@
 
 #include "application.h"
 
-#include "ge/ge.h"
-
-#define BIND_MEM_FN(fn) std::bind(&Application::fn, this, std::placeholders::_1)
+#include "ge/core/log.h"
+#include "ge/layer.h"
+#include "ge/window/window.h"
+#include "ge/window/window_event.h"
 
 namespace GE {
+
+Application* Application::m_instance{nullptr};
 
 Application::Application()
     : m_window(Window::create())
 {
-    m_window->setEventCallback(BIND_MEM_FN(onEvent));
+    GE_ASSERT(!m_instance, "Application already exists");
+    m_instance = this;
+    m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
 }
 
 void Application::run()
 {
     while (m_runnign) {
+        for (auto& layer : m_layer_stack) {
+            layer->onUpdate();
+        }
+
         m_window->onUpdate();
     }
+}
+
+void Application::pushLayer(std::shared_ptr<Layer> layer)
+{
+    m_layer_stack.pushLayer(layer);
+    layer->onAttach();
+}
+
+void Application::pushOverlay(std::shared_ptr<Layer> overlay)
+{
+    m_layer_stack.pushOverlay(overlay);
+    overlay->onAttach();
 }
 
 void Application::onEvent(Event& event)
 {
     EventDispatcher dispatcher{event};
-    dispatcher.dispatch<WindowClosedEvent>(BIND_MEM_FN(onWindowClosed));
+    dispatcher.dispatch<WindowClosedEvent>(GE_BIND_MEM_FN(Application::onWindowClosed));
+
+    for (auto layer = m_layer_stack.rbegin(); layer != m_layer_stack.rend(); ++layer) {
+        (*layer)->onEvent(event);
+
+        if (event.handled()) {
+            break;
+        }
+    }
 }
 
 bool Application::onWindowClosed([[maybe_unused]] WindowClosedEvent& event)

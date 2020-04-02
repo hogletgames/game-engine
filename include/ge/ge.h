@@ -35,18 +35,37 @@
 
 #include <ge/application.h>
 #include <ge/core/log.h>
+#include <ge/imgui/imgui_layer.h>
+#include <ge/layer.h>
+#include <ge/layer_stack.h>
 #include <ge/window/key_event.h>
 #include <ge/window/mouse_event.h>
 #include <ge/window/window.h>
 #include <ge/window/window_event.h>
 
-#define GE_INITIALIZE() ::GE::initialize()
-#define GE_SHUTDOWN()   ::GE::shutdown()
+#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
+#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
+#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
 
 namespace GE {
 
-void initialize();
-void shutdown();
+class GE_API FrameworkManager
+{
+public:
+    FrameworkManager() { initialize(); }
+    ~FrameworkManager() { shutdown(); }
+
+    FrameworkManager(const FrameworkManager&) = delete;
+    FrameworkManager(FrameworkManager&&) = delete;
+    FrameworkManager& operator=(const FrameworkManager&) = delete;
+    FrameworkManager& operator=(FrameworkManager&&) = delete;
+
+    static void initialize();
+    static void shutdown();
+
+private:
+    static bool initialized;
+};
 
 } // namespace GE
 
