@@ -30,30 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ge.h"
+#ifndef GE_NON_COPYBLE_H_
+#define GE_NON_COPYBLE_H_
 
 namespace GE {
 
-bool FrameworkManager::initialized{false};
-
-void FrameworkManager::initialize()
+class NonCopyable
 {
-    if (!initialized) {
-        Log::initialize();
-        Window::initialize();
-        initialized = true;
-        GE_CORE_TRACE("FM initialized");
-    }
-}
-
-void FrameworkManager::shutdown()
-{
-    if (initialized) {
-        GE_CORE_TRACE("FM shutdown");
-        Window::shutdown();
-        Log::shutdown();
-        initialized = false;
-    }
-}
+public:
+    NonCopyable() = default;
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
+};
 
 } // namespace GE
+
+#endif // GE_NON_COPYBLE_H_

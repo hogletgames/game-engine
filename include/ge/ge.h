@@ -38,6 +38,7 @@
 #include <ge/imgui/imgui_layer.h>
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
+#include <ge/non_copyble.h>
 #include <ge/window/key_event.h>
 #include <ge/window/mouse_event.h>
 #include <ge/window/window.h>
@@ -49,16 +50,11 @@
 
 namespace GE {
 
-class GE_API FrameworkManager
+class GE_API FrameworkManager: public NonCopyable
 {
 public:
     FrameworkManager() { initialize(); }
     ~FrameworkManager() { shutdown(); }
-
-    FrameworkManager(const FrameworkManager&) = delete;
-    FrameworkManager(FrameworkManager&&) = delete;
-    FrameworkManager& operator=(const FrameworkManager&) = delete;
-    FrameworkManager& operator=(FrameworkManager&&) = delete;
 
     static void initialize();
     static void shutdown();
