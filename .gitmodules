@@ -7,4 +7,6 @@
 [submodule "third-party/glad"]
 	path = third-party/glad
 	url = https://github.com/hogletgames/glad.git
-
+[submodule "third-party/imgui"]
+	path = third-party/imgui
+	url = https://github.com/hogletgames/imgui.git
