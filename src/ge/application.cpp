@@ -33,6 +33,7 @@
 #include "application.h"
 
 #include "ge/core/log.h"
+#include "ge/layer.h"
 #include "ge/window/window.h"
 #include "ge/window/window_event.h"
 
@@ -49,14 +50,38 @@ Application::Application()
 void Application::run()
 {
     while (m_runnign) {
+        for (auto& layer : m_layer_stack) {
+            layer->onUpdate();
+        }
+
         m_window->onUpdate();
     }
+}
+
+void Application::pushLayer(std::shared_ptr<Layer> layer)
+{
+    m_layer_stack.pushLayer(layer);
+    layer->onAttach();
+}
+
+void Application::pushOverlay(std::shared_ptr<Layer> overlay)
+{
+    m_layer_stack.pushOverlay(overlay);
+    overlay->onAttach();
 }
 
 void Application::onEvent(Event& event)
 {
     EventDispatcher dispatcher{event};
     dispatcher.dispatch<WindowClosedEvent>(BIND_MEM_FN(onWindowClosed));
+
+    for (auto layer = m_layer_stack.rbegin(); layer != m_layer_stack.rend(); ++layer) {
+        (*layer)->onEvent(event);
+
+        if (event.handled()) {
+            break;
+        }
+    }
 }
 
 bool Application::onWindowClosed([[maybe_unused]] WindowClosedEvent& event)

@@ -34,6 +34,7 @@
 #define GE_APPLICATION_H_
 
 #include <ge/core/core.h>
+#include <ge/layer_stack.h>
 
 #include <memory>
 
@@ -51,11 +52,15 @@ public:
 
     void run();
 
+    void pushLayer(std::shared_ptr<Layer> layer);
+    void pushOverlay(std::shared_ptr<Layer> overlay);
+
 private:
     void onEvent(Event& event);
     bool onWindowClosed(WindowClosedEvent& event);
 
     std::unique_ptr<Window> m_window;
+    LayerStack m_layer_stack;
     bool m_runnign{true};
 };
 
