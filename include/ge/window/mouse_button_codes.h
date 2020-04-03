@@ -30,43 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_WINDOW_MOUSE_BUTTON_CODES_H_
+#define GE_WINDOW_MOUSE_BUTTON_CODES_H_
 
-#include <ge/application.h>
-#include <ge/core/log.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/non_copyble.h>
+#include <iostream>
 
-#include <ge/imgui/imgui_layer.h>
-
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#define GE_BUTTON_UNKNOWN ::GE::MouseButton::BUTTON_UNKNOWN
+#define GE_BUTTON_LEFT    ::GE::MouseButton::BUTTON_LEFT
+#define GE_BUTTON_MIDDLE  ::GE::MouseButton::BUTTON_MIDDLE
+#define GE_BUTTON_RIGHT   ::GE::MouseButton::BUTTON_RIGHT
+#define GE_BUTTON_X1      ::GE::MouseButton::BUTTON_X1
+#define GE_BUTTON_X2      ::GE::MouseButton::BUTTON_X2
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+enum class MouseButton : uint8_t
 {
-public:
-    FrameworkManager() { initialize(); }
-    ~FrameworkManager() { shutdown(); }
-
-    static void initialize();
-    static void shutdown();
-
-private:
-    static bool initialized;
+    BUTTON_UNKNOWN = 0,
+    BUTTON_LEFT = 1,
+    BUTTON_MIDDLE = 2,
+    BUTTON_RIGHT = 3,
+    BUTTON_X1 = 4,
+    BUTTON_X2 = 5
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+inline std::ostream& operator<<(std::ostream& os, GE::MouseButton button)
+{
+    return os << static_cast<int>(button);
+}
+
+#endif // GE_WINDOW_MOUSE_BUTTON_CODES_H_
