@@ -34,6 +34,7 @@
 
 #include "ge/application.h"
 #include "ge/core/log.h"
+#include "ge/window/input.h"
 #include "ge/window/key_event.h"
 #include "ge/window/mouse_event.h"
 #include "ge/window/window_event.h"
@@ -47,6 +48,30 @@ using ImGuiPlatform = ::GE::priv::ImGuiUnix;
     #error "Unsupported platform"
 #endif
 
+#define CAST_KEY(key) static_cast<int>(key)
+
+namespace {
+
+int32_t toImGuiButton(GE::MouseButton button)
+{
+    switch (button) {
+        case GE_BUTTON_LEFT:
+            return 0;
+        case GE_BUTTON_RIGHT:
+            return 1;
+        case GE_BUTTON_MIDDLE:
+            return 2;
+        case GE_BUTTON_X1:
+            return 3;
+        case GE_BUTTON_X2:
+            return 4;
+        default:
+            return -1;
+    }
+}
+
+} // namespace
+
 namespace GE {
 
 void ImGuiLayer::onAttach()
@@ -57,6 +82,8 @@ void ImGuiLayer::onAttach()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    mapKeys(io);
 
     ImGui::StyleColorsDark();
     ImGuiPlatform::initialize();
@@ -104,19 +131,59 @@ void ImGuiLayer::onEvent(Event& event)
     dispatcher.dispatch<WindowResizedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onWindowResized));
 }
 
+void ImGuiLayer::mapKeys(ImGuiIO& io)
+{
+    io.KeyMap[ImGuiKey_Tab] = CAST_KEY(GE_KEY_TAB);
+    io.KeyMap[ImGuiKey_LeftArrow] = CAST_KEY(GE_KEY_LEFT);
+    io.KeyMap[ImGuiKey_RightArrow] = CAST_KEY(GE_KEY_RIGHT);
+    io.KeyMap[ImGuiKey_UpArrow] = CAST_KEY(GE_KEY_UP);
+    io.KeyMap[ImGuiKey_DownArrow] = CAST_KEY(GE_KEY_DOWN);
+    io.KeyMap[ImGuiKey_PageUp] = CAST_KEY(GE_KEY_PAGEUP);
+    io.KeyMap[ImGuiKey_PageDown] = CAST_KEY(GE_KEY_PAGEDOWN);
+    io.KeyMap[ImGuiKey_Home] = CAST_KEY(GE_KEY_HOME);
+    io.KeyMap[ImGuiKey_End] = CAST_KEY(GE_KEY_END);
+    io.KeyMap[ImGuiKey_Insert] = CAST_KEY(GE_KEY_INSERT);
+    io.KeyMap[ImGuiKey_Delete] = CAST_KEY(GE_KEY_DELETE);
+    io.KeyMap[ImGuiKey_Backspace] = CAST_KEY(GE_KEY_BACKSPACE);
+    io.KeyMap[ImGuiKey_Space] = CAST_KEY(GE_KEY_SPACE);
+    io.KeyMap[ImGuiKey_Enter] = CAST_KEY(GE_KEY_RETURN);
+    io.KeyMap[ImGuiKey_Escape] = CAST_KEY(GE_KEY_ESCAPE);
+    io.KeyMap[ImGuiKey_KeyPadEnter] = CAST_KEY(GE_KEY_KP_ENTER);
+    io.KeyMap[ImGuiKey_A] = CAST_KEY(GE_KEY_A);
+    io.KeyMap[ImGuiKey_C] = CAST_KEY(GE_KEY_C);
+    io.KeyMap[ImGuiKey_V] = CAST_KEY(GE_KEY_V);
+    io.KeyMap[ImGuiKey_X] = CAST_KEY(GE_KEY_X);
+    io.KeyMap[ImGuiKey_Y] = CAST_KEY(GE_KEY_Y);
+    io.KeyMap[ImGuiKey_Z] = CAST_KEY(GE_KEY_Z);
+}
+
+void ImGuiLayer::setControlKeys(ImGuiIO& io)
+{
+    io.KeyAlt = io.KeysDown[CAST_KEY(GE_KEY_LALT)] || io.KeysDown[CAST_KEY(GE_KEY_RALT)];
+
+    io.KeyCtrl = io.KeysDown[CAST_KEY(GE_KEY_LCTRL)] ||
+                 io.KeysDown[CAST_KEY(GE_KEY_RCTRL)];
+
+    io.KeyShift = io.KeysDown[CAST_KEY(GE_KEY_LSHIFT)] ||
+                  io.KeysDown[CAST_KEY(GE_KEY_RSHIFT)];
+
+    io.KeySuper = io.KeysDown[CAST_KEY(GE_KEY_LSUPER)] ||
+                  io.KeysDown[CAST_KEY(GE_KEY_RSUPER)];
+}
+
 bool ImGuiLayer::onKeyPressed([[maybe_unused]] KeyPressedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[event.getKeyCode()] = true;
-    ImGuiPlatform::setControlKey();
+    io.KeysDown[CAST_KEY(event.getKeyCode())] = true;
+    setControlKeys(io);
     return false;
 }
 
 bool ImGuiLayer::onKeyReleased([[maybe_unused]] KeyReleasedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[event.getKeyCode()] = false;
-    ImGuiPlatform::setControlKey();
+    io.KeysDown[CAST_KEY(event.getKeyCode())] = false;
+    setControlKeys(io);
     return false;
 }
 
@@ -144,15 +211,27 @@ bool ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event)
 
 bool ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
 {
+    auto button = event.getMouseButton();
+
+    if (button == GE_BUTTON_UNKNOWN) {
+        return false;
+    }
+
     ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[event.getMouseButton()] = true;
+    io.MouseDown[toImGuiButton(button)] = true;
     return false;
 }
 
 bool ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
 {
+    auto button = event.getMouseButton();
+
+    if (button == GE_BUTTON_UNKNOWN) {
+        return false;
+    }
+
     ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[event.getMouseButton()] = false;
+    io.MouseDown[toImGuiButton(button)] = false;
     return false;
 }
 

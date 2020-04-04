@@ -35,6 +35,7 @@
 
 #include <ge/core/core.h>
 #include <ge/layer_stack.h>
+#include <ge/non_copyble.h>
 #include <ge/window/window.h>
 
 #include <memory>
@@ -44,7 +45,7 @@ namespace GE {
 class Event;
 class WindowClosedEvent;
 
-class GE_API Application
+class GE_API Application: public NonCopyable
 {
 public:
     Application();

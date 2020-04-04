@@ -51,7 +51,7 @@ public:
     void setVSync(bool enabled) override;
     bool isVSync() const override { return m_vsync; }
 
-    virtual void* getNativeWindow() override { return m_window; };
+    void* getNativeWindow() const override { return m_window; };
     uint32_t getWidth() const override { return m_prop.width; }
     uint32_t getHeight() const override { return m_prop.height; }
 

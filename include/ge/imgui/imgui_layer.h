@@ -36,6 +36,8 @@
 #include <ge/core/core.h>
 #include <ge/layer.h>
 
+struct ImGuiIO;
+
 namespace GE {
 
 class KeyPressedEvent;
@@ -60,6 +62,9 @@ public:
     void onEvent(Event& event) override;
 
 private:
+    void mapKeys(ImGuiIO& io);
+    void setControlKeys(ImGuiIO& io);
+
     bool onKeyPressed(KeyPressedEvent& event);
     bool onKeyReleased(KeyReleasedEvent& event);
     bool onKeyTyped(KeyTypedEvent& event);

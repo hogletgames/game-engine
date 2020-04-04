@@ -1,4 +1,5 @@
 set(GE_WINDOW_UNIX_SRC
+    input_unix.cpp
     window_unix.cpp
 )
 

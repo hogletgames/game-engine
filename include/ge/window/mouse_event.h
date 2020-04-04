@@ -34,6 +34,7 @@
 #define GE_WINDOW_MOUSE_EVENT_H_
 
 #include <ge/window/event.h>
+#include <ge/window/mouse_button_codes.h>
 
 #include <sstream>
 
@@ -92,27 +93,27 @@ private:
 class GE_API MouseButtonEvent: public Event
 {
 public:
-    uint8_t getMouseButton() const { return m_button; }
+    MouseButton getMouseButton() const { return m_button; }
 
 protected:
-    explicit MouseButtonEvent(uint8_t button)
+    explicit MouseButtonEvent(MouseButton button)
         : m_button{button}
     {}
 
-    uint8_t m_button{};
+    MouseButton m_button{};
 };
 
 class GE_API MouseButtonPressedEvent: public MouseButtonEvent
 {
 public:
-    explicit MouseButtonPressedEvent(uint8_t button = 0)
+    explicit MouseButtonPressedEvent(MouseButton button = GE_BUTTON_UNKNOWN)
         : MouseButtonEvent{button}
     {}
 
     std::string toString() const override
     {
         std::stringstream ss;
-        ss << "MouseButtonPressedEvent: " << static_cast<int>(m_button);
+        ss << "MouseButtonPressedEvent: " << m_button;
         return ss.str();
     }
 
@@ -122,14 +123,14 @@ public:
 class GE_API MouseButtonReleasedEvent: public MouseButtonEvent
 {
 public:
-    explicit MouseButtonReleasedEvent(uint8_t button = 0)
+    explicit MouseButtonReleasedEvent(MouseButton button = GE_BUTTON_UNKNOWN)
         : MouseButtonEvent{button}
     {}
 
     std::string toString() const override
     {
         std::stringstream ss;
-        ss << "MouseButtonReleasedEvent: " << static_cast<int>(m_button);
+        ss << "MouseButtonReleasedEvent: " << m_button;
         return ss.str();
     }
 

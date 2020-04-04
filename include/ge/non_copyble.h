@@ -30,44 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
-
-#include <ge/application.h>
-#include <ge/core/log.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/non_copyble.h>
-
-#include <ge/imgui/imgui_layer.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#ifndef GE_NON_COPYBLE_H_
+#define GE_NON_COPYBLE_H_
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+class NonCopyable
 {
 public:
-    FrameworkManager() { initialize(); }
-    ~FrameworkManager() { shutdown(); }
-
-    static void initialize();
-    static void shutdown();
-
-private:
-    static bool initialized;
+    NonCopyable() = default;
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_NON_COPYBLE_H_
