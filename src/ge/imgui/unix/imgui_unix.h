@@ -45,7 +45,7 @@ public:
     static void newFrame();
     static void render();
 
-    static void changeViewport(const ImVec2& window_size);
+    static void updateViewport(const ImVec2& window_size);
 };
 
 } // namespace GE::priv

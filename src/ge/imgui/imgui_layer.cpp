@@ -76,25 +76,33 @@ namespace GE {
 
 void ImGuiLayer::onAttach()
 {
+    GE_CORE_TRACE("'{}' is attached", getName());
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
-    mapKeys(io);
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
     ImGuiPlatform::initialize();
-    GE_CORE_TRACE("'{}' attached", getName());
+    mapKeys(io);
 }
 
 void ImGuiLayer::onDetach()
 {
+    GE_CORE_TRACE("'{}' is detached", getName());
     ImGuiPlatform::shutdown();
     ImGui::DestroyContext();
-    GE_CORE_TRACE("'{}' detached", getName());
 }
 
 void ImGuiLayer::onUpdate()
@@ -113,6 +121,7 @@ void ImGuiLayer::onUpdate()
 
     ImGui::Render();
     ImGuiPlatform::render();
+    ImGuiPlatform::updateViewport(io.DisplaySize);
 }
 
 void ImGuiLayer::onEvent(Event& event)
@@ -241,7 +250,7 @@ bool ImGuiLayer::onWindowResized([[maybe_unused]] WindowResizedEvent& event)
     ImVec2 window_size = ImVec2(event.getWidth(), event.getHeight());
     io.DisplaySize = window_size;
     io.DisplayFramebufferScale = ImVec2{1.0f, 1.0f};
-    ImGuiPlatform::changeViewport(window_size);
+    ImGuiPlatform::updateViewport(window_size);
     return false;
 }
 
