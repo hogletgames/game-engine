@@ -100,7 +100,10 @@ install(DIRECTORY include/ge
 
 # Include directories
 include_directories(include)
-include_directories(SYSTEM third-party/spdlog/include)
+include_directories(SYSTEM 
+    third-party/spdlog/include
+    third-party/glm
+)
 
 # Subdirectories
 if(GE_BUILD_EXAMPLES)
