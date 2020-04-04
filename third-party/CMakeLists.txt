@@ -15,3 +15,7 @@ add_Library(imgui STATIC
     imgui/imgui_demo.cpp
     imgui/imgui_widgets.cpp
 )
+target_compile_options(imgui PRIVATE
+    -Wno-error=unused-variable
+    -Wno-error=unused-but-set-variable
+)
