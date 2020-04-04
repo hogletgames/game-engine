@@ -58,8 +58,12 @@ public:
 
     void onAttach() override;
     void onDetach() override;
-    void onUpdate() override;
+    void onUpdate() override {}
     void onEvent(Event& event) override;
+    void onImGuiRender() override;
+
+    void begin();
+    void end();
 
 private:
     void mapKeys(ImGuiIO& io);

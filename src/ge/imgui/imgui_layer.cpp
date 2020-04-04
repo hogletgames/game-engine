@@ -105,25 +105,6 @@ void ImGuiLayer::onDetach()
     ImGui::DestroyContext();
 }
 
-void ImGuiLayer::onUpdate()
-{
-    ImGuiIO& io = ImGui::GetIO();
-    Application& app = Application::instance();
-    io.DisplaySize = ImVec2(app.getWindow().getWidth(), app.getWindow().getHeight());
-
-    io.DeltaTime = 1.0f / 60.0f;
-
-    ImGuiPlatform::newFrame();
-    ImGui::NewFrame();
-
-    bool show_demo_window{true};
-    ImGui::ShowDemoWindow(&show_demo_window);
-
-    ImGui::Render();
-    ImGuiPlatform::render();
-    ImGuiPlatform::updateViewport(io.DisplaySize);
-}
-
 void ImGuiLayer::onEvent(Event& event)
 {
     EventDispatcher dispatcher(event);
@@ -138,6 +119,28 @@ void ImGuiLayer::onEvent(Event& event)
     dispatcher.dispatch<MouseButtonReleasedEvent>(
         GE_BIND_MEM_FN(ImGuiLayer::onMouseButtonReleased));
     dispatcher.dispatch<WindowResizedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onWindowResized));
+}
+
+void ImGuiLayer::onImGuiRender()
+{
+    static bool show_demo_window{true};
+    ImGui::ShowDemoWindow(&show_demo_window);
+}
+
+void ImGuiLayer::begin()
+{
+    ImGuiPlatform::newFrame();
+    ImGui::NewFrame();
+}
+
+void ImGuiLayer::end()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    const auto& window = Application::instance().getWindow();
+    io.DisplaySize = ImVec2(window.getWidth(), window.getHeight());
+
+    ImGui::Render();
+    ImGuiPlatform::render();
 }
 
 void ImGuiLayer::mapKeys(ImGuiIO& io)

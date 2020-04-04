@@ -35,10 +35,7 @@
 namespace {
 
 class Sandbox: public GE::Application
-{
-public:
-    Sandbox() { pushOverlay(std::make_shared<GE::ImGuiLayer>()); }
-};
+{};
 
 } // namespace
 

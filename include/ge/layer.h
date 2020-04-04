@@ -52,6 +52,7 @@ public:
     virtual void onDetach() = 0;
     virtual void onUpdate() = 0;
     virtual void onEvent(Event& event) = 0;
+    virtual void onImGuiRender() {}
 
     const char* getName() const { return m_name; }
 

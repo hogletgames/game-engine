@@ -43,6 +43,7 @@
 namespace GE {
 
 class Event;
+class ImGuiLayer;
 class WindowClosedEvent;
 
 class GE_API Application: public NonCopyable
@@ -68,6 +69,7 @@ private:
     static Application* m_instance;
 
     std::unique_ptr<Window> m_window;
+    std::shared_ptr<ImGuiLayer> m_imgui_layer;
     LayerStack m_layer_stack;
     bool m_runnign{true};
 };
