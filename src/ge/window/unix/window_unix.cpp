@@ -31,6 +31,7 @@
  */
 
 #include "window_unix.h"
+#include "input.h"
 #include "key_event.h"
 #include "mouse_event.h"
 #include "utils_unix.h"
@@ -182,16 +183,14 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
         }
 
         case SDL_MOUSEBUTTONDOWN: {
-            uint8_t button = sdl_event.button.button;
-            GE_CONVERT_MOUSE_BUTTON(button);
+            MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonPressedEvent event{button};
             m_event_callback(event);
             break;
         }
 
         case SDL_MOUSEBUTTONUP: {
-            uint8_t button = sdl_event.button.button;
-            GE_CONVERT_MOUSE_BUTTON(button);
+            MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonReleasedEvent event{button};
             m_event_callback(event);
             break;
@@ -206,7 +205,7 @@ void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
 {
     switch (sdl_event.type) {
         case SDL_KEYDOWN: {
-            uint16_t code = sdl_event.key.keysym.scancode;
+            KeyCode code = Input::toGEKeyCode(sdl_event.key.keysym.sym);
             uint32_t repeat_count = sdl_event.key.repeat;
             KeyPressedEvent event{code, repeat_count};
             m_event_callback(event);
@@ -214,7 +213,7 @@ void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
         }
 
         case SDL_KEYUP: {
-            uint16_t code = sdl_event.key.keysym.scancode;
+            KeyCode code = Input::toGEKeyCode(sdl_event.key.keysym.sym);
             KeyReleasedEvent event{code};
             m_event_callback(event);
             break;

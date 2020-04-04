@@ -34,6 +34,7 @@
 
 #include "ge/application.h"
 #include "ge/core/log.h"
+#include "ge/window/input.h"
 #include "ge/window/key_event.h"
 #include "ge/window/mouse_event.h"
 #include "ge/window/window_event.h"
@@ -107,7 +108,7 @@ void ImGuiLayer::onEvent(Event& event)
 bool ImGuiLayer::onKeyPressed([[maybe_unused]] KeyPressedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[event.getKeyCode()] = true;
+    io.KeysDown[Input::toNativeKeyCode(event.getKeyCode())] = true;
     ImGuiPlatform::setControlKey();
     return false;
 }
@@ -115,7 +116,7 @@ bool ImGuiLayer::onKeyPressed([[maybe_unused]] KeyPressedEvent& event)
 bool ImGuiLayer::onKeyReleased([[maybe_unused]] KeyReleasedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[event.getKeyCode()] = false;
+    io.KeysDown[Input::toNativeKeyCode(event.getKeyCode())] = false;
     ImGuiPlatform::setControlKey();
     return false;
 }
@@ -145,14 +146,14 @@ bool ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event)
 bool ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[event.getMouseButton()] = true;
+    io.MouseDown[Input::toNativeButton(event.getMouseButton()) - 1] = true;
     return false;
 }
 
 bool ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[event.getMouseButton()] = false;
+    io.MouseDown[Input::toNativeButton(event.getMouseButton()) - 1] = false;
     return false;
 }
 

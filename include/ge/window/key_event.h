@@ -34,6 +34,7 @@
 #define GE_WINDOWS_KEY_EVENT_H_
 
 #include <ge/window/event.h>
+#include <ge/window/key_codes.h>
 
 #include <sstream>
 
@@ -42,20 +43,20 @@ namespace GE {
 class GE_API KeyEvent: public Event
 {
 public:
-    uint16_t getKeyCode() const { return m_key_code; }
+    KeyCode getKeyCode() const { return m_key_code; }
 
 protected:
-    explicit KeyEvent(uint16_t key_code)
+    explicit KeyEvent(KeyCode key_code)
         : m_key_code{key_code}
     {}
 
-    uint16_t m_key_code{};
+    KeyCode m_key_code{GE_KEY_UNKNOWN};
 };
 
 class GE_API KeyPressedEvent: public KeyEvent
 {
 public:
-    KeyPressedEvent(uint16_t key_code = 0, uint32_t repeat_count = 0)
+    KeyPressedEvent(KeyCode key_code = GE_KEY_UNKNOWN, uint32_t repeat_count = 0)
         : KeyEvent{key_code}
         , m_repeat_count{repeat_count}
     {}
@@ -78,7 +79,7 @@ private:
 class GE_API KeyReleasedEvent: public KeyEvent
 {
 public:
-    explicit KeyReleasedEvent(uint16_t key_code = 0)
+    explicit KeyReleasedEvent(KeyCode key_code = GE_KEY_UNKNOWN)
         : KeyEvent{key_code}
     {}
 

@@ -8,9 +8,9 @@ namespace {
 
 TEST(EventTest, Key)
 {
-    constexpr uint16_t pressed_key_code{12};
+    constexpr GE::KeyCode pressed_key_code{GE_KEY_LALT};
     constexpr uint32_t repeat_count{49};
-    constexpr uint16_t released_key_code{62};
+    constexpr GE::KeyCode released_key_code{GE_KEY_S};
     const char* typed_text = "key typed event test";
 
     GE::KeyPressedEvent key_pressed{pressed_key_code, repeat_count};
@@ -37,8 +37,8 @@ TEST(EventTest, Mouse)
     constexpr float mouse_pos_y{46.0f};
     constexpr float mouse_offset_x{53.0f};
     constexpr float mouse_offset_y{90.0f};
-    constexpr uint8_t pressed_button{1};
-    constexpr uint8_t released_button{3};
+    constexpr GE::MouseButton pressed_button{GE_BUTTON_LEFT};
+    constexpr GE::MouseButton released_button{GE_BUTTON_MIDDLE};
 
     GE::MouseMovedEvent mouse_moved{mouse_pos_x, mouse_pos_y};
     GE::MouseScrolledEvent mouse_scrolled{mouse_offset_x, mouse_offset_y};
