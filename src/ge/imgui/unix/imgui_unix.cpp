@@ -40,6 +40,7 @@
 #include "examples/imgui_impl_sdl.h"
 
 #include "glad/glad.h"
+#include "SDL.h"
 
 #define GLSL_VERSION "#version 450"
 
@@ -48,6 +49,11 @@ namespace GE::priv {
 void ImGuiUnix::initialize()
 {
     GE_CORE_TRACE("Initialize ImGuiUnix");
+
+    void* window = Application::instance().getNativeWindow();
+    void* context = SDL_GL_GetCurrentContext();
+
+    ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context);
     ImGui_ImplOpenGL3_Init(GLSL_VERSION);
 }
 
@@ -55,19 +61,41 @@ void ImGuiUnix::shutdown()
 {
     GE_CORE_TRACE("Shutdown ImGuiUnix");
     ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
 }
 
 void ImGuiUnix::newFrame()
 {
+    void* window = Application::instance().getNativeWindow();
+
     ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));
 }
 
 void ImGuiUnix::render()
 {
+    ImGuiIO& io = ImGui::GetIO();
+    int32_t width = static_cast<int32_t>(io.DisplaySize.x);
+    int32_t height = static_cast<int32_t>(io.DisplaySize.y);
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    glViewport(0, 0, width, height);
+    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+        SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+    }
 }
 
-void ImGuiUnix::changeViewport(const ImVec2& window_size)
+void ImGuiUnix::updateViewport(const ImVec2& window_size)
 {
     glViewport(0, 0, window_size.x, window_size.y);
 }

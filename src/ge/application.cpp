@@ -33,6 +33,7 @@
 #include "application.h"
 
 #include "ge/core/log.h"
+#include "ge/imgui/imgui_layer.h"
 #include "ge/layer.h"
 #include "ge/window/window.h"
 #include "ge/window/window_event.h"
@@ -47,6 +48,9 @@ Application::Application()
     GE_ASSERT(!m_instance, "Application already exists");
     m_instance = this;
     m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
+
+    m_imgui_layer = std::make_shared<ImGuiLayer>();
+    pushOverlay(m_imgui_layer);
 }
 
 void Application::run()
@@ -56,6 +60,13 @@ void Application::run()
             layer->onUpdate();
         }
 
+        m_imgui_layer->begin();
+
+        for (auto layer : m_layer_stack) {
+            layer->onImGuiRender();
+        }
+
+        m_imgui_layer->end();
         m_window->onUpdate();
     }
 }
