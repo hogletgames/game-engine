@@ -58,6 +58,7 @@ public:
 
     const Window& getWindow() { return *m_window; }
     void* getNativeWindow() { return m_window->getNativeWindow(); }
+    void* getNativeContext() { return m_window->getNativeContext(); }
 
     static Application* instance() { return m_instance; }
 

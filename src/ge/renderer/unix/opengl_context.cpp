@@ -30,57 +30,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#include "opengl_context.h"
+#include "unix_utils.h"
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include <SDL.h>
+#include <glad/glad.h>
 
-union SDL_Event;
-struct SDL_Window;
+#define OPENGL_MAJOR_VERSION 4
+#define OPENGL_MINOR_VERSION 5
 
 namespace GE::UNIX {
 
-class Window: public ::GE::Window
+OpenGLContext::OpenGLContext(void* window)
+    : m_window{reinterpret_cast<SDL_Window*>(window)}
 {
-public:
-    explicit Window(properties_t prop);
-    ~Window() override;
+    GE_CORE_TRACE("OpenGL context has been created");
+}
 
-    static void initialize();
-    static void shutdown();
+void OpenGLContext::initialize()
+{
+    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_MAJOR_VERSION));
+    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_MINOR_VERSION));
+    SDLCall(
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE));
 
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
+    m_gl_context = SDL_GL_CreateContext(m_window);
+    GE_CORE_ASSERT(m_gl_context, "Failed to create graphics context");
 
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
+    auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
+    int is_glad_loaded = gladLoadGLLoader(glad_load_proc);
+    GE_CORE_ASSERT(is_glad_loaded, "Failed to initialize GLAD");
 
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
+    GE_CORE_INFO("OpenGL Version: {}", glGetString(GL_VERSION));
+    GE_CORE_INFO("OpenGL Shading Language Version: {}",
+                 glGetString(GL_SHADING_LANGUAGE_VERSION));
+    GE_CORE_INFO("OpenGL Vendor: {}", glGetString(GL_VENDOR));
+    GE_CORE_INFO("OpenGL Renderer: {}", glGetString(GL_RENDERER));
+}
 
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
+void OpenGLContext::shutdown()
+{
+    SDL_GL_DeleteContext(m_gl_context);
+    GE_CORE_TRACE("OpenGL context has been deleted");
+}
 
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
-};
+void OpenGLContext::swapBuffers()
+{
+    SDL_GL_SwapWindow(m_window);
+}
 
 } // namespace GE::UNIX
-
-#endif // GE_WINDOW_UNIX_WINDOW_H_

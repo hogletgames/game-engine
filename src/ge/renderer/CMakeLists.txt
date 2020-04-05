@@ -1,0 +1,12 @@
+set(GE_RENDERER_SRC
+    graphics_context.cpp
+)
+
+add_library(ge-renderer STATIC ${GE_RENDERER_SRC})
+target_include_directories(ge-renderer PRIVATE
+    ${CMAKE_SOURCE_DIR}/include/ge/renderer
+)
+if(GE_PLATFORM_UNIX)
+    target_link_libraries(ge-renderer PUBLIC ge-renderer-unix)
+    add_subdirectory(unix)
+endif()

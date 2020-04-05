@@ -43,6 +43,8 @@
 
 #include <ge/imgui/imgui_layer.h>
 
+#include <ge/renderer/graphics_context.h>
+
 #include <ge/window/input.h>
 #include <ge/window/key_codes.h>
 #include <ge/window/key_event.h>

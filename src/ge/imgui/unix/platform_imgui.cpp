@@ -52,7 +52,7 @@ void PlatformImGui::initialize()
     GE_CORE_TRACE("Initialize Unix::PlatformImGui");
 
     void* window = Application::instance()->getNativeWindow();
-    void* context = SDL_GL_GetCurrentContext();
+    void* context = Application::instance()->getNativeContext();
 
     ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context);
     ImGui_ImplOpenGL3_Init(GLSL_VERSION);

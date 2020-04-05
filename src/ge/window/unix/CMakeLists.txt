@@ -6,6 +6,7 @@ set(GE_WINDOW_UNIX_SRC
 add_library(ge-window-unix STATIC ${GE_WINDOW_UNIX_SRC})
 target_link_libraries(ge-window-unix PUBLIC
     ge-core
+    ge-renderer
     SDL2
     glad
 )
