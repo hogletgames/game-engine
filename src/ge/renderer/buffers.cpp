@@ -30,55 +30,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
-
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-
-#include <ge/imgui/imgui_layer.h>
-
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#include "buffers.h"
+#include "opengl/buffers.h"
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+// TODO: impl render API to select buffers
+
+Scoped<VertexBuffer> VertexBuffer::create(float* vertices, uint32_t size)
 {
-public:
-    FrameworkManager() { initialize(); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    return makeScoped<OpenGL::VertexBuffer>(vertices, size);
+}
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
-
-    ~FrameworkManager() { shutdown(); } // NOLINT
-
-    static void initialize();
-    static void shutdown();
-
-private:
-    static bool initialized;
-};
+Scoped<IndexBuffer> IndexBuffer::create(uint32_t* indexes, uint32_t count)
+{
+    return makeScoped<OpenGL::IndexBuffer>(indexes, count);
+}
 
 } // namespace GE
-
-#endif // GE_GE_H_

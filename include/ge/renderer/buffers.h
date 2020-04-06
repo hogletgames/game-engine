@@ -30,55 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_BUFFERS_H_
+#define GE_RENDERER_BUFFERS_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
 #include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
 
-#include <ge/imgui/imgui_layer.h>
-
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#include <memory>
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+class GE_API VertexBuffer: public NonCopyable
 {
 public:
-    FrameworkManager() { initialize(); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    static Scoped<VertexBuffer> create(float* vertices, uint32_t size);
+};
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
+class GE_API IndexBuffer: public NonCopyable
+{
+public:
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
-    static void initialize();
-    static void shutdown();
+    virtual uint32_t getCount() const = 0;
 
-private:
-    static bool initialized;
+    static Scoped<IndexBuffer> create(uint32_t* indexes, uint32_t count);
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_RENDERER_BUFFERS_H_

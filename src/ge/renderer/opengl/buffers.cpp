@@ -30,55 +30,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#include "buffers.h"
+#include "opengl_utils.h"
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
+#include <glad/glad.h>
 
-#include <ge/imgui/imgui_layer.h>
+namespace {
 
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
+using BufferType = ::GE::OpenGL::BufferBase::Type;
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
-
-namespace GE {
-
-class GE_API FrameworkManager: public NonCopyable
+GLenum toGLBufferType(BufferType type)
 {
-public:
-    FrameworkManager() { initialize(); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    switch (type) {
+        case BufferType::VERTEX: return GL_ARRAY_BUFFER;
+        case BufferType::INDEX: return GL_ELEMENT_ARRAY_BUFFER;
+        default: break;
+    }
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    GE_CORE_ASSERT(false, "Unknown OpenGL buffer type: {}", static_cast<int>(type));
+    return 0;
+}
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
+} // namespace
 
-    static void initialize();
-    static void shutdown();
+namespace GE::OpenGL {
 
-private:
-    static bool initialized;
-};
+BufferBase::BufferBase(Type type, void* data, uint32_t size)
+    : m_gl_type{toGLBufferType(type)}
+{
+    GE_CORE_ASSERT(m_gl_type, "Unknown buffer type");
+    GLCall(glCreateBuffers(1, &m_id));
+    GLCall(glBindBuffer(m_gl_type, m_id));
+    GLCall(glBufferData(m_gl_type, size, data, GL_STATIC_DRAW));
+}
 
-} // namespace GE
+BufferBase::~BufferBase()
+{
+    GLCall(glDeleteBuffers(1, &m_id));
+}
 
-#endif // GE_GE_H_
+void BufferBase::bindBuffer() const
+{
+    GLCall(glBindBuffer(m_gl_type, m_id));
+}
+
+void BufferBase::unbindBuffer() const
+{
+    GLCall(glBindBuffer(m_gl_type, 0));
+}
+
+} // namespace GE::OpenGL

@@ -30,55 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+// NOLINTNEXTLINE
+#ifndef GE_RENDERER_OPENGL_BUFFERS_H_
+#define GE_RENDERER_OPENGL_BUFFERS_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
+#include "ge/renderer/buffers.h"
 
-#include <ge/imgui/imgui_layer.h>
+namespace GE::OpenGL {
 
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
-
-namespace GE {
-
-class GE_API FrameworkManager: public NonCopyable
+class BufferBase: public NonCopyable
 {
 public:
-    FrameworkManager() { initialize(); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    enum class Type : uint8_t
+    {
+        NONE = 0,
+        VERTEX,
+        INDEX
+    };
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    BufferBase(Type type, void* data, uint32_t size);
+    ~BufferBase() override;
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
-
-    static void initialize();
-    static void shutdown();
+    void bindBuffer() const;
+    void unbindBuffer() const;
 
 private:
-    static bool initialized;
+    uint32_t m_gl_type{0};
+    uint32_t m_id{0};
 };
 
-} // namespace GE
+class VertexBuffer: public ::GE::VertexBuffer, public BufferBase
+{
+public:
+    VertexBuffer(float* vertices, uint32_t size)
+        : BufferBase{Type::VERTEX, vertices, size}
+    {}
 
-#endif // GE_GE_H_
+    void bind() const override { bindBuffer(); }
+    void unbind() const override { unbindBuffer(); }
+};
+
+class IndexBuffer: public ::GE::IndexBuffer, public BufferBase
+{
+public:
+    IndexBuffer(uint32_t* indexes, uint32_t count)
+        : BufferBase(Type::INDEX, indexes, sizeof(*indexes) * count)
+        , m_count{count}
+    {}
+
+    void bind() const override { bindBuffer(); }
+    void unbind() const override { unbindBuffer(); }
+
+    uint32_t getCount() const override { return m_count; }
+
+private:
+    uint32_t m_count{};
+};
+
+} // namespace GE::OpenGL
+
+#endif // GE_RENDERER_OPENGL_BUFFERS_H_
