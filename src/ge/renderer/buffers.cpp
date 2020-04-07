@@ -32,19 +32,30 @@
 
 #include "buffers.h"
 #include "opengl/buffers.h"
+#include "renderer.h"
+
+#include "ge/core/asserts.h"
 
 namespace GE {
 
-// TODO: impl render API to select buffers
-
 Scoped<VertexBuffer> VertexBuffer::create(float* vertices, uint32_t size)
 {
-    return makeScoped<OpenGL::VertexBuffer>(vertices, size);
+    switch (Renderer::getAPI()) {
+        case GE_OPEN_GL_API: return makeScoped<OpenGL::VertexBuffer>(vertices, size);
+        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
+    }
+
+    return nullptr;
 }
 
 Scoped<IndexBuffer> IndexBuffer::create(uint32_t* indexes, uint32_t count)
 {
-    return makeScoped<OpenGL::IndexBuffer>(indexes, count);
+    switch (Renderer::getAPI()) {
+        case GE_OPEN_GL_API: return makeScoped<OpenGL::IndexBuffer>(indexes, count);
+        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
+    }
+
+    return nullptr;
 }
 
 } // namespace GE

@@ -41,7 +41,7 @@ class Sandbox: public GE::Application
 
 int main()
 {
-    GE_CREATE_FW_MANAGER();
+    GE_CREATE_FW_MANAGER(GE_OPEN_GL_API);
 
     Sandbox app{};
     app.run();

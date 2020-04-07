@@ -30,28 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "graphics_context.h"
 #include "renderer.h"
 
-#include "ge/core/asserts.h"
-
-#if defined(GE_PLATFORM_UNIX)
-    #include "unix/opengl_context.h"
-using OpenGLContext = ::GE::UNIX::OpenGLContext;
-#else
-    #error "Unsupported platform"
-#endif
+#include "ge/core/log.h"
 
 namespace GE {
 
-Scoped<GraphicsContext> GraphicsContext::create(void* window)
-{
-    switch (Renderer::getAPI()) {
-        case GE_OPEN_GL_API: return makeScoped<OpenGLContext>(window);
-        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
-    }
+Renderer::API Renderer::m_api{NONE_API};
 
-    return nullptr;
+void Renderer::initialize(API api)
+{
+    GE_CORE_TRACE("Initialize Renderer: API '{}'", api);
+    m_api = api;
+}
+
+void Renderer::shutdown()
+{
+    GE_CORE_TRACE("Shutdown Renderer");
+    m_api = NONE_API;
 }
 
 } // namespace GE

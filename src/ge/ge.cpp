@@ -36,7 +36,7 @@ namespace GE {
 
 bool FrameworkManager::initialized{false};
 
-void FrameworkManager::initialize()
+void FrameworkManager::initialize(Renderer::API api)
 {
     if (initialized) {
         return;
@@ -44,6 +44,7 @@ void FrameworkManager::initialize()
 
     Log::initialize();
     Input::initialize();
+    Renderer::initialize(api);
     Window::initialize();
     initialized = true;
     GE_CORE_TRACE("FM initialized");
@@ -57,6 +58,7 @@ void FrameworkManager::shutdown()
 
     GE_CORE_TRACE("FM shutdown");
     Window::shutdown();
+    Renderer::shutdown();
     Input::shutdown();
     Log::shutdown();
     initialized = false;

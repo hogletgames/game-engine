@@ -35,6 +35,7 @@
 #include "unix_utils.h"
 
 #include "ge/renderer/graphics_context.h"
+#include "ge/renderer/renderer.h"
 #include "ge/window/key_event.h"
 #include "ge/window/mouse_event.h"
 #include "ge/window/window_event.h"
@@ -59,8 +60,9 @@ Window::Window(properties_t prop)
     int32_t pos_y = SDL_WINDOWPOS_CENTERED;
     uint32_t flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN;
 
-    // TODO hide OpenGl usage
-    flags |= SDL_WINDOW_OPENGL;
+    if (Renderer::getAPI() == GE_OPEN_GL_API) {
+        flags |= SDL_WINDOW_OPENGL;
+    }
 
     m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
                                 m_prop.height, flags);
