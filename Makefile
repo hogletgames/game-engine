@@ -24,7 +24,8 @@ CMAKE_FLAGS += -DGE_BUILD_TESTS=$(BUILD_TESTS) -DGE_ENABLE_ASAN=$(ENABLE_ASAN)
 CMAKE_FLAGS += -DGE_ENABLE_USAN=$(ENABLE_USAN) CMAKE_FLAGS -DGE_ENABLE_TSAN=$(ENABLE_TSAN)
 CMAKE_FLAGS += -DGE_ENABLE_ASSERTS=$(ENABLE_ASSERTS) -DGE_DEBUG=$(ENABLE_DEBUG)
 
-VALGRIND_BIN = valgrind --leak-check=full --error-exitcode=1
+VALGRIND_BIN             = valgrind --leak-check=full --error-exitcode=1
+RUN_CLANG_TIDY_BIN      ?= run-clang-tidy
 
 # Build project
 .PHONY: all
@@ -34,10 +35,19 @@ all: build_project
 install: MAKE_TARGET = install
 install: build_project
 
+.PHONY: clang-tidy
+clang-tidy: generate_makefiles
+clang-tidy: CMAKE_FLAGS += -DGE_EXPORT_COMPILE_CMD=ON -DGE_BUILD_EXAMPLES=ON -DGE_BUILD_TESTS=OFF
+clang-tidy:
+	$(RUN_CLANG_TIDY_BIN) -p build
+
 .PHONY: build_project
-build_project:
-	mkdir -p $(BUILD_DIR) && cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) ..
+build_project: generate_makefiles
 	$(MAKE) -C $(BUILD_DIR) $(MAKE_TARGET)
+
+.PHONY: generate_makefiles
+generate_makefiles:
+	mkdir -p $(BUILD_DIR) && cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) ..
 
 # Clean project
 .PHONY: clean

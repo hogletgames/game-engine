@@ -9,7 +9,7 @@ target_link_libraries(ge-window-unix PUBLIC
     SDL2
     glad
 )
-target_include_directories(ge-window-unix PRIVATE
+target_include_directories(ge-window-unix SYSTEM PRIVATE
     ${CMAKE_SOURCE_DIR}/third-party/SDL2/include
     ${CMAKE_SOURCE_DIR}/third-party/glad/include
 )

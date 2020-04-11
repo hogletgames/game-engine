@@ -1,8 +1,11 @@
 set(GE_IMGUI_DIR ${CMAKE_SOURCE_DIR}/third-party/imgui)
 
 include_directories(
-    ${GE_IMGUI_DIR}
     ${CMAKE_SOURCE_DIR}/include/ge/imgui
+)
+
+include_directories(SYSTEM
+    ${GE_IMGUI_DIR}
 )
 
 set(GE_IMGUI_SRC
