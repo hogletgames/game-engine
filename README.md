@@ -61,5 +61,16 @@ make test_valgrind
 make CC=gcc CXX=g++ BUILD_EXAMPLES=ON -j$(nproc)
 ```
 
+### Clang tools
+clang-format:
+```bash
+bash tools/clang_format.sh --clang-format-bin clang-format-9 --fix
+```
+
+clang-tidy:
+``` bash
+make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-9
+```
+
 ### License
 Game Engine is licensed under the [BSD 3-Clause license](LICENSE).
