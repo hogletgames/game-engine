@@ -35,7 +35,6 @@
 
 #include <ge/core/core.h>
 #include <ge/layer_stack.h>
-#include <ge/non_copyble.h>
 #include <ge/window/window.h>
 
 #include <memory>
@@ -46,10 +45,16 @@ class Event;
 class ImGuiLayer;
 class WindowClosedEvent;
 
-class GE_API Application: public NonCopyable
+class GE_API Application
 {
 public:
     Application();
+    Application(const Application& other) = delete;
+    Application(Application&& other) = delete;
+
+    Application& operator=(const Application& other) = delete;
+    Application& operator=(Application&& other) = delete;
+
     virtual ~Application() = default;
 
     void run();
@@ -60,11 +65,11 @@ public:
     const Window& getWindow() { return *m_window; }
     void* getNativeWindow() { return m_window->getNativeWindow(); }
 
-    static Application& instance() { return *m_instance; }
+    static Application* instance() { return m_instance; }
 
 private:
-    void onEvent(Event& event);
-    bool onWindowClosed(WindowClosedEvent& event);
+    void onEvent(Event* event);
+    bool onWindowClosed(const WindowClosedEvent& event);
 
     static Application* m_instance;
 

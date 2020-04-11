@@ -31,16 +31,15 @@
  */
 
 #include "imgui_unix.h"
-#include "imgui.h"
 
 #include "ge/application.h"
 #include "ge/core/log.h"
 
-#include "examples/imgui_impl_opengl3.h"
-#include "examples/imgui_impl_sdl.h"
-
-#include "glad/glad.h"
-#include "SDL.h"
+#include <SDL.h>
+#include <glad/glad.h>
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl.h>
 
 #define GLSL_VERSION "#version 450"
 
@@ -50,7 +49,7 @@ void ImGuiUnix::initialize()
 {
     GE_CORE_TRACE("Initialize ImGuiUnix");
 
-    void* window = Application::instance().getNativeWindow();
+    void* window = Application::instance()->getNativeWindow();
     void* context = SDL_GL_GetCurrentContext();
 
     ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context);
@@ -66,7 +65,7 @@ void ImGuiUnix::shutdown()
 
 void ImGuiUnix::newFrame()
 {
-    void* window = Application::instance().getNativeWindow();
+    void* window = Application::instance()->getNativeWindow();
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));
@@ -75,9 +74,9 @@ void ImGuiUnix::newFrame()
 void ImGuiUnix::render()
 {
     ImGuiIO& io = ImGui::GetIO();
-    int32_t width = static_cast<int32_t>(io.DisplaySize.x);
-    int32_t height = static_cast<int32_t>(io.DisplaySize.y);
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    auto width = static_cast<int32_t>(io.DisplaySize.x);
+    auto height = static_cast<int32_t>(io.DisplaySize.y);
+    ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -86,7 +85,7 @@ void ImGuiUnix::render()
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
         SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
         SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
         ImGui::UpdatePlatformWindows();

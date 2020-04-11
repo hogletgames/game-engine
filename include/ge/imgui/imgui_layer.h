@@ -59,24 +59,24 @@ public:
     void onAttach() override;
     void onDetach() override;
     void onUpdate() override {}
-    void onEvent(Event& event) override;
+    void onEvent(Event* event) override;
     void onImGuiRender() override;
 
-    void begin();
-    void end();
+    static void begin();
+    static void end();
 
 private:
-    void mapKeys(ImGuiIO& io);
-    void setControlKeys(ImGuiIO& io);
+    static void mapKeys();
+    static void setControlKeys();
 
-    bool onKeyPressed(KeyPressedEvent& event);
-    bool onKeyReleased(KeyReleasedEvent& event);
-    bool onKeyTyped(KeyTypedEvent& event);
-    bool onMouseMoved(MouseMovedEvent& event);
-    bool onMouseScrolled(MouseScrolledEvent& event);
-    bool onMouseButtonPressed(MouseButtonPressedEvent& event);
-    bool onMouseButtonReleased(MouseButtonReleasedEvent& event);
-    bool onWindowResized(WindowResizedEvent& event);
+    static bool onKeyPressed(const KeyPressedEvent& event);
+    static bool onKeyReleased(const KeyReleasedEvent& event);
+    static bool onKeyTyped(const KeyTypedEvent& event);
+    static bool onMouseMoved(const MouseMovedEvent& event);
+    static bool onMouseScrolled(const MouseScrolledEvent& event);
+    static bool onMouseButtonPressed(const MouseButtonPressedEvent& event);
+    static bool onMouseButtonReleased(const MouseButtonReleasedEvent& event);
+    static bool onWindowResized(const WindowResizedEvent& event);
 };
 
 } // namespace GE

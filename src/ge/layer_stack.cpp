@@ -37,6 +37,24 @@
 
 namespace GE {
 
+LayerStack::LayerStack(LayerStack&& other) noexcept(
+    std::is_nothrow_move_assignable<Container>::value)
+{
+    *this = std::move(other);
+}
+
+LayerStack& LayerStack::operator=(LayerStack&& other) noexcept(
+    std::is_nothrow_move_assignable<Container>::value)
+{
+    if (this == &other) {
+        return *this;
+    }
+
+    m_stack = std::move(other.m_stack);
+    m_last_layer_idx = std::exchange(other.m_last_layer_idx, 0);
+    return *this;
+}
+
 LayerStack::~LayerStack()
 {
     for (auto& layer : m_stack) {
@@ -50,7 +68,7 @@ void LayerStack::pushLayer(std::shared_ptr<Layer> layer)
     m_last_layer_idx++;
 }
 
-void LayerStack::popLayer(std::shared_ptr<Layer> layer)
+void LayerStack::popLayer(const std::shared_ptr<Layer>& layer)
 {
     auto layer_end = std::next(m_stack.begin(), m_last_layer_idx);
     auto layer_in_stack = std::find(m_stack.begin(), layer_end, layer);
@@ -67,7 +85,7 @@ void LayerStack::pushOverlay(std::shared_ptr<Layer> overlay)
     m_stack.emplace_back(std::move(overlay));
 }
 
-void LayerStack::popOverlay(std::shared_ptr<Layer> overlay)
+void LayerStack::popOverlay(const std::shared_ptr<Layer>& overlay)
 {
     auto overlay_begin = std::next(m_stack.begin(), m_last_layer_idx);
     auto overlay_in_stack = std::find(overlay_begin, m_stack.end(), overlay);

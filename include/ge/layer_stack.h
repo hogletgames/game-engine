@@ -37,6 +37,7 @@
 
 #include <deque>
 #include <memory>
+#include <type_traits>
 
 namespace GE {
 
@@ -51,13 +52,24 @@ public:
     using const_iterator = typename Container::const_iterator;
     using const_reverse_iterator = typename Container::const_reverse_iterator;
 
+    LayerStack() = default;
+    LayerStack(const LayerStack& other) = default;
+
+    LayerStack(LayerStack&& other) noexcept(
+        std::is_nothrow_move_assignable<Container>::value);
+
+    LayerStack& operator=(const LayerStack& other) = default;
+
+    LayerStack& operator=(LayerStack&& other) noexcept(
+        std::is_nothrow_move_assignable<Container>::value);
+
     ~LayerStack();
 
     void pushLayer(std::shared_ptr<Layer> layer);
-    void popLayer(std::shared_ptr<Layer> layer);
+    void popLayer(const std::shared_ptr<Layer>& layer);
 
     void pushOverlay(std::shared_ptr<Layer> overlay);
-    void popOverlay(std::shared_ptr<Layer> overlay);
+    void popOverlay(const std::shared_ptr<Layer>& overlay);
 
     iterator begin() { return m_stack.begin(); }
     iterator end() { return m_stack.end(); }
@@ -70,7 +82,7 @@ public:
     const_reverse_iterator rend() const { return m_stack.rend(); }
 
 private:
-    Container m_stack;
+    Container m_stack{};
     size_t m_last_layer_idx{0};
 };
 

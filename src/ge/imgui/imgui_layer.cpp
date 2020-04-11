@@ -39,7 +39,7 @@
 #include "ge/window/mouse_event.h"
 #include "ge/window/window_event.h"
 
-#include "imgui.h"
+#include <imgui.h>
 
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/imgui_unix.h"
@@ -89,13 +89,13 @@ void ImGuiLayer::onAttach()
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
 
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
     ImGuiPlatform::initialize();
-    mapKeys(io);
+    mapKeys();
 }
 
 void ImGuiLayer::onDetach()
@@ -105,20 +105,18 @@ void ImGuiLayer::onDetach()
     ImGui::DestroyContext();
 }
 
-void ImGuiLayer::onEvent(Event& event)
+void ImGuiLayer::onEvent(Event* event)
 {
     EventDispatcher dispatcher(event);
 
-    dispatcher.dispatch<KeyPressedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onKeyPressed));
-    dispatcher.dispatch<KeyReleasedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onKeyReleased));
-    dispatcher.dispatch<KeyTypedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onKeyTyped));
-    dispatcher.dispatch<MouseMovedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onMouseMoved));
-    dispatcher.dispatch<MouseScrolledEvent>(GE_BIND_MEM_FN(ImGuiLayer::onMouseScrolled));
-    dispatcher.dispatch<MouseButtonPressedEvent>(
-        GE_BIND_MEM_FN(ImGuiLayer::onMouseButtonPressed));
-    dispatcher.dispatch<MouseButtonReleasedEvent>(
-        GE_BIND_MEM_FN(ImGuiLayer::onMouseButtonReleased));
-    dispatcher.dispatch<WindowResizedEvent>(GE_BIND_MEM_FN(ImGuiLayer::onWindowResized));
+    dispatcher.dispatch<KeyPressedEvent>(ImGuiLayer::onKeyPressed);
+    dispatcher.dispatch<KeyReleasedEvent>(ImGuiLayer::onKeyReleased);
+    dispatcher.dispatch<KeyTypedEvent>(ImGuiLayer::onKeyTyped);
+    dispatcher.dispatch<MouseMovedEvent>(ImGuiLayer::onMouseMoved);
+    dispatcher.dispatch<MouseScrolledEvent>(ImGuiLayer::onMouseScrolled);
+    dispatcher.dispatch<MouseButtonPressedEvent>(ImGuiLayer::onMouseButtonPressed);
+    dispatcher.dispatch<MouseButtonReleasedEvent>(ImGuiLayer::onMouseButtonReleased);
+    dispatcher.dispatch<WindowResizedEvent>(ImGuiLayer::onWindowResized);
 }
 
 void ImGuiLayer::onImGuiRender()
@@ -136,15 +134,17 @@ void ImGuiLayer::begin()
 void ImGuiLayer::end()
 {
     ImGuiIO& io = ImGui::GetIO();
-    const auto& window = Application::instance().getWindow();
+    const auto& window = Application::instance()->getWindow();
     io.DisplaySize = ImVec2(window.getWidth(), window.getHeight());
 
     ImGui::Render();
     ImGuiPlatform::render();
 }
 
-void ImGuiLayer::mapKeys(ImGuiIO& io)
+void ImGuiLayer::mapKeys()
 {
+    ImGuiIO& io = ImGui::GetIO();
+
     io.KeyMap[ImGuiKey_Tab] = CAST_KEY(GE_KEY_TAB);
     io.KeyMap[ImGuiKey_LeftArrow] = CAST_KEY(GE_KEY_LEFT);
     io.KeyMap[ImGuiKey_RightArrow] = CAST_KEY(GE_KEY_RIGHT);
@@ -169,8 +169,10 @@ void ImGuiLayer::mapKeys(ImGuiIO& io)
     io.KeyMap[ImGuiKey_Z] = CAST_KEY(GE_KEY_Z);
 }
 
-void ImGuiLayer::setControlKeys(ImGuiIO& io)
+void ImGuiLayer::setControlKeys()
 {
+    ImGuiIO& io = ImGui::GetIO();
+
     io.KeyAlt = io.KeysDown[CAST_KEY(GE_KEY_LALT)] || io.KeysDown[CAST_KEY(GE_KEY_RALT)];
 
     io.KeyCtrl = io.KeysDown[CAST_KEY(GE_KEY_LCTRL)] ||
@@ -183,37 +185,37 @@ void ImGuiLayer::setControlKeys(ImGuiIO& io)
                   io.KeysDown[CAST_KEY(GE_KEY_RSUPER)];
 }
 
-bool ImGuiLayer::onKeyPressed([[maybe_unused]] KeyPressedEvent& event)
+bool ImGuiLayer::onKeyPressed(const KeyPressedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = true;
-    setControlKeys(io);
+    setControlKeys();
     return false;
 }
 
-bool ImGuiLayer::onKeyReleased([[maybe_unused]] KeyReleasedEvent& event)
+bool ImGuiLayer::onKeyReleased(const KeyReleasedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = false;
-    setControlKeys(io);
+    setControlKeys();
     return false;
 }
 
-bool ImGuiLayer::onKeyTyped(KeyTypedEvent& event)
+bool ImGuiLayer::onKeyTyped(const KeyTypedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.AddInputCharactersUTF8(event.getText());
     return false;
 }
 
-bool ImGuiLayer::onMouseMoved(MouseMovedEvent& event)
+bool ImGuiLayer::onMouseMoved(const MouseMovedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.MousePos = ImVec2(event.getPosX(), event.getPosY());
     return false;
 }
 
-bool ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event)
+bool ImGuiLayer::onMouseScrolled(const MouseScrolledEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.MouseWheelH = event.getOffsetX();
@@ -221,7 +223,7 @@ bool ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
+bool ImGuiLayer::onMouseButtonPressed(const MouseButtonPressedEvent& event)
 {
     auto button = event.getMouseButton();
 
@@ -234,7 +236,7 @@ bool ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
+bool ImGuiLayer::onMouseButtonReleased(const MouseButtonReleasedEvent& event)
 {
     auto button = event.getMouseButton();
 
@@ -247,7 +249,7 @@ bool ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onWindowResized([[maybe_unused]] WindowResizedEvent& event)
+bool ImGuiLayer::onWindowResized(const WindowResizedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 window_size = ImVec2(event.getWidth(), event.getHeight());

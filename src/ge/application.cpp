@@ -62,7 +62,7 @@ void Application::run()
 
         m_imgui_layer->begin();
 
-        for (auto layer : m_layer_stack) {
+        for (auto& layer : m_layer_stack) {
             layer->onImGuiRender();
         }
 
@@ -73,17 +73,17 @@ void Application::run()
 
 void Application::pushLayer(std::shared_ptr<Layer> layer)
 {
-    m_layer_stack.pushLayer(layer);
     layer->onAttach();
+    m_layer_stack.pushLayer(std::move(layer));
 }
 
 void Application::pushOverlay(std::shared_ptr<Layer> overlay)
 {
-    m_layer_stack.pushOverlay(overlay);
     overlay->onAttach();
+    m_layer_stack.pushOverlay(std::move(overlay));
 }
 
-void Application::onEvent(Event& event)
+void Application::onEvent(Event* event)
 {
     EventDispatcher dispatcher{event};
     dispatcher.dispatch<WindowClosedEvent>(GE_BIND_MEM_FN(Application::onWindowClosed));
@@ -91,13 +91,13 @@ void Application::onEvent(Event& event)
     for (auto layer = m_layer_stack.rbegin(); layer != m_layer_stack.rend(); ++layer) {
         (*layer)->onEvent(event);
 
-        if (event.handled()) {
+        if (event->handled()) {
             break;
         }
     }
 }
 
-bool Application::onWindowClosed([[maybe_unused]] WindowClosedEvent& event)
+bool Application::onWindowClosed([[maybe_unused]] const WindowClosedEvent& event)
 {
     m_runnign = false;
     return true;

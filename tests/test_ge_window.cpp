@@ -101,8 +101,8 @@ TYPED_TEST_SUITE(EventDispatcherTest, EventTypeList);
 TYPED_TEST(EventDispatcherTest, SuccessfulDispatch)
 {
     TypeParam event{};
-    GE::EventDispatcher dispatcher{event};
-    GE::EventCallback<TypeParam> callback = [](auto&) { return true; };
+    GE::EventDispatcher dispatcher{&event};
+    GE::EventCallback<TypeParam> callback = [](const TypeParam&) { return true; };
 
     EXPECT_FALSE(event.handled());
     EXPECT_TRUE(dispatcher.dispatch(callback));

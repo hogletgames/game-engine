@@ -50,7 +50,7 @@ public:
     MOCK_METHOD(void, onAttach, (), (override));
     MOCK_METHOD(void, onDetach, (), (override));
     MOCK_METHOD(void, onUpdate, (), (override));
-    MOCK_METHOD(void, onEvent, (GE::Event & event), (override));
+    MOCK_METHOD(void, onEvent, (GE::Event * event), (override));
 };
 
 class LayerStackTest: public ::testing::Test
