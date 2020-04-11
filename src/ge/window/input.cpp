@@ -30,19 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_NON_COPYBLE_H_
-#define GE_NON_COPYBLE_H_
+#include "input.h"
+
+#if defined(GE_PLATFORM_UNIX)
+    #include "unix/input_unix.h"
+
+using PlatformInput = ::GE::priv::InputUnix;
+#else
+    #error "Unsupported platform"
+#endif
 
 namespace GE {
 
-class NonCopyable
+std::unique_ptr<Input> Input::m_impl{nullptr};
+
+void Input::initialize()
 {
-public:
-    NonCopyable() = default;
-    NonCopyable(const NonCopyable&) = delete;
-    NonCopyable& operator=(const NonCopyable&) = delete;
-};
+    m_impl = std::make_unique<PlatformInput>();
+    m_impl->initializeImpl();
+}
+
+void Input::shutdown()
+{
+    m_impl->shutdownImpl();
+    m_impl.reset();
+}
 
 } // namespace GE
-
-#endif // GE_NON_COPYBLE_H_

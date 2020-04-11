@@ -30,7 +30,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-class ImVec2;
+// NOLINTNEXTLINE
+#ifndef GE_IMGUI_UNIX_IMGUI_UNIX_H_
+#define GE_IMGUI_UNIX_IMGUI_UNIX_H_
+
+struct ImVec2;
 
 namespace GE::priv {
 
@@ -49,3 +53,5 @@ public:
 };
 
 } // namespace GE::priv
+
+#endif // GE_IMGUI_UNIX_IMGUI_UNIX_H_

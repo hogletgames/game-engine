@@ -34,7 +34,7 @@
 
 #include "ge/core/log.h"
 
-#include "SDL.h"
+#include <SDL.h>
 
 #include <vector>
 
@@ -63,7 +63,7 @@ bool InputUnix::isKeyPressedImpl(KeyCode key_code) const
 {
     uint16_t sdl_key = toNativeKeyCodeImpl(key_code);
     const uint8_t* keys_state = SDL_GetKeyboardState(nullptr);
-    return keys_state ? keys_state[sdl_key] == 0 : false;
+    return keys_state != nullptr ? keys_state[sdl_key] == 0 : false;
 }
 
 uint8_t InputUnix::toNativeButtonImpl(MouseButton button_code) const
@@ -81,7 +81,7 @@ MouseButton InputUnix::toGEMouseButtonImpl(uint8_t button_code) const
 bool InputUnix::isMouseButtonPressedImpl(MouseButton button) const
 {
     uint8_t sdl_button = toNativeButtonImpl(button);
-    return SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(sdl_button);
+    return SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(sdl_button); // NOLINT
 }
 
 std::pair<float, float> InputUnix::getMousePosImpl() const
@@ -96,14 +96,14 @@ float InputUnix::getMousePosXImpl() const
 {
     int pos_x{0};
     SDL_GetMouseState(&pos_x, nullptr);
-    return pos_x;
+    return static_cast<float>(pos_x);
 }
 
 float InputUnix::getMousePosYImpl() const
 {
     int pos_y{0};
     SDL_GetMouseState(nullptr, &pos_y);
-    return pos_y;
+    return static_cast<float>(pos_y);
 }
 
 void InputUnix::mapKeyCodes()

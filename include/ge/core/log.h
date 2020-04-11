@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_LOG_H_
-#define GE_LOG_H_
+#ifndef GE_CORE_LOG_H_
+#define GE_CORE_LOG_H_
 
 #include <ge/core/core.h>
 
@@ -63,6 +63,8 @@ namespace GE {
 class GE_API Log
 {
 public:
+    Log() = delete;
+
     static void initialize();
     static void shutdown();
 
@@ -76,4 +78,4 @@ private:
 
 } // namespace GE
 
-#endif // GE_LOG_H_
+#endif // GE_CORE_LOG_H_

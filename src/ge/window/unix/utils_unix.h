@@ -30,27 +30,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOW_UNIX_UTILS_H_
-#define GE_WINDOW_UNIX_UTILS_H_
+// NOLINTNEXTLINE
+#ifndef GE_WINDOW_UNIX_UTILS_UNIX_H_
+#define GE_WINDOW_UNIX_UTILS_UNIX_H_
 
 #include "ge/core/core.h"
-
-#define MOUSE_BUTTON_LEFT   0
-#define MOUSE_BUTTON_RIGHT  1
-#define MOUSE_BUTTON_MIDDLE 2
-#define MOUSE_BUTTON_X1     3
-#define MOUSE_BUTTON_X2     4
-
-#define GE_CONVERT_MOUSE_BUTTON(button)           \
-    {                                             \
-        if (button == SDL_BUTTON_LEFT) {          \
-            button = MOUSE_BUTTON_LEFT;           \
-        } else if (button == SDL_BUTTON_RIGHT) {  \
-            button = MOUSE_BUTTON_RIGHT;          \
-        } else if (button == SDL_BUTTON_MIDDLE) { \
-            button = MOUSE_BUTTON_MIDDLE;         \
-        }                                         \
-    }
 
 #if defined(GE_DEBUG)
     #define SDLCall(x)                                                            \
@@ -61,4 +45,4 @@
     #define SDLCall(x) (x)
 #endif
 
-#endif // GE_WINDOW_UNIX_UTILS_H_
+#endif // GE_WINDOW_UNIX_UTILS_UNIX_H_

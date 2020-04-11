@@ -46,12 +46,18 @@ public:
         : m_name{name}
     {}
 
+    Layer(const Layer& other) = default;
+    Layer(Layer&& other) = default;
+
+    Layer& operator=(const Layer& other) = default;
+    Layer& operator=(Layer&& other) = default;
+
     virtual ~Layer() = default;
 
     virtual void onAttach() = 0;
     virtual void onDetach() = 0;
     virtual void onUpdate() = 0;
-    virtual void onEvent(Event& event) = 0;
+    virtual void onEvent(Event* event) = 0;
     virtual void onImGuiRender() {}
 
     const char* getName() const { return m_name; }

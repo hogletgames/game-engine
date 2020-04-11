@@ -30,20 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+// NOLINTNEXTLINE
+#ifndef GE_WINDOW_UNIX_WINDOW_UNIX_H_
+#define GE_WINDOW_UNIX_WINDOW_UNIX_H_
 
 #include "window.h"
 
-#include "SDL.h"
+struct SDL_Window;
+union SDL_Event;
 
 namespace GE::priv {
 
 class GE_API WindowUnix: public Window
 {
 public:
-    WindowUnix(const properties_t& prop);
-    ~WindowUnix();
+    explicit WindowUnix(properties_t prop);
+    WindowUnix(const WindowUnix& other) = delete;
+    WindowUnix(WindowUnix&& other) noexcept;
+
+    WindowUnix& operator=(const WindowUnix& other) = delete;
+    WindowUnix& operator=(WindowUnix&& other) noexcept;
+
+    ~WindowUnix() override;
 
     static void initialize();
     static void shutdown();
@@ -70,13 +78,13 @@ private:
     static bool m_initialized;
 
     SDL_Window* m_window{nullptr};
-    SDL_GLContext m_gl_contex{nullptr};
+    void* m_gl_contex{nullptr};
 
     WinEventCallback m_event_callback;
     properties_t m_prop;
-    bool m_vsync{false};
+    bool m_vsync{true};
 };
 
 } // namespace GE::priv
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+#endif // GE_WINDOW_UNIX_WINDOW_UNIX_H_

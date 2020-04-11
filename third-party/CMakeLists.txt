@@ -19,3 +19,17 @@ target_compile_options(imgui PRIVATE
     -Wno-error=unused-variable
     -Wno-error=unused-but-set-variable
 )
+
+# Dear ImGui examples
+add_library(imgui-examples STATIC
+    imgui/examples/imgui_impl_opengl3.cpp
+    imgui/examples/imgui_impl_sdl.cpp
+)
+target_include_directories(imgui-examples SYSTEM PRIVATE
+    imgui
+    glad/include
+    SDL2/include
+)
+target_compile_definitions(imgui-examples PRIVATE
+    -DIMGUI_IMPL_OPENGL_LOADER_GLAD
+)

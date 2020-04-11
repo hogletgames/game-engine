@@ -37,7 +37,6 @@
 #include <ge/core/log.h>
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
-#include <ge/non_copyble.h>
 
 #include <ge/imgui/imgui_layer.h>
 
@@ -55,11 +54,17 @@
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+class GE_API FrameworkManager
 {
 public:
     FrameworkManager() { initialize(); }
-    ~FrameworkManager() { shutdown(); }
+    FrameworkManager(const FrameworkManager& other) = delete;
+    FrameworkManager(FrameworkManager&& other) = delete;
+
+    FrameworkManager& operator=(const FrameworkManager& other) = delete;
+    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+
+    ~FrameworkManager() { shutdown(); } // NOLINT
 
     static void initialize();
     static void shutdown();

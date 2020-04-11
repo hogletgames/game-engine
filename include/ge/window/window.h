@@ -51,25 +51,32 @@ class Event;
 class GE_API Window
 {
 public:
-    using WinEventCallback = std::function<void(Event&)>;
+    using WinEventCallback = std::function<void(Event*)>;
 
     struct properties_t {
         std::string title{};
         uint32_t width{};
         uint32_t height{};
 
-        properties_t(const std::string& title = WINDOW_TITLE_DEF,
-                     uint32_t width = WINDOW_WIDTH_DEF,
-                     uint32_t height = WINDOW_HEIGHT_DEF)
-            : title{title}
+        explicit properties_t(std::string title = WINDOW_TITLE_DEF,
+                              uint32_t width = WINDOW_WIDTH_DEF,
+                              uint32_t height = WINDOW_HEIGHT_DEF)
+            : title{std::move(title)}
             , width{width}
             , height{height}
         {}
     };
 
+    Window() = default;
+    Window(const Window& other) = default;
+    Window(Window&& other) noexcept = default;
+
+    Window& operator=(const Window& other) = default;
+    Window& operator=(Window&& other) noexcept = default;
+
     virtual ~Window() = default;
 
-    static std::unique_ptr<Window> create(const properties_t& properties = {});
+    static std::unique_ptr<Window> create(properties_t properties = properties_t{});
     static void initialize();
     static void shutdown();
 

@@ -2,14 +2,15 @@ cmake_minimum_required(VERSION 3.9)
 project(game_engine)
 
 # Project options
-option(GE_STATIC            "Build static library"  OFF)
-option(GE_BUILD_EXAMPLES    "Build examples"        OFF)
-option(GE_BUILD_TEST        "Build tests"           OFF)
-option(GE_ENABLE_ASAN       "Build with ASAN"       OFF)
-option(GE_ENABLE_USAN       "Build with USAN"       OFF)
-option(GE_ENABLE_TSAN       "Build with TSAN"       OFF)
-option(GE_ENABLE_ASSERTS    "Enable asserts"        OFF)
-option(GE_DEBUG             "Enable debug"          OFF)
+option(GE_STATIC                "Build static library"      OFF)
+option(GE_BUILD_EXAMPLES        "Build examples"            OFF)
+option(GE_BUILD_TESTS           "Build tests"               OFF)
+option(GE_ENABLE_ASAN           "Build with ASAN"           OFF)
+option(GE_ENABLE_USAN           "Build with USAN"           OFF)
+option(GE_ENABLE_TSAN           "Build with TSAN"           OFF)
+option(GE_ENABLE_ASSERTS        "Enable asserts"            OFF)
+option(GE_DEBUG                 "Enable debug"              OFF)
+option(GE_EXPORT_COMPILE_CMD    "Export compile commands"   OFF)
 
 # Compile options
 set(GE_COMPILER_FLAGS "-Wall -Wextra -Werror -pedantic")
@@ -67,6 +68,11 @@ if(GE_ENABLE_ASSERTS)
     add_definitions(-DGE_ENABLE_ASSERTS)
 endif()
 
+if(GE_EXPORT_COMPILE_CMD)
+    message("Export compile commands")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
 if(GE_DEBUG)
     message("Enable debug")
     add_definitions(-DGE_DEBUG)
@@ -89,14 +95,16 @@ install(DIRECTORY include/ge
 
 # Include directories
 include_directories(include)
-include_directories(third-party/spdlog/include)
+include_directories(SYSTEM third-party/spdlog/include)
 
 # Subdirectories
-add_subdirectory(src)
-add_subdirectory(third-party)
 if(GE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 if(GE_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
+if(NOT GE_EXPORT_COMPILE_CMD)
+    add_subdirectory(third-party)
+endif()
+add_subdirectory(src)

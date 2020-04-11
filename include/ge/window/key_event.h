@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOWS_KEY_EVENT_H_
-#define GE_WINDOWS_KEY_EVENT_H_
+#ifndef GE_WINDOW_KEY_EVENT_H_
+#define GE_WINDOW_KEY_EVENT_H_
 
 #include <ge/window/event.h>
 #include <ge/window/key_codes.h>
@@ -56,7 +56,7 @@ protected:
 class GE_API KeyPressedEvent: public KeyEvent
 {
 public:
-    KeyPressedEvent(KeyCode key_code = GE_KEY_UNKNOWN, uint32_t repeat_count = 0)
+    explicit KeyPressedEvent(KeyCode key_code = GE_KEY_UNKNOWN, uint32_t repeat_count = 0)
         : KeyEvent{key_code}
         , m_repeat_count{repeat_count}
     {}
@@ -117,4 +117,4 @@ private:
 
 } // namespace GE
 
-#endif // GE_WINDOWS_KEY_EVENT_H_
+#endif // GE_WINDOW_KEY_EVENT_H_

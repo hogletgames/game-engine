@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_CORE_H_
-#define GE_CORE_H_
+#ifndef GE_CORE_CORE_H_
+#define GE_CORE_CORE_H_
 
 #include <functional>
 
@@ -67,6 +67,7 @@
     #define GE_ASSERT(x, ...)
 #endif
 
+// NOLINTNEXTLINE
 #define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
-#endif // GE_CORE_H_
+#endif // GE_CORE_CORE_H_

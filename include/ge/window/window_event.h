@@ -42,7 +42,7 @@ namespace GE {
 class GE_API WindowResizedEvent: public Event
 {
 public:
-    WindowResizedEvent(uint32_t width = 0, uint32_t height = 0)
+    explicit WindowResizedEvent(uint32_t width = 0, uint32_t height = 0)
         : m_width{width}
         , m_height{height}
     {}

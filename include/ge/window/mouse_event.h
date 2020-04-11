@@ -43,7 +43,7 @@ namespace GE {
 class GE_API MouseMovedEvent: public Event
 {
 public:
-    MouseMovedEvent(float x = 0, float y = 0)
+    explicit MouseMovedEvent(float x = 0, float y = 0)
         : m_pos_x{x}
         , m_pos_y{y}
     {}
@@ -68,7 +68,7 @@ private:
 class GE_API MouseScrolledEvent: public Event
 {
 public:
-    MouseScrolledEvent(float offset_x = 0, float offset_y = 0)
+    explicit MouseScrolledEvent(float offset_x = 0, float offset_y = 0)
         : m_offset_x{offset_x}
         , m_offset_y{offset_y}
     {}

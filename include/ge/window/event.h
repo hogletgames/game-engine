@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOWS_EVENT_H_
-#define GE_WINDOWS_EVENT_H_
+#ifndef GE_WINDOW_EVENT_H_
+#define GE_WINDOW_EVENT_H_
 
 #include <functional>
 #include <iostream>
@@ -46,7 +46,7 @@
 namespace GE {
 
 template<typename EventType>
-using EventCallback = std::function<bool(EventType&)>;
+using EventCallback = std::function<bool(const EventType&)>;
 
 class GE_API Event
 {
@@ -68,6 +68,21 @@ public:
         WINDOW_CLOSED
     };
 
+    Event() = default;
+    Event(const Event& other) = delete;
+    Event(Event&& other) noexcept { *this = std::move(other); }
+
+    Event& operator=(const Event& other) = delete;
+
+    Event& operator=(Event&& other) noexcept
+    {
+        if (this != &other) {
+            m_handled = std::exchange(other.m_handled, false);
+        }
+
+        return *this;
+    }
+
     virtual ~Event() = default;
 
     virtual Type getType() const = 0;
@@ -84,16 +99,16 @@ private:
 class GE_API EventDispatcher
 {
 public:
-    explicit EventDispatcher(Event& event)
+    explicit EventDispatcher(Event* event)
         : m_event{event}
     {}
 
     template<typename EventType>
     bool dispatch(const EventCallback<EventType>& event_callback)
     {
-        if (m_event.getType() == EventType::getStaticType()) {
-            EventType& event = static_cast<EventType&>(m_event);
-            m_event.setHandled(event_callback(event));
+        if (m_event->getType() == EventType::getStaticType()) {
+            auto* event = static_cast<EventType*>(m_event);
+            m_event->setHandled(event_callback(*event));
             return true;
         }
 
@@ -101,7 +116,7 @@ public:
     }
 
 private:
-    Event& m_event;
+    Event* m_event{nullptr};
 };
 
 } // namespace GE
@@ -111,4 +126,4 @@ inline std::ostream& operator<<(std::ostream& os, const GE::Event& event)
     return os << event.toString();
 }
 
-#endif // GE_WINDOWS_EVENT_H_
+#endif // GE_WINDOW_EVENT_H_

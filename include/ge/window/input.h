@@ -34,7 +34,6 @@
 #define GE_WINDOW_INPUT_H_
 
 #include <ge/core/core.h>
-#include <ge/non_copyble.h>
 #include <ge/window/key_codes.h>
 #include <ge/window/mouse_button_codes.h>
 
@@ -44,13 +43,19 @@
 
 namespace GE {
 
-class GE_API Input: public NonCopyable
+class GE_API Input
 {
 public:
+    Input(const Input& other) = delete;
+    Input(Input&& other) = delete;
+
+    Input& operator=(const Input& other) = delete;
+    Input& operator=(Input&& other) = delete;
+
     virtual ~Input() = default;
 
-    static void initialize() { m_impl->initializeImpl(); }
-    static void shutdown() { m_impl->shutdownImpl(); }
+    static void initialize();
+    static void shutdown();
 
     static int32_t toNativeKeyCode(KeyCode key_code)
     {
@@ -87,6 +92,8 @@ public:
     static float getMousePosY() { return m_impl->getMousePosYImpl(); }
 
 protected:
+    Input() = default;
+
     virtual void initializeImpl() = 0;
     virtual void shutdownImpl() = 0;
 

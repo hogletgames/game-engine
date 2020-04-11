@@ -31,13 +31,10 @@
  */
 
 #include "window.h"
-#include "input.h"
 
 #if defined(GE_PLATFORM_UNIX)
-    #include "unix/input_unix.h"
     #include "unix/window_unix.h"
 
-using PlatformInput = ::GE::priv::InputUnix;
 using PlatformWindow = ::GE::priv::WindowUnix;
 #else
     #error "Unsupported platform"
@@ -45,11 +42,9 @@ using PlatformWindow = ::GE::priv::WindowUnix;
 
 namespace GE {
 
-std::unique_ptr<Input> Input::m_impl = std::make_unique<PlatformInput>();
-
-std::unique_ptr<Window> Window::create(const properties_t& prop)
+std::unique_ptr<Window> Window::create(properties_t prop)
 {
-    return std::make_unique<PlatformWindow>(prop);
+    return std::make_unique<PlatformWindow>(std::move(prop));
 }
 
 void Window::initialize()

@@ -8,6 +8,7 @@ addons:
     packages:
       - cmake
       - clang-format-9
+      - clang-tidy-9
       - valgrind
 
 env:
@@ -24,5 +25,7 @@ script:
 
 jobs:
   include:
-    - name: clang-format
-      script: bash tools/clang_format.sh --clang-format-bin clang-format-9
+    - name: clang-tools
+      script:
+        - bash tools/clang_format.sh --clang-format-bin clang-format-9
+        - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-9

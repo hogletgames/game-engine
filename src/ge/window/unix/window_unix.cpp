@@ -39,7 +39,8 @@
 
 #include "ge/core/log.h"
 
-#include "glad/glad.h"
+#include <SDL.h>
+#include <glad/glad.h>
 
 #define VSYNC_OFF       0
 #define VSYNC_ON        1
@@ -50,8 +51,8 @@ namespace GE::priv {
 
 bool WindowUnix::m_initialized{false};
 
-WindowUnix::WindowUnix(const properties_t& prop)
-    : m_prop(prop)
+WindowUnix::WindowUnix(properties_t prop)
+    : m_prop(std::move(prop))
 {
     GE_CORE_TRACE("Creating window '{}', ({}, {})", m_prop.title, m_prop.width,
                   m_prop.height);
@@ -79,20 +80,42 @@ WindowUnix::WindowUnix(const properties_t& prop)
     GE_CORE_INFO("OpenGL Vendor: {}", glGetString(GL_VENDOR));
     GE_CORE_INFO("OpenGL Renderer: {}", glGetString(GL_RENDERER));
 
-    setVSync(true);
     GE_CORE_TRACE("Window '{}' created", m_prop.title);
+}
+
+WindowUnix::WindowUnix(WindowUnix&& other) noexcept
+{
+    *this = std::move(other);
+}
+
+WindowUnix& WindowUnix::operator=(WindowUnix&& other) noexcept
+{
+    if (this == &other) {
+        return *this;
+    }
+
+    m_window = std::exchange(other.m_window, nullptr);
+    m_gl_contex = std::exchange(other.m_gl_contex, nullptr);
+    m_event_callback = std::move(other.m_event_callback);
+    m_prop = std::exchange(other.m_prop, properties_t{});
+    m_vsync = std::exchange(other.m_vsync, true);
+    return *this;
 }
 
 WindowUnix::~WindowUnix()
 {
-    if (m_gl_contex) {
+    if (m_gl_contex != nullptr) {
         SDL_GL_DeleteContext(m_gl_contex);
-        GE_CORE_TRACE("SDL GL context has been deleted");
+        try {
+            GE_CORE_TRACE("SDL GL context has been deleted");
+        } catch (...) {}
     }
 
-    if (m_window) {
+    if (m_window != nullptr) {
         SDL_DestroyWindow(m_window);
-        GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
+        try {
+            GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
+        } catch (...) {}
     }
 }
 
@@ -153,7 +176,7 @@ void WindowUnix::pollEvents()
 
             case SDL_QUIT: {
                 WindowClosedEvent event{};
-                m_event_callback(event);
+                m_event_callback(&event);
                 break;
             }
 
@@ -170,7 +193,7 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
             float x = sdl_event.motion.x;
             float y = sdl_event.motion.y;
             MouseMovedEvent event{x, y};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
@@ -178,21 +201,21 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
             float offset_x = sdl_event.wheel.x;
             float offset_y = sdl_event.wheel.y;
             MouseScrolledEvent event{offset_x, offset_y};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
         case SDL_MOUSEBUTTONDOWN: {
             MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonPressedEvent event{button};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
         case SDL_MOUSEBUTTONUP: {
             MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonReleasedEvent event{button};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
@@ -208,20 +231,20 @@ void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
             KeyCode code = Input::toGEKeyCode(sdl_event.key.keysym.sym);
             uint32_t repeat_count = sdl_event.key.repeat;
             KeyPressedEvent event{code, repeat_count};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
         case SDL_KEYUP: {
             KeyCode code = Input::toGEKeyCode(sdl_event.key.keysym.sym);
             KeyReleasedEvent event{code};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
         case SDL_TEXTINPUT: {
             KeyTypedEvent event{sdl_event.text.text};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
@@ -237,13 +260,13 @@ void WindowUnix::onSDLWindowEvent(const SDL_Event& sdl_event)
             uint32_t width = sdl_event.window.data1;
             uint32_t height = sdl_event.window.data2;
             WindowResizedEvent event{width, height};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 
         case SDL_WINDOWEVENT_CLOSE: {
             WindowClosedEvent event{};
-            m_event_callback(event);
+            m_event_callback(&event);
             break;
         }
 

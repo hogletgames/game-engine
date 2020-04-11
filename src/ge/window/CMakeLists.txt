@@ -3,6 +3,7 @@ include_directories(
 )
 
 set(GE_WINDOW_SRC
+    input.cpp
     window.cpp
 )
 

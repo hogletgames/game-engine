@@ -30,8 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOW_UNIX_INPUT_H_
-#define GE_WINDOW_UNIX_INPUT_H_
+// NOLINTNEXTLINE
+#ifndef GE_WINDOW_UNIX_INPUT_UNIX_H_
+#define GE_WINDOW_UNIX_INPUT_UNIX_H_
 
 #include "input.h"
 #include "key_codes.h"
@@ -43,6 +44,9 @@ namespace GE::priv {
 
 class InputUnix: public Input
 {
+public:
+    InputUnix() = default;
+
 protected:
     void initializeImpl() override;
     void shutdownImpl() override {}
@@ -71,4 +75,4 @@ private:
 
 } // namespace GE::priv
 
-#endif // GE_WINDOW_UNIX_INPUT_H_
+#endif // GE_WINDOW_UNIX_INPUT_UNIX_H_
