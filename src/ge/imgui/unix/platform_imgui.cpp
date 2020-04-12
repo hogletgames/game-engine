@@ -31,6 +31,7 @@
  */
 
 #include "platform_imgui.h"
+#include "opengl_utils.h"
 #include "unix_utils.h"
 
 #include "ge/application.h"
@@ -81,9 +82,9 @@ void PlatformImGui::render()
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    glViewport(0, 0, width, height);
-    glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT);
+    GLCall(glViewport(0, 0, width, height));
+    GLCall(glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w));
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
@@ -97,7 +98,7 @@ void PlatformImGui::render()
 
 void PlatformImGui::updateViewport(const ImVec2& window_size)
 {
-    glViewport(0, 0, window_size.x, window_size.y);
+    GLCall(glViewport(0, 0, window_size.x, window_size.y));
 }
 
 } // namespace GE::UNIX
