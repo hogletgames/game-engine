@@ -37,10 +37,8 @@
 #include "ge/core/asserts.h"
 
 #if defined(GE_DEBUG)
-    #define SDLCall(x)                                                            \
-        {                                                                         \
-            GE_CORE_ASSERT((x) != -1, "'{}' call error: {}", #x, SDL_GetError()); \
-        }
+    #define SDLCall(x) \
+        GE_CORE_ASSERT((x) != -1, "'{}' call error: {}", #x, SDL_GetError())
 #else
     #define SDLCall(x) (x)
 #endif
