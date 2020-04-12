@@ -1,3 +1,7 @@
+include_directories(
+    utils
+)
+
 set(GE_SRC
     application.cpp
     ge.cpp

@@ -31,6 +31,7 @@
  */
 
 #include "platform_imgui.h"
+#include "unix_utils.h"
 
 #include "ge/application.h"
 #include "ge/core/log.h"
@@ -90,7 +91,7 @@ void PlatformImGui::render()
         SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-        SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+        SDLCall(SDL_GL_MakeCurrent(backup_current_window, backup_current_context));
     }
 }
 

@@ -31,8 +31,8 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_UNIX_UTILS_H_
-#define GE_WINDOW_UNIX_UNIX_UTILS_H_
+#ifndef GE_UTILS_UNIX_UTILS_H_
+#define GE_UTILS_UNIX_UTILS_H_
 
 #include "ge/core/asserts.h"
 
@@ -43,4 +43,4 @@
     #define SDLCall(x) (x)
 #endif
 
-#endif // GE_WINDOW_UNIX_UNIX_UTILS_H_
+#endif // GE_UTILS_UNIX_UTILS_H_
