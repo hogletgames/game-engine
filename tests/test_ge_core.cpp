@@ -38,8 +38,10 @@ TEST_F(GECoreTest, ClientLogger)
 
 TEST_F(GECoreTest, Asserts)
 {
+#if !defined(GE_DISABLE_ASSERTS)
     EXPECT_DEATH(GE_CORE_ASSERT(2 * 2 == 5, "core assert"), "");
     EXPECT_DEATH(GE_ASSERT(2 < 0, "client assert"), "");
+#endif
     GE_CORE_ASSERT(true, "True =)");
     GE_ASSERT(2 * 2 == 4, "Yes");
 }

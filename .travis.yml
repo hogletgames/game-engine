@@ -12,7 +12,7 @@ addons:
       - valgrind
 
 env:
-  - MATRIX_EVAL="export BUILD_EXAMPLES=ON"
+  - MATRIX_EVAL="export BUILD_EXAMPLES=ON DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF"
   - MATRIX_EVAL="export VALGRIND='valgrind --leak-check=full --error-exitcode=1'"
   - MATRIX_EVAL="export ENABLE_ASAN=ON"
   - MATRIX_EVAL="export ENABLE_USAN=ON"

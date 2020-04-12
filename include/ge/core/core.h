@@ -45,7 +45,7 @@
     #define GE_API
 #endif
 
-#if defined(GE_ENABLE_ASSERTS)
+#if !defined(GE_DISABLE_ASSERTS)
     #define GE_CORE_ASSERT(x, ...)                       \
         {                                                \
             if (!(x)) {                                  \
@@ -63,8 +63,8 @@
             }                                       \
         }
 #else
-    #define GE_CORE_ASSERT(x, ...)
-    #define GE_ASSERT(x, ...)
+    #define GE_CORE_ASSERT(x, ...) static_cast<void>(x)
+    #define GE_ASSERT(x, ...)      static_cast<void>(x)
 #endif
 
 // NOLINTNEXTLINE
