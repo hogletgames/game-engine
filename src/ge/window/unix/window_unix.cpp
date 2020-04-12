@@ -159,28 +159,26 @@ void WindowUnix::pollEvents()
             case SDL_MOUSEMOTION:
             case SDL_MOUSEWHEEL:
             case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
+            case SDL_MOUSEBUTTONUP: {
                 onSDLMouseEvent(sdl_event);
                 break;
-
+            }
             case SDL_KEYDOWN:
             case SDL_KEYUP:
-            case SDL_TEXTINPUT:
+            case SDL_TEXTINPUT: {
                 onSDLKeyEvent(sdl_event);
                 break;
-
-            case SDL_WINDOWEVENT:
+            }
+            case SDL_WINDOWEVENT: {
                 onSDLWindowEvent(sdl_event);
                 break;
-
+            }
             case SDL_QUIT: {
                 WindowClosedEvent event{};
                 m_event_callback(&event);
                 break;
             }
-
-            default:
-                break;
+            default: break;
         }
     }
 }
@@ -195,7 +193,6 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_MOUSEWHEEL: {
             float offset_x = sdl_event.wheel.x;
             float offset_y = sdl_event.wheel.y;
@@ -203,23 +200,19 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_MOUSEBUTTONDOWN: {
             MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonPressedEvent event{button};
             m_event_callback(&event);
             break;
         }
-
         case SDL_MOUSEBUTTONUP: {
             MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonReleasedEvent event{button};
             m_event_callback(&event);
             break;
         }
-
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -233,22 +226,18 @@ void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_KEYUP: {
             KeyCode code = Input::toGEKeyCode(sdl_event.key.keysym.sym);
             KeyReleasedEvent event{code};
             m_event_callback(&event);
             break;
         }
-
         case SDL_TEXTINPUT: {
             KeyTypedEvent event{sdl_event.text.text};
             m_event_callback(&event);
             break;
         }
-
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -262,15 +251,12 @@ void WindowUnix::onSDLWindowEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_WINDOWEVENT_CLOSE: {
             WindowClosedEvent event{};
             m_event_callback(&event);
             break;
         }
-
-        default:
-            break;
+        default: break;
     }
 }
 

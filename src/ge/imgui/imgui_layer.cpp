@@ -55,18 +55,12 @@ namespace {
 int32_t toImGuiButton(GE::MouseButton button)
 {
     switch (button) {
-        case GE_BUTTON_LEFT:
-            return 0;
-        case GE_BUTTON_RIGHT:
-            return 1;
-        case GE_BUTTON_MIDDLE:
-            return 2;
-        case GE_BUTTON_X1:
-            return 3;
-        case GE_BUTTON_X2:
-            return 4;
-        default:
-            return -1;
+        case GE_BUTTON_LEFT: return 0;
+        case GE_BUTTON_RIGHT: return 1;
+        case GE_BUTTON_MIDDLE: return 2;
+        case GE_BUTTON_X1: return 3;
+        case GE_BUTTON_X2: return 4;
+        default: return -1;
     }
 }
 
