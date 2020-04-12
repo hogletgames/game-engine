@@ -37,8 +37,6 @@
 #include "utils_unix.h"
 #include "window_event.h"
 
-#include "ge/core/log.h"
-
 #include <SDL.h>
 #include <glad/glad.h>
 
@@ -72,7 +70,8 @@ WindowUnix::WindowUnix(properties_t prop)
     SDLCall(SDL_GL_MakeCurrent(m_window, m_gl_contex));
 
     auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
-    GE_CORE_ASSERT(gladLoadGLLoader(glad_load_proc), "Failed to initialize GLAD");
+    int is_glad_loaded = gladLoadGLLoader(glad_load_proc);
+    GE_CORE_ASSERT(is_glad_loaded, "Failed to initialize GLAD");
 
     GE_CORE_INFO("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
     GE_CORE_INFO("OpenGL SHading Language Version: {}",

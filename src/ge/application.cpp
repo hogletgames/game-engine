@@ -32,7 +32,7 @@
 
 #include "application.h"
 
-#include "ge/core/log.h"
+#include "ge/core/asserts.h"
 #include "ge/imgui/imgui_layer.h"
 #include "ge/layer.h"
 #include "ge/window/window.h"
@@ -45,7 +45,7 @@ Application* Application::m_instance{nullptr};
 Application::Application()
     : m_window(Window::create())
 {
-    GE_ASSERT(!m_instance, "Application already exists");
+    GE_CORE_ASSERT(!m_instance, "Application already exists");
     m_instance = this;
     m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
 

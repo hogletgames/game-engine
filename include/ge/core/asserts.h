@@ -30,22 +30,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_CORE_CORE_H_
-#define GE_CORE_CORE_H_
+#ifndef GE_CORE_ASSERTS_H_
+#define GE_CORE_ASSERTS_H_
 
-#include <functional>
+#include <ge/core/log.h>
 
-#if defined(GE_PLATFORM_WINDOWS)
-    #if !defined(GE_STATIC)
-        #define GE_API __declspec(dllexport)
-    #else
-        #define GE_API __declspec(dllimport)
-    #endif
+#if !defined(GE_DISABLE_ASSERTS)
+    #define GE_CORE_ASSERT(x, ...) ::GE::core_assert(x, #x, __VA_ARGS__)
+    #define GE_ASSERT(x, ...)      ::GE::client_assert(x, #x, __VA_ARGS__)
 #else
-    #define GE_API
+    #define GE_CORE_ASSERT(x, ...) static_cast<void>(x)
+    #define GE_ASSERT(x, ...)      static_cast<void>(x)
 #endif
 
-// NOLINTNEXTLINE
-#define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+namespace GE {
 
-#endif // GE_CORE_CORE_H_
+template<typename... Args>
+inline void core_assert(bool statement, const char* str, Args... args)
+{
+    if (!statement) {
+        GE_CORE_CRIT("assert failed: '{}'", str);
+        GE_CORE_CRIT(args...);
+        std::terminate();
+    }
+}
+
+template<typename... Args>
+inline void client_assert(bool statement, const char* str, Args... args)
+{
+    if (!statement) {
+        GE_CRIT("assert failed: '{}'", str);
+        GE_CRIT(args...);
+        std::terminate();
+    }
+}
+
+} // namespace GE
+
+#endif // GE_CORE_ASSERTS_H_
