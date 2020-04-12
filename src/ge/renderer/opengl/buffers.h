@@ -68,6 +68,12 @@ public:
 
     void bind() const override { bindBuffer(); }
     void unbind() const override { unbindBuffer(); }
+
+    void setLayout(const BufferLayout& layout) override { m_layout = layout; }
+    const BufferLayout& getLayout() const override { return m_layout; }
+
+private:
+    BufferLayout m_layout;
 };
 
 class IndexBuffer: public ::GE::IndexBuffer, public BufferBase

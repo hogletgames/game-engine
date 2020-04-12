@@ -37,7 +37,6 @@
 
 #include <deque>
 #include <memory>
-#include <type_traits>
 
 namespace GE {
 

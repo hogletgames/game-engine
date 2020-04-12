@@ -34,6 +34,7 @@
 #define GE_RENDERER_BUFFERS_H_
 
 #include <ge/core/non_copyable.h>
+#include <ge/renderer/buffer_layout.h>
 
 #include <memory>
 
@@ -44,6 +45,9 @@ class GE_API VertexBuffer: public NonCopyable
 public:
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
+
+    virtual void setLayout(const BufferLayout& layout) = 0;
+    virtual const BufferLayout& getLayout() const = 0;
 
     static Scoped<VertexBuffer> create(float* vertices, uint32_t size);
 };

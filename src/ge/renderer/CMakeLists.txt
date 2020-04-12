@@ -1,4 +1,5 @@
 set(GE_RENDERER_SRC
+    buffer_layout.cpp
     buffers.cpp
     graphics_context.cpp
     renderer.cpp

@@ -43,6 +43,7 @@
 
 #include <ge/imgui/imgui_layer.h>
 
+#include <ge/renderer/buffer_layout.h>
 #include <ge/renderer/buffers.h>
 #include <ge/renderer/graphics_context.h>
 #include <ge/renderer/renderer.h>
