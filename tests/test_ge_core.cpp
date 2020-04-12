@@ -1,3 +1,4 @@
+#include "ge/core/asserts.h"
 #include "ge/core/core.h"
 #include "ge/core/log.h"
 #include "ge/layer.h"

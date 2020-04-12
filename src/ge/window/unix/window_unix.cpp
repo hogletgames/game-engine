@@ -37,8 +37,6 @@
 #include "utils_unix.h"
 #include "window_event.h"
 
-#include "ge/core/log.h"
-
 #include <SDL.h>
 #include <glad/glad.h>
 

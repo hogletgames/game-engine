@@ -45,28 +45,6 @@
     #define GE_API
 #endif
 
-#if !defined(GE_DISABLE_ASSERTS)
-    #define GE_CORE_ASSERT(x, ...)                       \
-        {                                                \
-            if (!(x)) {                                  \
-                GE_CORE_CRIT("assert failed: '{}'", #x); \
-                GE_CORE_CRIT(__VA_ARGS__);               \
-                std::terminate();                        \
-            }                                            \
-        }
-    #define GE_ASSERT(x, ...)                       \
-        {                                           \
-            if (!(x)) {                             \
-                GE_CRIT("assert failed: '{}'", #x); \
-                GE_CRIT(__VA_ARGS__);               \
-                std::terminate();                   \
-            }                                       \
-        }
-#else
-    #define GE_CORE_ASSERT(x, ...) static_cast<void>(x)
-    #define GE_ASSERT(x, ...)      static_cast<void>(x)
-#endif
-
 // NOLINTNEXTLINE
 #define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 

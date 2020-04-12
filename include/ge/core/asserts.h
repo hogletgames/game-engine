@@ -30,19 +30,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_UTILS_UNIX_H_
-#define GE_WINDOW_UNIX_UTILS_UNIX_H_
+#ifndef GE_CORE_ASSERTS_H_
+#define GE_CORE_ASSERTS_H_
 
-#include "ge/core/asserts.h"
+#include <ge/core/log.h>
 
-#if defined(GE_DEBUG)
-    #define SDLCall(x)                                                            \
-        {                                                                         \
-            GE_CORE_ASSERT((x) != -1, "'{}' call error: {}", #x, SDL_GetError()); \
+#if !defined(GE_DISABLE_ASSERTS)
+    #define GE_CORE_ASSERT(x, ...)                       \
+        {                                                \
+            if (!(x)) {                                  \
+                GE_CORE_CRIT("assert failed: '{}'", #x); \
+                GE_CORE_CRIT(__VA_ARGS__);               \
+                std::terminate();                        \
+            }                                            \
+        }
+    #define GE_ASSERT(x, ...)                       \
+        {                                           \
+            if (!(x)) {                             \
+                GE_CRIT("assert failed: '{}'", #x); \
+                GE_CRIT(__VA_ARGS__);               \
+                std::terminate();                   \
+            }                                       \
         }
 #else
-    #define SDLCall(x) (x)
+    #define GE_CORE_ASSERT(x, ...) static_cast<void>(x)
+    #define GE_ASSERT(x, ...)      static_cast<void>(x)
 #endif
 
-#endif // GE_WINDOW_UNIX_UTILS_UNIX_H_
+#endif // GE_CORE_ASSERTS_H_
