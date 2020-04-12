@@ -35,6 +35,7 @@
 
 #include <ge/application.h>
 #include <ge/core/asserts.h>
+#include <ge/core/interface.h>
 #include <ge/core/log.h>
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
