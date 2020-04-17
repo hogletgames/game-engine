@@ -2,6 +2,8 @@ set(GE_RENDERER_SRC
     buffer_layout.cpp
     buffers.cpp
     graphics_context.cpp
+    render_command.cpp
+    renderer_api.cpp
     renderer.cpp
     vertex_array.cpp
 )

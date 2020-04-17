@@ -36,7 +36,7 @@ namespace GE {
 
 bool FrameworkManager::initialized{false};
 
-void FrameworkManager::initialize(Renderer::API api)
+void FrameworkManager::initialize(RendererAPI::API api)
 {
     if (initialized) {
         return;

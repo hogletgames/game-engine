@@ -1,5 +1,6 @@
 set(GE_RENDERER_OPENGL_SRC
     buffers.cpp
+    renderer_api.cpp
     vertex_array.cpp
 )
 

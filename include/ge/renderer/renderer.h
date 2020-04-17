@@ -34,44 +34,26 @@
 #define GE_RENDERER_RENDERER_H_
 
 #include <ge/core/core.h>
-
-#include <iostream>
-
-#define GE_NONE_API    ::GE::Renderer::API::NONE
-#define GE_OPEN_GL_API ::GE::Renderer::API::OPEN_GL
+#include <ge/renderer/renderer_api.h>
 
 namespace GE {
 
 class GE_API Renderer
 {
 public:
-    enum class API : uint8_t
-    {
-        NONE = 0,
-        OPEN_GL
-    };
-
     Renderer() = delete;
 
-    static void initialize(API api);
+    static void initialize(RendererAPI::API api);
     static void shutdown();
 
-    static API getAPI() { return m_api; }
+    static void beginScene();
+    static void endScene();
 
-    static API m_api;
+    static void submit(const Shared<VertexArray>& vertex_array);
+
+    static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 };
 
 } // namespace GE
-
-inline std::ostream& operator<<(std::ostream& os, ::GE::Renderer::API api)
-{
-    using API = GE::Renderer::API;
-
-    switch (api) {
-        case GE_NONE_API: return os << "None";
-        case GE_OPEN_GL_API: return os << "OpenGL";
-        default: return os << "Unknown API: " << static_cast<int>(api);
-    }
-}
 
 #endif // GE_RENDERER_RENDERER_H_

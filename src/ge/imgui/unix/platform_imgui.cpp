@@ -36,6 +36,7 @@
 
 #include "ge/application.h"
 #include "ge/core/log.h"
+#include "ge/renderer/render_command.h"
 
 #include <SDL.h>
 #include <glad/glad.h>
@@ -82,7 +83,7 @@ void PlatformImGui::render()
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    GLCall(glViewport(0, 0, width, height));
+    RenderCommand::setViewport(0, 0, width, height);
     GLCall(glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w));
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -94,11 +95,6 @@ void PlatformImGui::render()
         ImGui::RenderPlatformWindowsDefault();
         SDLCall(SDL_GL_MakeCurrent(backup_current_window, backup_current_context));
     }
-}
-
-void PlatformImGui::updateViewport(const ImVec2& window_size)
-{
-    GLCall(glViewport(0, 0, window_size.x, window_size.y));
 }
 
 } // namespace GE::UNIX

@@ -30,21 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "opengl/vertex_array.h"
-#include "renderer.h"
+#include "renderer_api.h"
+#include "opengl_utils.h"
 
-#include "ge/core/asserts.h"
+#include <glad/glad.h>
 
-namespace GE {
+namespace GE::OpenGL {
 
-Scoped<VertexArray> VertexArray::create()
+void RendererAPI::clear(const glm::vec4& color)
 {
-    switch (Renderer::getAPI()) {
-        case GE_OPEN_GL_API: return makeScoped<OpenGL::VertexArray>();
-        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
-    }
-
-    return nullptr;
+    GLCall(glClearColor(color.r, color.g, color.b, color.a));
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
-} // namespace GE
+void RendererAPI::draw(const Shared<VertexArray>& vertex_array)
+{
+    GLsizei count = vertex_array->getIndexBuffer()->getCount();
+    GLCall(glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr));
+}
+
+void RendererAPI::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    GLCall(glViewport(x, y, width, height));
+}
+
+} // namespace GE::OpenGL

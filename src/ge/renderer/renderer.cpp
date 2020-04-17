@@ -31,23 +31,32 @@
  */
 
 #include "renderer.h"
+#include "render_command.h"
+#include "vertex_array.h"
 
 #include "ge/core/log.h"
 
 namespace GE {
 
-Renderer::API Renderer::m_api{NONE_API};
-
-void Renderer::initialize(API api)
+void Renderer::initialize(RendererAPI::API api)
 {
-    GE_CORE_TRACE("Initialize Renderer: API '{}'", api);
-    m_api = api;
+    GE_CORE_TRACE("Initialize Renderer");
+    RenderCommand::initialize(api);
 }
 
 void Renderer::shutdown()
 {
     GE_CORE_TRACE("Shutdown Renderer");
-    m_api = NONE_API;
+    RenderCommand::shutdown();
+}
+
+void Renderer::beginScene() {}
+
+void Renderer::endScene() {}
+
+void Renderer::submit(const Shared<VertexArray>& vertex_array)
+{
+    RenderCommand::draw(vertex_array);
 }
 
 } // namespace GE

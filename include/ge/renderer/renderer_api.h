@@ -30,60 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_RENDERER_API_H_
+#define GE_RENDERER_RENDERER_API_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-
-#include <ge/imgui/imgui_layer.h>
-
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
 #include <ge/renderer/vertex_array.h>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+#include <glm/glm.hpp>
 
-#define GE_CREATE_FW_MANAGER(api) ::GE::FrameworkManager fw##__FILE__##__LINE__(api)
-#define GE_INITIALIZE(api)        ::GE::FrameworkManager::initialize(api)
-#define GE_SHUTDOWN()             ::GE::FrameworkManager::shutdown()
+#include <iostream>
+#include <memory>
+
+#define GE_NONE_API    ::GE::RendererAPI::API::NONE
+#define GE_OPEN_GL_API ::GE::RendererAPI::API::OPEN_GL
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+class GE_API RendererAPI: public NonCopyable
 {
 public:
-    explicit FrameworkManager(RendererAPI::API api) { initialize(api); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    enum class API : uint8_t
+    {
+        NONE = 0,
+        OPEN_GL
+    };
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    virtual void clear(const glm::vec4& color) = 0;
+    virtual void draw(const Shared<VertexArray>& vertex_array) = 0;
+    virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
-
-    static void initialize(RendererAPI::API api);
-    static void shutdown();
+    static API getAPI() { return m_api; }
+    static Scoped<RendererAPI> create(API api);
 
 private:
-    static bool initialized;
+    static API m_api;
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+inline std::ostream& operator<<(std::ostream& os, ::GE::RendererAPI::API api)
+{
+    switch (api) {
+        case GE_NONE_API: return os << "None";
+        case GE_OPEN_GL_API: return os << "OpenGL";
+        default: return os << "Unknown API: " << static_cast<int>(api);
+    }
+}
+
+#endif // GE_RENDERER_RENDERER_API_H_
