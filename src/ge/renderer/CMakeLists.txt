@@ -3,6 +3,7 @@ set(GE_RENDERER_SRC
     buffers.cpp
     graphics_context.cpp
     renderer.cpp
+    vertex_array.cpp
 )
 
 add_library(ge-renderer STATIC ${GE_RENDERER_SRC})

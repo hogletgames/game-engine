@@ -1,5 +1,6 @@
 set(GE_RENDERER_OPENGL_SRC
     buffers.cpp
+    vertex_array.cpp
 )
 
 add_library(ge-renderer-opengl STATIC ${GE_RENDERER_OPENGL_SRC})

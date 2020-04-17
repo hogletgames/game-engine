@@ -30,58 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+// NOLINTNEXTLINE
+#ifndef GE_RENDERER_OPENGL_VERTEX_ARRAY_H_
+#define GE_RENDERER_OPENGL_VERTEX_ARRAY_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
+#include "ge/renderer/vertex_array.h"
 
-#include <ge/imgui/imgui_layer.h>
+namespace GE::OpenGL {
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/vertex_array.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER(api) ::GE::FrameworkManager fw##__FILE__##__LINE__(api)
-#define GE_INITIALIZE(api)        ::GE::FrameworkManager::initialize(api)
-#define GE_SHUTDOWN()             ::GE::FrameworkManager::shutdown()
-
-namespace GE {
-
-class GE_API FrameworkManager: public NonCopyable
+class VertexArray: public ::GE::VertexArray
 {
 public:
-    explicit FrameworkManager(Renderer::API api) { initialize(api); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    VertexArray();
+    ~VertexArray() override;
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    void bind() const override;
+    void unbind() const override;
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
+    void addVertexBuffer(Shared<VertexBuffer> vertex_buffer) override;
+    void setIndexBuffer(Shared<IndexBuffer> index_buffer) override;
 
-    static void initialize(Renderer::API api);
-    static void shutdown();
+    const Vertices& getVertexBuffers() const override { return m_vertices; }
+    Shared<IndexBuffer> getIndexBuffer() const override { return m_index_buffer; }
 
 private:
-    static bool initialized;
+    uint32_t m_id{0};
+    uint32_t m_vb_idx{0};
+
+    Vertices m_vertices;
+    Shared<IndexBuffer> m_index_buffer;
 };
 
-} // namespace GE
+} // namespace GE::OpenGL
 
-#endif // GE_GE_H_
+#endif // GE_RENDERER_OPENGL_VERTEX_ARRAY_H_

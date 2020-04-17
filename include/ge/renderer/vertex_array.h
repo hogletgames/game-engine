@@ -30,58 +30,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_VERTEX_ARRAY_H_
+#define GE_RENDERER_VERTEX_ARRAY_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-
-#include <ge/imgui/imgui_layer.h>
-
-#include <ge/renderer/buffer_layout.h>
 #include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/vertex_array.h>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER(api) ::GE::FrameworkManager fw##__FILE__##__LINE__(api)
-#define GE_INITIALIZE(api)        ::GE::FrameworkManager::initialize(api)
-#define GE_SHUTDOWN()             ::GE::FrameworkManager::shutdown()
+#include <memory>
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+class GE_API VertexArray: public NonCopyable
 {
 public:
-    explicit FrameworkManager(Renderer::API api) { initialize(api); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    using Vertices = std::vector<Shared<VertexBuffer>>;
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
+    virtual void addVertexBuffer(Shared<VertexBuffer> vertex_buffer) = 0;
+    virtual void setIndexBuffer(Shared<IndexBuffer> index_buffer) = 0;
 
-    static void initialize(Renderer::API api);
-    static void shutdown();
+    virtual const Vertices& getVertexBuffers() const = 0;
+    virtual Shared<IndexBuffer> getIndexBuffer() const = 0;
 
-private:
-    static bool initialized;
+    static Scoped<VertexArray> create();
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_RENDERER_VERTEX_ARRAY_H_
