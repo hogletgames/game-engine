@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "imgui_unix.h"
+#include "platform_imgui.h"
 
 #include "ge/application.h"
 #include "ge/core/log.h"
@@ -43,11 +43,11 @@
 
 #define GLSL_VERSION "#version 450"
 
-namespace GE::priv {
+namespace GE::UNIX {
 
-void ImGuiUnix::initialize()
+void PlatformImGui::initialize()
 {
-    GE_CORE_TRACE("Initialize ImGuiUnix");
+    GE_CORE_TRACE("Initialize Unix::PlatformImGui");
 
     void* window = Application::instance()->getNativeWindow();
     void* context = SDL_GL_GetCurrentContext();
@@ -56,14 +56,14 @@ void ImGuiUnix::initialize()
     ImGui_ImplOpenGL3_Init(GLSL_VERSION);
 }
 
-void ImGuiUnix::shutdown()
+void PlatformImGui::shutdown()
 {
-    GE_CORE_TRACE("Shutdown ImGuiUnix");
+    GE_CORE_TRACE("Shutdown Unix::PlatformImGui");
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
 }
 
-void ImGuiUnix::newFrame()
+void PlatformImGui::newFrame()
 {
     void* window = Application::instance()->getNativeWindow();
 
@@ -71,7 +71,7 @@ void ImGuiUnix::newFrame()
     ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));
 }
 
-void ImGuiUnix::render()
+void PlatformImGui::render()
 {
     ImGuiIO& io = ImGui::GetIO();
     auto width = static_cast<int32_t>(io.DisplaySize.x);
@@ -94,9 +94,9 @@ void ImGuiUnix::render()
     }
 }
 
-void ImGuiUnix::updateViewport(const ImVec2& window_size)
+void PlatformImGui::updateViewport(const ImVec2& window_size)
 {
     glViewport(0, 0, window_size.x, window_size.y);
 }
 
-} // namespace GE::priv
+} // namespace GE::UNIX

@@ -31,17 +31,17 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_IMGUI_UNIX_IMGUI_UNIX_H_
-#define GE_IMGUI_UNIX_IMGUI_UNIX_H_
+#ifndef GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
+#define GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
 
 struct ImVec2;
 
-namespace GE::priv {
+namespace GE::UNIX {
 
-class ImGuiUnix
+class PlatformImGui
 {
 public:
-    ImGuiUnix() = delete;
+    PlatformImGui() = delete;
 
     static void initialize();
     static void shutdown();
@@ -52,6 +52,6 @@ public:
     static void updateViewport(const ImVec2& window_size);
 };
 
-} // namespace GE::priv
+} // namespace GE::UNIX
 
-#endif // GE_IMGUI_UNIX_IMGUI_UNIX_H_
+#endif // GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
