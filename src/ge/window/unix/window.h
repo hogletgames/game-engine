@@ -31,27 +31,27 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_UNIX_H_
-#define GE_WINDOW_UNIX_WINDOW_UNIX_H_
+#ifndef GE_WINDOW_UNIX_WINDOW_H_
+#define GE_WINDOW_UNIX_WINDOW_H_
 
-#include "window.h"
+#include "ge/window/window.h"
 
 struct SDL_Window;
 union SDL_Event;
 
-namespace GE::priv {
+namespace GE::UNIX {
 
-class GE_API WindowUnix: public Window
+class Window: public ::GE::Window
 {
 public:
-    explicit WindowUnix(properties_t prop);
-    WindowUnix(const WindowUnix& other) = delete;
-    WindowUnix(WindowUnix&& other) noexcept;
+    explicit Window(properties_t prop);
+    Window(const Window& other) = delete;
+    Window(Window&& other) noexcept;
 
-    WindowUnix& operator=(const WindowUnix& other) = delete;
-    WindowUnix& operator=(WindowUnix&& other) noexcept;
+    Window& operator=(const Window& other) = delete;
+    Window& operator=(Window&& other) noexcept;
 
-    ~WindowUnix() override;
+    ~Window() override;
 
     static void initialize();
     static void shutdown();
@@ -85,6 +85,6 @@ private:
     bool m_vsync{true};
 };
 
-} // namespace GE::priv
+} // namespace GE::UNIX
 
-#endif // GE_WINDOW_UNIX_WINDOW_UNIX_H_
+#endif // GE_WINDOW_UNIX_WINDOW_H_

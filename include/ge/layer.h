@@ -33,26 +33,18 @@
 #ifndef GE_LAYER_H
 #define GE_LAYER_H
 
-#include <ge/core/core.h>
+#include <ge/core/interface.h>
 
 namespace GE {
 
 class Event;
 
-class GE_API Layer
+class GE_API Layer: public Interface
 {
 public:
     explicit Layer(const char* name = "Layer")
         : m_name{name}
     {}
-
-    Layer(const Layer& other) = default;
-    Layer(Layer&& other) = default;
-
-    Layer& operator=(const Layer& other) = default;
-    Layer& operator=(Layer&& other) = default;
-
-    virtual ~Layer() = default;
 
     virtual void onAttach() = 0;
     virtual void onDetach() = 0;

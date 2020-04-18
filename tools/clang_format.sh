@@ -12,7 +12,7 @@ FILES=$(ls  examples/*.cpp              \
             src/ge/imgui/*.cpp          \
             src/ge/imgui/unix/*.h       \
             src/ge/imgui/unix/*.cpp     \
-            src/ge/window/*.h           \
+            src/ge/utils/*.h            \
             src/ge/window/*.cpp         \
             src/ge/window/unix/*.h      \
             src/ge/window/unix/*.cpp    \

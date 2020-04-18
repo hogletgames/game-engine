@@ -31,48 +31,16 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_INPUT_UNIX_H_
-#define GE_WINDOW_UNIX_INPUT_UNIX_H_
+#ifndef GE_UTILS_UNIX_UTILS_H_
+#define GE_UTILS_UNIX_UTILS_H_
 
-#include "input.h"
-#include "key_codes.h"
-#include "mouse_button_codes.h"
+#include "ge/core/asserts.h"
 
-#include <unordered_map>
+#if defined(GE_DEBUG)
+    #define SDLCall(x) \
+        GE_CORE_ASSERT((x) != -1, "'{}' call error: {}", #x, SDL_GetError())
+#else
+    #define SDLCall(x) (x)
+#endif
 
-namespace GE::priv {
-
-class InputUnix: public Input
-{
-public:
-    InputUnix() = default;
-
-protected:
-    void initializeImpl() override;
-    void shutdownImpl() override {}
-
-    int32_t toNativeKeyCodeImpl(KeyCode key_code) const override;
-    KeyCode toGEKeyCodeImpl(int32_t key_code) const override;
-    bool isKeyPressedImpl(KeyCode key_code) const override;
-
-    uint8_t toNativeButtonImpl(MouseButton button) const override;
-    MouseButton toGEMouseButtonImpl(uint8_t button) const override;
-    bool isMouseButtonPressedImpl(MouseButton button) const override;
-    std::pair<float, float> getMousePosImpl() const override;
-    float getMousePosXImpl() const override;
-    float getMousePosYImpl() const override;
-
-private:
-    void mapKeyCodes();
-    void mapMouseButtons();
-
-    std::unordered_map<int32_t, KeyCode> m_sdl_to_ge_keys;
-    std::unordered_map<KeyCode, int32_t> m_ge_to_sdl_keys;
-
-    std::unordered_map<uint8_t, MouseButton> m_sdl_to_ge_buttons;
-    std::unordered_map<MouseButton, uint8_t> m_ge_to_sdl_buttons;
-};
-
-} // namespace GE::priv
-
-#endif // GE_WINDOW_UNIX_INPUT_UNIX_H_
+#endif // GE_UTILS_UNIX_UTILS_H_

@@ -1,5 +1,5 @@
 set(GE_IMGUI_UNIX_SRC
-    imgui_unix.cpp
+    platform_imgui.cpp
 )
 
 add_library(ge-imgui-unix STATIC ${GE_IMGUI_UNIX_SRC})

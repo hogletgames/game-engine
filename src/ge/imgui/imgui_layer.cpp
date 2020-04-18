@@ -42,8 +42,8 @@
 #include <imgui.h>
 
 #if defined(GE_PLATFORM_UNIX)
-    #include "unix/imgui_unix.h"
-using ImGuiPlatform = ::GE::priv::ImGuiUnix;
+    #include "unix/platform_imgui.h"
+using PlatformImGui = ::GE::UNIX::PlatformImGui;
 #else
     #error "Unsupported platform"
 #endif
@@ -55,18 +55,12 @@ namespace {
 int32_t toImGuiButton(GE::MouseButton button)
 {
     switch (button) {
-        case GE_BUTTON_LEFT:
-            return 0;
-        case GE_BUTTON_RIGHT:
-            return 1;
-        case GE_BUTTON_MIDDLE:
-            return 2;
-        case GE_BUTTON_X1:
-            return 3;
-        case GE_BUTTON_X2:
-            return 4;
-        default:
-            return -1;
+        case GE_BUTTON_LEFT: return 0;
+        case GE_BUTTON_RIGHT: return 1;
+        case GE_BUTTON_MIDDLE: return 2;
+        case GE_BUTTON_X1: return 3;
+        case GE_BUTTON_X2: return 4;
+        default: return -1;
     }
 }
 
@@ -94,14 +88,14 @@ void ImGuiLayer::onAttach()
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    ImGuiPlatform::initialize();
+    PlatformImGui::initialize();
     mapKeys();
 }
 
 void ImGuiLayer::onDetach()
 {
     GE_CORE_TRACE("'{}' is detached", getName());
-    ImGuiPlatform::shutdown();
+    PlatformImGui::shutdown();
     ImGui::DestroyContext();
 }
 
@@ -127,7 +121,7 @@ void ImGuiLayer::onImGuiRender()
 
 void ImGuiLayer::begin()
 {
-    ImGuiPlatform::newFrame();
+    PlatformImGui::newFrame();
     ImGui::NewFrame();
 }
 
@@ -138,7 +132,7 @@ void ImGuiLayer::end()
     io.DisplaySize = ImVec2(window.getWidth(), window.getHeight());
 
     ImGui::Render();
-    ImGuiPlatform::render();
+    PlatformImGui::render();
 }
 
 void ImGuiLayer::mapKeys()
@@ -255,7 +249,7 @@ bool ImGuiLayer::onWindowResized(const WindowResizedEvent& event)
     ImVec2 window_size = ImVec2(event.getWidth(), event.getHeight());
     io.DisplaySize = window_size;
     io.DisplayFramebufferScale = ImVec2{1.0f, 1.0f};
-    ImGuiPlatform::updateViewport(window_size);
+    PlatformImGui::updateViewport(window_size);
     return false;
 }
 

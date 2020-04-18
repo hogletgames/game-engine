@@ -30,58 +30,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_WINDOW_WINDOW_H_
-#define GE_WINDOW_WINDOW_H_
+// NOLINTNEXTLINE
+#ifndef GE_WINDOW_UNIX_INPUT_H_
+#define GE_WINDOW_UNIX_INPUT_H_
 
-#include <ge/core/interface.h>
+#include "ge/window/input.h"
+#include "ge/window/key_codes.h"
+#include "ge/window/mouse_button_codes.h"
 
-#include <cstdint>
-#include <functional>
-#include <memory>
-#include <string>
+#include <unordered_map>
 
-#define WINDOW_TITLE_DEF  "Game Engine"
-#define WINDOW_WIDTH_DEF  1280
-#define WINDOW_HEIGHT_DEF 720
+namespace GE::UNIX {
 
-namespace GE {
-
-class Event;
-
-class GE_API Window: public Interface
+class Input: public ::GE::Input
 {
 public:
-    using WinEventCallback = std::function<void(Event*)>;
+    Input() = default;
 
-    struct properties_t {
-        std::string title{};
-        uint32_t width{};
-        uint32_t height{};
+protected:
+    void initializeImpl() override;
+    void shutdownImpl() override;
 
-        explicit properties_t(std::string title = WINDOW_TITLE_DEF,
-                              uint32_t width = WINDOW_WIDTH_DEF,
-                              uint32_t height = WINDOW_HEIGHT_DEF)
-            : title{std::move(title)}
-            , width{width}
-            , height{height}
-        {}
-    };
+    int32_t toNativeKeyCodeImpl(KeyCode key_code) const override;
+    KeyCode toGEKeyCodeImpl(int32_t key_code) const override;
+    bool isKeyPressedImpl(KeyCode key_code) const override;
 
-    static std::unique_ptr<Window> create(properties_t properties = properties_t{});
-    static void initialize();
-    static void shutdown();
+    uint8_t toNativeButtonImpl(MouseButton button) const override;
+    MouseButton toGEMouseButtonImpl(uint8_t button) const override;
+    bool isMouseButtonPressedImpl(MouseButton button) const override;
+    std::pair<float, float> getMousePosImpl() const override;
+    float getMousePosXImpl() const override;
+    float getMousePosYImpl() const override;
 
-    virtual void setVSync(bool enabled) = 0;
-    virtual bool isVSync() const = 0;
+private:
+    void mapKeyCodes();
+    void mapMouseButtons();
 
-    virtual void* getNativeWindow() const = 0;
-    virtual uint32_t getWidth() const = 0;
-    virtual uint32_t getHeight() const = 0;
+    std::unordered_map<int32_t, KeyCode> m_sdl_to_ge_keys;
+    std::unordered_map<KeyCode, int32_t> m_ge_to_sdl_keys;
 
-    virtual void onUpdate() = 0;
-    virtual void setEventCallback(WinEventCallback callback) = 0;
+    std::unordered_map<uint8_t, MouseButton> m_sdl_to_ge_buttons;
+    std::unordered_map<MouseButton, uint8_t> m_ge_to_sdl_buttons;
 };
 
-} // namespace GE
+} // namespace GE::UNIX
 
-#endif // GE_WINDOW_WINDOW_H_
+#endif // GE_WINDOW_UNIX_INPUT_H_

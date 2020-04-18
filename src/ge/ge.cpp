@@ -51,7 +51,7 @@ void FrameworkManager::initialize()
 
 void FrameworkManager::shutdown()
 {
-    if (initialized) {
+    if (!initialized) {
         return;
     }
 

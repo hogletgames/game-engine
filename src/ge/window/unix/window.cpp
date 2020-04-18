@@ -30,12 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "window_unix.h"
+#include "window.h"
 #include "input.h"
-#include "key_event.h"
-#include "mouse_event.h"
-#include "utils_unix.h"
-#include "window_event.h"
+#include "unix_utils.h"
+
+#include "ge/window/key_event.h"
+#include "ge/window/mouse_event.h"
+#include "ge/window/window_event.h"
 
 #include <SDL.h>
 #include <glad/glad.h>
@@ -45,11 +46,11 @@
 #define GE_GL_MAJOR_VER 4
 #define GE_GL_MINOR_VER 5
 
-namespace GE::priv {
+namespace GE::UNIX {
 
-bool WindowUnix::m_initialized{false};
+bool Window::m_initialized{false};
 
-WindowUnix::WindowUnix(properties_t prop)
+Window::Window(properties_t prop)
     : m_prop(std::move(prop))
 {
     GE_CORE_TRACE("Creating window '{}', ({}, {})", m_prop.title, m_prop.width,
@@ -82,12 +83,12 @@ WindowUnix::WindowUnix(properties_t prop)
     GE_CORE_TRACE("Window '{}' created", m_prop.title);
 }
 
-WindowUnix::WindowUnix(WindowUnix&& other) noexcept
+Window::Window(Window&& other) noexcept
 {
     *this = std::move(other);
 }
 
-WindowUnix& WindowUnix::operator=(WindowUnix&& other) noexcept
+Window& Window::operator=(Window&& other) noexcept
 {
     if (this == &other) {
         return *this;
@@ -101,7 +102,7 @@ WindowUnix& WindowUnix::operator=(WindowUnix&& other) noexcept
     return *this;
 }
 
-WindowUnix::~WindowUnix()
+Window::~Window()
 {
     if (m_gl_contex != nullptr) {
         SDL_GL_DeleteContext(m_gl_contex);
@@ -118,8 +119,9 @@ WindowUnix::~WindowUnix()
     }
 }
 
-void WindowUnix::initialize()
+void Window::initialize()
 {
+    GE_CORE_TRACE("Initialize UNIX::Window");
     SDLCall(SDL_Init(SDL_INIT_VIDEO));
     SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, GE_GL_MAJOR_VER));
     SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, GE_GL_MINOR_VER));
@@ -127,13 +129,13 @@ void WindowUnix::initialize()
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE));
 }
 
-void WindowUnix::shutdown()
+void Window::shutdown()
 {
+    GE_CORE_TRACE("Shutdown UNIX::Window");
     SDL_Quit();
-    GE_CORE_TRACE("SDL quit");
 }
 
-void WindowUnix::setVSync(bool enabled)
+void Window::setVSync(bool enabled)
 {
     if (enabled) {
         SDLCall(SDL_GL_SetSwapInterval(VSYNC_ON));
@@ -144,13 +146,13 @@ void WindowUnix::setVSync(bool enabled)
     m_vsync = enabled;
 }
 
-void WindowUnix::onUpdate()
+void Window::onUpdate()
 {
     pollEvents();
     SDL_GL_SwapWindow(m_window);
 }
 
-void WindowUnix::pollEvents()
+void Window::pollEvents()
 {
     SDL_Event sdl_event;
 
@@ -159,33 +161,31 @@ void WindowUnix::pollEvents()
             case SDL_MOUSEMOTION:
             case SDL_MOUSEWHEEL:
             case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
+            case SDL_MOUSEBUTTONUP: {
                 onSDLMouseEvent(sdl_event);
                 break;
-
+            }
             case SDL_KEYDOWN:
             case SDL_KEYUP:
-            case SDL_TEXTINPUT:
+            case SDL_TEXTINPUT: {
                 onSDLKeyEvent(sdl_event);
                 break;
-
-            case SDL_WINDOWEVENT:
+            }
+            case SDL_WINDOWEVENT: {
                 onSDLWindowEvent(sdl_event);
                 break;
-
+            }
             case SDL_QUIT: {
                 WindowClosedEvent event{};
                 m_event_callback(&event);
                 break;
             }
-
-            default:
-                break;
+            default: break;
         }
     }
 }
 
-void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
+void Window::onSDLMouseEvent(const SDL_Event& sdl_event)
 {
     switch (sdl_event.type) {
         case SDL_MOUSEMOTION: {
@@ -195,7 +195,6 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_MOUSEWHEEL: {
             float offset_x = sdl_event.wheel.x;
             float offset_y = sdl_event.wheel.y;
@@ -203,27 +202,23 @@ void WindowUnix::onSDLMouseEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_MOUSEBUTTONDOWN: {
             MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonPressedEvent event{button};
             m_event_callback(&event);
             break;
         }
-
         case SDL_MOUSEBUTTONUP: {
             MouseButton button = Input::toGEMouseButton(sdl_event.button.button);
             MouseButtonReleasedEvent event{button};
             m_event_callback(&event);
             break;
         }
-
-        default:
-            break;
+        default: break;
     }
 }
 
-void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
+void Window::onSDLKeyEvent(const SDL_Event& sdl_event)
 {
     switch (sdl_event.type) {
         case SDL_KEYDOWN: {
@@ -233,26 +228,22 @@ void WindowUnix::onSDLKeyEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_KEYUP: {
             KeyCode code = Input::toGEKeyCode(sdl_event.key.keysym.sym);
             KeyReleasedEvent event{code};
             m_event_callback(&event);
             break;
         }
-
         case SDL_TEXTINPUT: {
             KeyTypedEvent event{sdl_event.text.text};
             m_event_callback(&event);
             break;
         }
-
-        default:
-            break;
+        default: break;
     }
 }
 
-void WindowUnix::onSDLWindowEvent(const SDL_Event& sdl_event)
+void Window::onSDLWindowEvent(const SDL_Event& sdl_event)
 {
     switch (sdl_event.window.event) {
         case SDL_WINDOWEVENT_RESIZED: {
@@ -262,16 +253,13 @@ void WindowUnix::onSDLWindowEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
-
         case SDL_WINDOWEVENT_CLOSE: {
             WindowClosedEvent event{};
             m_event_callback(&event);
             break;
         }
-
-        default:
-            break;
+        default: break;
     }
 }
 
-} // namespace GE::priv
+} // namespace GE::UNIX

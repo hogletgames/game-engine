@@ -30,28 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_IMGUI_UNIX_IMGUI_UNIX_H_
-#define GE_IMGUI_UNIX_IMGUI_UNIX_H_
+#ifndef GE_CORE_INTERFACE_H_
+#define GE_CORE_INTERFACE_H_
 
-struct ImVec2;
+#include <ge/core/core.h>
 
-namespace GE::priv {
+namespace GE {
 
-class ImGuiUnix
+class GE_API Interface
 {
 public:
-    ImGuiUnix() = delete;
-
-    static void initialize();
-    static void shutdown();
-
-    static void newFrame();
-    static void render();
-
-    static void updateViewport(const ImVec2& window_size);
+    Interface() = default;
+    Interface(const Interface& other) = default;
+    Interface(Interface&& other) noexcept = default;
+    Interface& operator=(const Interface& other) = default;
+    Interface& operator=(Interface&& other) noexcept = default;
+    virtual ~Interface() = default;
 };
 
-} // namespace GE::priv
+} // namespace GE
 
-#endif // GE_IMGUI_UNIX_IMGUI_UNIX_H_
+#endif // GE_CORE_INTERFACE_H_

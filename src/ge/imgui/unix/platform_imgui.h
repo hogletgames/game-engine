@@ -31,16 +31,27 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_UTILS_UNIX_H_
-#define GE_WINDOW_UNIX_UTILS_UNIX_H_
+#ifndef GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
+#define GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
 
-#include "ge/core/asserts.h"
+struct ImVec2;
 
-#if defined(GE_DEBUG)
-    #define SDLCall(x) \
-        GE_CORE_ASSERT((x) != -1, "'{}' call error: {}", #x, SDL_GetError())
-#else
-    #define SDLCall(x) (x)
-#endif
+namespace GE::UNIX {
 
-#endif // GE_WINDOW_UNIX_UTILS_UNIX_H_
+class PlatformImGui
+{
+public:
+    PlatformImGui() = delete;
+
+    static void initialize();
+    static void shutdown();
+
+    static void newFrame();
+    static void render();
+
+    static void updateViewport(const ImVec2& window_size);
+};
+
+} // namespace GE::UNIX
+
+#endif // GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
