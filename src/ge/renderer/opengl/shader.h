@@ -30,61 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+// NOLINTNEXTLINE
+#ifndef GE_RENDERER_OPENGL_SHADER_H_
+#define GE_RENDERER_OPENGL_SHADER_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
+#include "ge/renderer/shader.h"
 
-#include <ge/imgui/imgui_layer.h>
+namespace GE::OpenGL {
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/vertex_array.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER(api) ::GE::FrameworkManager fw##__FILE__##__LINE__(api)
-#define GE_INITIALIZE(api)        ::GE::FrameworkManager::initialize(api)
-#define GE_SHUTDOWN()             ::GE::FrameworkManager::shutdown()
-
-namespace GE {
-
-class GE_API FrameworkManager: public NonCopyable
+class Shader: public ::GE::Shader
 {
 public:
-    explicit FrameworkManager(RendererAPI::API api) { initialize(api); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    explicit Shader(Type type);
+    ~Shader() override;
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    bool compileFromFile(const std::string& filepath) override;
+    bool compileFromSource(const std::string& source_code) override;
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
-
-    static void initialize(RendererAPI::API api);
-    static void shutdown();
+    std::uint32_t getNativeID() const override { return m_id; };
 
 private:
-    static bool initialized;
+    uint32_t m_id{0};
+    uint32_t m_type{0};
 };
 
-} // namespace GE
+} // namespace GE::OpenGL
 
-#endif // GE_GE_H_
+#endif // GE_RENDERER_OPENGL_SHADER_H_

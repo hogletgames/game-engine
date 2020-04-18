@@ -30,61 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_SHADER_H_
+#define GE_RENDERER_SHADER_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
 #include <ge/core/non_copyable.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
 
-#include <ge/imgui/imgui_layer.h>
+#include <memory>
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/vertex_array.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_CREATE_FW_MANAGER(api) ::GE::FrameworkManager fw##__FILE__##__LINE__(api)
-#define GE_INITIALIZE(api)        ::GE::FrameworkManager::initialize(api)
-#define GE_SHUTDOWN()             ::GE::FrameworkManager::shutdown()
+#define GE_NONE_SHADER     ::GE::Shader::NONE
+#define GE_VERTEX_SHADER   ::GE::Shader::VERTEX
+#define GE_FRAGMENT_SHADER ::GE::Shader::FRAGMENT
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+class GE_API Shader: public NonCopyable
 {
 public:
-    explicit FrameworkManager(RendererAPI::API api) { initialize(api); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    enum Type : uint8_t
+    {
+        NONE = 0,
+        VERTEX,
+        FRAGMENT
+    };
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
+    virtual bool compileFromFile(const std::string& filepath) = 0;
+    virtual bool compileFromSource(const std::string& source_code) = 0;
 
-    ~FrameworkManager() { shutdown(); } // NOLINT
+    virtual std::uint32_t getNativeID() const = 0;
 
-    static void initialize(RendererAPI::API api);
-    static void shutdown();
-
-private:
-    static bool initialized;
+    static Scoped<Shader> create(Type type);
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_RENDERER_SHADER_H_
