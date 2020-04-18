@@ -31,60 +31,16 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_UNIX_H_
-#define GE_WINDOW_UNIX_WINDOW_UNIX_H_
+#ifndef GE_WINDOW_UNIX_UNIX_UTILS_H_
+#define GE_WINDOW_UNIX_UNIX_UTILS_H_
 
-#include "window.h"
+#include "ge/core/asserts.h"
 
-struct SDL_Window;
-union SDL_Event;
+#if defined(GE_DEBUG)
+    #define SDLCall(x) \
+        GE_CORE_ASSERT((x) != -1, "'{}' call error: {}", #x, SDL_GetError())
+#else
+    #define SDLCall(x) (x)
+#endif
 
-namespace GE::priv {
-
-class GE_API WindowUnix: public Window
-{
-public:
-    explicit WindowUnix(properties_t prop);
-    WindowUnix(const WindowUnix& other) = delete;
-    WindowUnix(WindowUnix&& other) noexcept;
-
-    WindowUnix& operator=(const WindowUnix& other) = delete;
-    WindowUnix& operator=(WindowUnix&& other) noexcept;
-
-    ~WindowUnix() override;
-
-    static void initialize();
-    static void shutdown();
-
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
-
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    void* m_gl_contex{nullptr};
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
-};
-
-} // namespace GE::priv
-
-#endif // GE_WINDOW_UNIX_WINDOW_UNIX_H_
+#endif // GE_WINDOW_UNIX_UNIX_UTILS_H_

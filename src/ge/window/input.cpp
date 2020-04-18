@@ -33,9 +33,8 @@
 #include "input.h"
 
 #if defined(GE_PLATFORM_UNIX)
-    #include "unix/input_unix.h"
-
-using PlatformInput = ::GE::priv::InputUnix;
+    #include "unix/input.h"
+using PlatformInput = ::GE::UNIX::Input;
 #else
     #error "Unsupported platform"
 #endif

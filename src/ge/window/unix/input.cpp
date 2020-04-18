@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "input_unix.h"
+#include "input.h"
 
 #include "ge/core/log.h"
 
@@ -38,53 +38,58 @@
 
 #include <vector>
 
-namespace GE::priv {
+namespace GE::UNIX {
 
-void InputUnix::initializeImpl()
+void Input::initializeImpl()
 {
-    GE_CORE_TRACE("Initialize unix input");
+    GE_CORE_TRACE("Initialize UNIX::Input");
     mapKeyCodes();
     mapMouseButtons();
 }
 
-int32_t InputUnix::toNativeKeyCodeImpl(KeyCode key_code) const
+void Input::shutdownImpl()
+{
+    GE_CORE_TRACE("Shutdown UNIX::Input");
+}
+
+int32_t Input::toNativeKeyCodeImpl(KeyCode key_code) const
 {
     auto key = m_ge_to_sdl_keys.find(key_code);
     return key != m_ge_to_sdl_keys.end() ? key->second : SDLK_UNKNOWN;
 }
 
-KeyCode InputUnix::toGEKeyCodeImpl(int32_t key_code) const
+KeyCode Input::toGEKeyCodeImpl(int32_t key_code) const
 {
     auto key = m_sdl_to_ge_keys.find(key_code);
     return key != m_sdl_to_ge_keys.end() ? key->second : GE_KEY_UNKNOWN;
 }
 
-bool InputUnix::isKeyPressedImpl(KeyCode key_code) const
+bool Input::isKeyPressedImpl(KeyCode key_code) const
 {
     uint16_t sdl_key = toNativeKeyCodeImpl(key_code);
     const uint8_t* keys_state = SDL_GetKeyboardState(nullptr);
     return keys_state != nullptr ? keys_state[sdl_key] == 0 : false;
 }
 
-uint8_t InputUnix::toNativeButtonImpl(MouseButton button_code) const
+uint8_t Input::toNativeButtonImpl(MouseButton button_code) const
 {
     auto button = m_ge_to_sdl_buttons.find(button_code);
     return button != m_ge_to_sdl_buttons.end() ? button->second : 0;
 }
 
-MouseButton InputUnix::toGEMouseButtonImpl(uint8_t button_code) const
+MouseButton Input::toGEMouseButtonImpl(uint8_t button_code) const
 {
     auto button = m_sdl_to_ge_buttons.find(button_code);
     return button != m_sdl_to_ge_buttons.end() ? button->second : GE_BUTTON_UNKNOWN;
 }
 
-bool InputUnix::isMouseButtonPressedImpl(MouseButton button) const
+bool Input::isMouseButtonPressedImpl(MouseButton button) const
 {
     uint8_t sdl_button = toNativeButtonImpl(button);
     return SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(sdl_button); // NOLINT
 }
 
-std::pair<float, float> InputUnix::getMousePosImpl() const
+std::pair<float, float> Input::getMousePosImpl() const
 {
     int pos_x{0};
     int pos_y{0};
@@ -92,21 +97,21 @@ std::pair<float, float> InputUnix::getMousePosImpl() const
     return {pos_x, pos_y};
 }
 
-float InputUnix::getMousePosXImpl() const
+float Input::getMousePosXImpl() const
 {
     int pos_x{0};
     SDL_GetMouseState(&pos_x, nullptr);
     return static_cast<float>(pos_x);
 }
 
-float InputUnix::getMousePosYImpl() const
+float Input::getMousePosYImpl() const
 {
     int pos_y{0};
     SDL_GetMouseState(nullptr, &pos_y);
     return static_cast<float>(pos_y);
 }
 
-void InputUnix::mapKeyCodes()
+void Input::mapKeyCodes()
 {
     m_sdl_to_ge_keys = {{SDLK_UNKNOWN, GE_KEY_UNKNOWN},
 
@@ -261,7 +266,7 @@ void InputUnix::mapKeyCodes()
     }
 }
 
-void InputUnix::mapMouseButtons()
+void Input::mapMouseButtons()
 {
     m_sdl_to_ge_buttons = {{SDL_BUTTON_LEFT, GE_BUTTON_LEFT},
                            {SDL_BUTTON_RIGHT, GE_BUTTON_RIGHT},
@@ -274,4 +279,4 @@ void InputUnix::mapMouseButtons()
     }
 }
 
-} // namespace GE::priv
+} // namespace GE::UNIX

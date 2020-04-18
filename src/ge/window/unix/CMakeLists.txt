@@ -1,6 +1,6 @@
 set(GE_WINDOW_UNIX_SRC
-    input_unix.cpp
-    window_unix.cpp
+    input.cpp
+    window.cpp
 )
 
 add_library(ge-window-unix STATIC ${GE_WINDOW_UNIX_SRC})

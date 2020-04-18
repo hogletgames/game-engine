@@ -31,48 +31,60 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_INPUT_UNIX_H_
-#define GE_WINDOW_UNIX_INPUT_UNIX_H_
+#ifndef GE_WINDOW_UNIX_WINDOW_H_
+#define GE_WINDOW_UNIX_WINDOW_H_
 
-#include "input.h"
-#include "key_codes.h"
-#include "mouse_button_codes.h"
+#include "ge/window/window.h"
 
-#include <unordered_map>
+struct SDL_Window;
+union SDL_Event;
 
-namespace GE::priv {
+namespace GE::UNIX {
 
-class InputUnix: public Input
+class Window: public ::GE::Window
 {
 public:
-    InputUnix() = default;
+    explicit Window(properties_t prop);
+    Window(const Window& other) = delete;
+    Window(Window&& other) noexcept;
 
-protected:
-    void initializeImpl() override;
-    void shutdownImpl() override {}
+    Window& operator=(const Window& other) = delete;
+    Window& operator=(Window&& other) noexcept;
 
-    int32_t toNativeKeyCodeImpl(KeyCode key_code) const override;
-    KeyCode toGEKeyCodeImpl(int32_t key_code) const override;
-    bool isKeyPressedImpl(KeyCode key_code) const override;
+    ~Window() override;
 
-    uint8_t toNativeButtonImpl(MouseButton button) const override;
-    MouseButton toGEMouseButtonImpl(uint8_t button) const override;
-    bool isMouseButtonPressedImpl(MouseButton button) const override;
-    std::pair<float, float> getMousePosImpl() const override;
-    float getMousePosXImpl() const override;
-    float getMousePosYImpl() const override;
+    static void initialize();
+    static void shutdown();
+
+    void setVSync(bool enabled) override;
+    bool isVSync() const override { return m_vsync; }
+
+    void* getNativeWindow() const override { return m_window; };
+    uint32_t getWidth() const override { return m_prop.width; }
+    uint32_t getHeight() const override { return m_prop.height; }
+
+    void onUpdate() override;
+    void setEventCallback(WinEventCallback callback) override
+    {
+        m_event_callback = callback;
+    }
 
 private:
-    void mapKeyCodes();
-    void mapMouseButtons();
+    void pollEvents();
+    void onSDLMouseEvent(const SDL_Event& sdl_event);
+    void onSDLKeyEvent(const SDL_Event& sdl_event);
+    void onSDLWindowEvent(const SDL_Event& sdl_event);
 
-    std::unordered_map<int32_t, KeyCode> m_sdl_to_ge_keys;
-    std::unordered_map<KeyCode, int32_t> m_ge_to_sdl_keys;
+    static bool m_initialized;
 
-    std::unordered_map<uint8_t, MouseButton> m_sdl_to_ge_buttons;
-    std::unordered_map<MouseButton, uint8_t> m_ge_to_sdl_buttons;
+    SDL_Window* m_window{nullptr};
+    void* m_gl_contex{nullptr};
+
+    WinEventCallback m_event_callback;
+    properties_t m_prop;
+    bool m_vsync{true};
 };
 
-} // namespace GE::priv
+} // namespace GE::UNIX
 
-#endif // GE_WINDOW_UNIX_INPUT_UNIX_H_
+#endif // GE_WINDOW_UNIX_WINDOW_H_

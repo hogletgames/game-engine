@@ -33,9 +33,9 @@
 #include "window.h"
 
 #if defined(GE_PLATFORM_UNIX)
-    #include "unix/window_unix.h"
+    #include "unix/window.h"
 
-using PlatformWindow = ::GE::priv::WindowUnix;
+using PlatformWindow = ::GE::UNIX::Window;
 #else
     #error "Unsupported platform"
 #endif
