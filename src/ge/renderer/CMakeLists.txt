@@ -5,6 +5,7 @@ set(GE_RENDERER_SRC
     render_command.cpp
     renderer_api.cpp
     renderer.cpp
+    shader_program.cpp
     shader.cpp
     vertex_array.cpp
 )

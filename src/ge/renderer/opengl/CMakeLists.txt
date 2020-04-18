@@ -1,6 +1,7 @@
 set(GE_RENDERER_OPENGL_SRC
     buffers.cpp
     renderer_api.cpp
+    shader_program.cpp
     shader.cpp
     vertex_array.cpp
 )
