@@ -37,6 +37,7 @@
 #include <ge/core/asserts.h>
 #include <ge/core/interface.h>
 #include <ge/core/log.h>
+#include <ge/core/non_copyable.h>
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
 
@@ -56,7 +57,7 @@
 
 namespace GE {
 
-class GE_API FrameworkManager
+class GE_API FrameworkManager: public NonCopyable
 {
 public:
     FrameworkManager() { initialize(); }

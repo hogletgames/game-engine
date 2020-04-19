@@ -33,7 +33,7 @@
 #ifndef GE_WINDOW_INPUT_H_
 #define GE_WINDOW_INPUT_H_
 
-#include <ge/core/core.h>
+#include <ge/core/non_copyable.h>
 #include <ge/window/key_codes.h>
 #include <ge/window/mouse_button_codes.h>
 
@@ -43,17 +43,9 @@
 
 namespace GE {
 
-class GE_API Input
+class GE_API Input: public NonCopyable
 {
 public:
-    Input(const Input& other) = delete;
-    Input(Input&& other) = delete;
-
-    Input& operator=(const Input& other) = delete;
-    Input& operator=(Input&& other) = delete;
-
-    virtual ~Input() = default;
-
     static void initialize();
     static void shutdown();
 

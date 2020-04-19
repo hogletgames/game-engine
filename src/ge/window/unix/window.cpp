@@ -83,25 +83,6 @@ Window::Window(properties_t prop)
     GE_CORE_TRACE("Window '{}' created", m_prop.title);
 }
 
-Window::Window(Window&& other) noexcept
-{
-    *this = std::move(other);
-}
-
-Window& Window::operator=(Window&& other) noexcept
-{
-    if (this == &other) {
-        return *this;
-    }
-
-    m_window = std::exchange(other.m_window, nullptr);
-    m_gl_contex = std::exchange(other.m_gl_contex, nullptr);
-    m_event_callback = std::move(other.m_event_callback);
-    m_prop = std::exchange(other.m_prop, properties_t{});
-    m_vsync = std::exchange(other.m_vsync, true);
-    return *this;
-}
-
 Window::~Window()
 {
     if (m_gl_contex != nullptr) {

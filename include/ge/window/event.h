@@ -36,7 +36,7 @@
 #include <functional>
 #include <iostream>
 
-#include <ge/core/core.h>
+#include <ge/core/interface.h>
 
 #define DECLARE_EVENT_TYPE(type)                                                 \
     static ::GE::Event::Type getStaticType() { return ::GE::Event::Type::type; } \
@@ -48,7 +48,7 @@ namespace GE {
 template<typename EventType>
 using EventCallback = std::function<bool(const EventType&)>;
 
-class GE_API Event
+class GE_API Event: public Interface
 {
 public:
     enum class Type : uint8_t
@@ -67,23 +67,6 @@ public:
         WINDOW_RESIZED,
         WINDOW_CLOSED
     };
-
-    Event() = default;
-    Event(const Event& other) = delete;
-    Event(Event&& other) noexcept { *this = std::move(other); }
-
-    Event& operator=(const Event& other) = delete;
-
-    Event& operator=(Event&& other) noexcept
-    {
-        if (this != &other) {
-            m_handled = std::exchange(other.m_handled, false);
-        }
-
-        return *this;
-    }
-
-    virtual ~Event() = default;
 
     virtual Type getType() const = 0;
     virtual const char* getName() const = 0;
@@ -121,7 +104,7 @@ private:
 
 } // namespace GE
 
-inline std::ostream& operator<<(std::ostream& os, const GE::Event& event)
+inline std::ostream& operator<<(std::ostream& os, const ::GE::Event& event)
 {
     return os << event.toString();
 }
