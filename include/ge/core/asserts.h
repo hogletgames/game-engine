@@ -36,8 +36,10 @@
 #include <ge/core/log.h>
 
 #if !defined(GE_DISABLE_ASSERTS)
-    #define GE_CORE_ASSERT(x, ...) ::GE::core_assert(x, #x, __VA_ARGS__)
-    #define GE_ASSERT(x, ...)      ::GE::client_assert(x, #x, __VA_ARGS__)
+    #define GE_CORE_ASSERT(x, ...) \
+        ::GE::core_assert(x, #x, __FILE__, __LINE__, __VA_ARGS__)
+
+    #define GE_ASSERT(x, ...) ::GE::client_assert(x, #x, __FILE__, __LINE__, __VA_ARGS__)
 #else
     #define GE_CORE_ASSERT(x, ...) static_cast<void>(x)
     #define GE_ASSERT(x, ...)      static_cast<void>(x)
@@ -46,21 +48,23 @@
 namespace GE {
 
 template<typename... Args>
-inline void core_assert(bool statement, const char* str, Args... args)
+inline void core_assert(bool expr, const char* expr_str, const char* file, size_t line,
+                        Args&&... args)
 {
-    if (!statement) {
-        GE_CORE_CRIT("assert failed: '{}'", str);
-        GE_CORE_CRIT(args...);
+    if (!expr) {
+        GE_CORE_CRIT("assert failed: {}:{}: '{}'", file, line, expr_str);
+        GE_CORE_CRIT(std::forward<Args>(args)...);
         std::terminate();
     }
 }
 
 template<typename... Args>
-inline void client_assert(bool statement, const char* str, Args... args)
+inline void client_assert(bool expr, const char* expr_str, const char* file, size_t line,
+                          Args&&... args)
 {
-    if (!statement) {
-        GE_CRIT("assert failed: '{}'", str);
-        GE_CRIT(args...);
+    if (!expr) {
+        GE_CRIT("assert failed: {}:{}: '{}'", file, line, expr_str);
+        GE_CRIT(std::forward<Args>(args)...);
         std::terminate();
     }
 }
