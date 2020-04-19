@@ -41,11 +41,11 @@ using PlatformInput = ::GE::UNIX::Input;
 
 namespace GE {
 
-std::unique_ptr<Input> Input::m_impl{nullptr};
+Scoped<Input> Input::m_impl{nullptr};
 
 void Input::initialize()
 {
-    m_impl = std::make_unique<PlatformInput>();
+    m_impl = makeScoped<PlatformInput>();
     m_impl->initializeImpl();
 }
 

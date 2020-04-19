@@ -39,8 +39,8 @@
 
 namespace GE {
 
-std::shared_ptr<spdlog::logger> Log::m_core_logger;
-std::shared_ptr<spdlog::logger> Log::m_client_logger;
+Shared<spdlog::logger> Log::m_core_logger;
+Shared<spdlog::logger> Log::m_client_logger;
 
 void Log::initialize()
 {

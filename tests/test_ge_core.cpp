@@ -61,10 +61,10 @@ class LayerStackTest: public ::testing::Test
 protected:
     void SetUp() override
     {
-        layer_1 = std::make_shared<LayerMock>();
-        layer_2 = std::make_shared<LayerMock>();
-        overlay_1 = std::make_shared<LayerMock>();
-        overlay_2 = std::make_shared<LayerMock>();
+        layer_1 = GE::makeShared<LayerMock>();
+        layer_2 = GE::makeShared<LayerMock>();
+        overlay_1 = GE::makeShared<LayerMock>();
+        overlay_2 = GE::makeShared<LayerMock>();
 
         layer_stack.pushLayer(layer_1);
         layer_stack.pushOverlay(overlay_1);
@@ -79,15 +79,15 @@ protected:
 
     GE::LayerStack layer_stack;
 
-    std::shared_ptr<LayerMock> layer_1;
-    std::shared_ptr<LayerMock> layer_2;
-    std::shared_ptr<LayerMock> overlay_1;
-    std::shared_ptr<LayerMock> overlay_2;
+    GE::Shared<LayerMock> layer_1;
+    GE::Shared<LayerMock> layer_2;
+    GE::Shared<LayerMock> overlay_1;
+    GE::Shared<LayerMock> overlay_2;
 };
 
 TEST_F(LayerStackTest, ReplaceLayerForwardOrder)
 {
-    auto layer_3 = std::make_shared<LayerMock>();
+    auto layer_3 = GE::makeShared<LayerMock>();
 
     EXPECT_CALL(*layer_3, onDetach());
 
@@ -111,7 +111,7 @@ TEST_F(LayerStackTest, ReplaceLayerForwardOrder)
 
 TEST_F(LayerStackTest, ReplaceLayerReverseOrder)
 {
-    auto layer_3 = std::make_shared<LayerMock>();
+    auto layer_3 = GE::makeShared<LayerMock>();
 
     EXPECT_CALL(*layer_3, onDetach());
 
@@ -135,7 +135,7 @@ TEST_F(LayerStackTest, ReplaceLayerReverseOrder)
 
 TEST_F(LayerStackTest, ReplaceOverlayForwardOrder)
 {
-    auto overlay_3 = std::make_shared<LayerMock>();
+    auto overlay_3 = GE::makeShared<LayerMock>();
 
     EXPECT_CALL(*overlay_3, onDetach());
 
@@ -159,7 +159,7 @@ TEST_F(LayerStackTest, ReplaceOverlayForwardOrder)
 
 TEST_F(LayerStackTest, ReplaceOverlayReverseOrder)
 {
-    auto overlay_3 = std::make_shared<LayerMock>();
+    auto overlay_3 = GE::makeShared<LayerMock>();
 
     EXPECT_CALL(*overlay_3, onDetach());
 

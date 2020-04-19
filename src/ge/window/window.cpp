@@ -42,9 +42,9 @@ using PlatformWindow = ::GE::UNIX::Window;
 
 namespace GE {
 
-std::unique_ptr<Window> Window::create(properties_t prop)
+Scoped<Window> Window::create(properties_t prop)
 {
-    return std::make_unique<PlatformWindow>(std::move(prop));
+    return makeScoped<PlatformWindow>(std::move(prop));
 }
 
 void Window::initialize()
