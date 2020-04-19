@@ -59,8 +59,8 @@ public:
 
     void run();
 
-    void pushLayer(std::shared_ptr<Layer> layer);
-    void pushOverlay(std::shared_ptr<Layer> overlay);
+    void pushLayer(Shared<Layer> layer);
+    void pushOverlay(Shared<Layer> overlay);
 
     const Window& getWindow() { return *m_window; }
     void* getNativeWindow() { return m_window->getNativeWindow(); }
@@ -73,8 +73,8 @@ private:
 
     static Application* m_instance;
 
-    std::unique_ptr<Window> m_window;
-    std::shared_ptr<ImGuiLayer> m_imgui_layer;
+    Scoped<Window> m_window;
+    Shared<ImGuiLayer> m_imgui_layer;
     LayerStack m_layer_stack;
     bool m_runnign{true};
 };

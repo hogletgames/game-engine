@@ -68,12 +68,12 @@ public:
     static void initialize();
     static void shutdown();
 
-    static std::shared_ptr<spdlog::logger> getCoreLogger() { return m_core_logger; }
-    static std::shared_ptr<spdlog::logger> getClientLogger() { return m_client_logger; }
+    static Shared<spdlog::logger> getCoreLogger() { return m_core_logger; }
+    static Shared<spdlog::logger> getClientLogger() { return m_client_logger; }
 
 private:
-    static std::shared_ptr<spdlog::logger> m_core_logger;
-    static std::shared_ptr<spdlog::logger> m_client_logger;
+    static Shared<spdlog::logger> m_core_logger;
+    static Shared<spdlog::logger> m_client_logger;
 };
 
 } // namespace GE

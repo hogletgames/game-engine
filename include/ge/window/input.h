@@ -109,7 +109,7 @@ protected:
     virtual float getMousePosYImpl() const = 0;
 
 private:
-    static std::unique_ptr<Input> m_impl;
+    static Scoped<Input> m_impl;
 };
 
 } // namespace GE

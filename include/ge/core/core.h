@@ -34,6 +34,7 @@
 #define GE_CORE_CORE_H_
 
 #include <functional>
+#include <memory>
 
 #if defined(GE_PLATFORM_WINDOWS)
     #if !defined(GE_STATIC)
@@ -47,5 +48,27 @@
 
 // NOLINTNEXTLINE
 #define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+namespace GE {
+
+template<typename Type>
+using Scoped = std::unique_ptr<Type>;
+
+template<typename Type>
+using Shared = std::shared_ptr<Type>;
+
+template<typename Type, typename... Args>
+Scoped<Type> makeScoped(Args&&... args)
+{
+    return std::make_unique<Type>(std::forward<Args>(args)...);
+}
+
+template<typename Type, typename... Args>
+Shared<Type> makeShared(Args&&... args)
+{
+    return std::make_shared<Type>(std::forward<Args>(args)...);
+}
+
+} // namespace GE
 
 #endif // GE_CORE_CORE_H_

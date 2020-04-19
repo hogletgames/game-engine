@@ -46,7 +46,7 @@ class Layer;
 class GE_API LayerStack
 {
 public:
-    using Container = std::deque<std::shared_ptr<Layer>>;
+    using Container = std::deque<Shared<Layer>>;
     using iterator = typename Container::iterator;
     using reverse_iterator = typename Container::reverse_iterator;
     using const_iterator = typename Container::const_iterator;
@@ -65,11 +65,11 @@ public:
 
     ~LayerStack();
 
-    void pushLayer(std::shared_ptr<Layer> layer);
-    void popLayer(const std::shared_ptr<Layer>& layer);
+    void pushLayer(Shared<Layer> layer);
+    void popLayer(const Shared<Layer>& layer);
 
-    void pushOverlay(std::shared_ptr<Layer> overlay);
-    void popOverlay(const std::shared_ptr<Layer>& overlay);
+    void pushOverlay(Shared<Layer> overlay);
+    void popOverlay(const Shared<Layer>& overlay);
 
     iterator begin() { return m_stack.begin(); }
     iterator end() { return m_stack.end(); }

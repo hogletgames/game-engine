@@ -62,13 +62,13 @@ LayerStack::~LayerStack()
     }
 }
 
-void LayerStack::pushLayer(std::shared_ptr<Layer> layer)
+void LayerStack::pushLayer(Shared<Layer> layer)
 {
     m_stack.emplace(std::next(m_stack.begin(), m_last_layer_idx), std::move(layer));
     m_last_layer_idx++;
 }
 
-void LayerStack::popLayer(const std::shared_ptr<Layer>& layer)
+void LayerStack::popLayer(const Shared<Layer>& layer)
 {
     auto layer_end = std::next(m_stack.begin(), m_last_layer_idx);
     auto layer_in_stack = std::find(m_stack.begin(), layer_end, layer);
@@ -80,12 +80,12 @@ void LayerStack::popLayer(const std::shared_ptr<Layer>& layer)
     }
 }
 
-void LayerStack::pushOverlay(std::shared_ptr<Layer> overlay)
+void LayerStack::pushOverlay(Shared<Layer> overlay)
 {
     m_stack.emplace_back(std::move(overlay));
 }
 
-void LayerStack::popOverlay(const std::shared_ptr<Layer>& overlay)
+void LayerStack::popOverlay(const Shared<Layer>& overlay)
 {
     auto overlay_begin = std::next(m_stack.begin(), m_last_layer_idx);
     auto overlay_in_stack = std::find(overlay_begin, m_stack.end(), overlay);

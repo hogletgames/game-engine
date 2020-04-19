@@ -49,7 +49,7 @@ Application::Application()
     m_instance = this;
     m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
 
-    m_imgui_layer = std::make_shared<ImGuiLayer>();
+    m_imgui_layer = makeShared<ImGuiLayer>();
     pushOverlay(m_imgui_layer);
 }
 
@@ -71,13 +71,13 @@ void Application::run()
     }
 }
 
-void Application::pushLayer(std::shared_ptr<Layer> layer)
+void Application::pushLayer(Shared<Layer> layer)
 {
     layer->onAttach();
     m_layer_stack.pushLayer(std::move(layer));
 }
 
-void Application::pushOverlay(std::shared_ptr<Layer> overlay)
+void Application::pushOverlay(Shared<Layer> overlay)
 {
     overlay->onAttach();
     m_layer_stack.pushOverlay(std::move(overlay));

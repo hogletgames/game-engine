@@ -67,7 +67,7 @@ public:
         {}
     };
 
-    static std::unique_ptr<Window> create(properties_t properties = properties_t{});
+    static Scoped<Window> create(properties_t properties = properties_t{});
     static void initialize();
     static void shutdown();
 
