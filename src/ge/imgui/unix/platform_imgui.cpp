@@ -79,13 +79,8 @@ void PlatformImGui::render()
     ImGuiIO& io = ImGui::GetIO();
     auto width = static_cast<int32_t>(io.DisplaySize.x);
     auto height = static_cast<int32_t>(io.DisplaySize.y);
-    ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
-
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     RenderCommand::setViewport(0, 0, width, height);
-    GLCall(glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w));
-    GLCall(glClear(GL_COLOR_BUFFER_BIT));
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
