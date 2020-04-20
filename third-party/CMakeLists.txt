@@ -33,3 +33,6 @@ target_include_directories(imgui-examples SYSTEM PRIVATE
 target_compile_definitions(imgui-examples PRIVATE
     -DIMGUI_IMPL_OPENGL_LOADER_GLAD
 )
+
+# docopt
+add_subdirectory(docopt)

@@ -13,3 +13,6 @@
 [submodule "third-party/glm"]
 	path = third-party/glm
 	url = https://github.com/hogletgames/glm.git
+[submodule "third-party/docopt"]
+	path = third-party/docopt
+	url = https://github.com/hogletgames/docopt.cpp.git
