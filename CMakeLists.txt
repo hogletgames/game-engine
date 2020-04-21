@@ -102,8 +102,9 @@ install(DIRECTORY include/ge
 include_directories(include)
 include_directories(SYSTEM 
     third-party/docopt
-    third-party/spdlog/include
     third-party/glm
+    third-party/imgui
+    third-party/spdlog/include
 )
 
 # Subdirectories

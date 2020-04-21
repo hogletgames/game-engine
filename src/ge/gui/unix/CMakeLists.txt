@@ -9,7 +9,7 @@ target_link_libraries(ge-gui-unix PUBLIC
     SDL2
 )
 target_include_directories(ge-gui-unix SYSTEM PRIVATE
-    ${GE_IMGUI_DIR}/examples
     ${CMAKE_SOURCE_DIR}/third-party/glad/include
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/examples
     ${CMAKE_SOURCE_DIR}/third-party/SDL2/include
 )
