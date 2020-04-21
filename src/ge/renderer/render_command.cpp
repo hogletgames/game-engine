@@ -30,57 +30,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#include "render_command.h"
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include "ge/core/log.h"
 
-union SDL_Event;
-struct SDL_Window;
+namespace GE {
 
-namespace GE::UNIX {
+Scoped<RendererAPI> RenderCommand::m_renderer_api{nullptr};
 
-class Window: public ::GE::Window
+void RenderCommand::initialize(RendererAPI::API api)
 {
-public:
-    explicit Window(properties_t prop);
-    ~Window() override;
+    GE_CORE_TRACE("Initialize Renderer Command");
+    m_renderer_api = RendererAPI::create(api);
+}
 
-    static void initialize();
-    static void shutdown();
+void RenderCommand::shutdown()
+{
+    GE_CORE_TRACE("Shutdown Renderer Command");
+    m_renderer_api.reset();
+}
 
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
+void RenderCommand::clear(const glm::vec4& color)
+{
+    m_renderer_api->clear(color);
+}
 
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
+void RenderCommand::draw(const Shared<VertexArray>& vertex_array)
+{
+    vertex_array->bind();
+    m_renderer_api->draw(vertex_array);
+}
 
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
+void RenderCommand::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    m_renderer_api->setViewport(x, y, width, height);
+}
 
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
-};
-
-} // namespace GE::UNIX
-
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+} // namespace GE

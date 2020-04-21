@@ -34,6 +34,7 @@
 
 #include "ge/application.h"
 #include "ge/core/log.h"
+#include "ge/renderer/render_command.h"
 #include "ge/window/input.h"
 #include "ge/window/key_event.h"
 #include "ge/window/mouse_event.h"
@@ -246,10 +247,9 @@ bool ImGuiLayer::onMouseButtonReleased(const MouseButtonReleasedEvent& event)
 bool ImGuiLayer::onWindowResized(const WindowResizedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
-    ImVec2 window_size = ImVec2(event.getWidth(), event.getHeight());
-    io.DisplaySize = window_size;
+    io.DisplaySize = ImVec2(event.getWidth(), event.getHeight());
     io.DisplayFramebufferScale = ImVec2{1.0f, 1.0f};
-    PlatformImGui::updateViewport(window_size);
+    RenderCommand::setViewport(0, 0, event.getWidth(), event.getHeight());
     return false;
 }
 

@@ -37,10 +37,21 @@
 #include <ge/core/asserts.h>
 #include <ge/core/interface.h>
 #include <ge/core/log.h>
+#include <ge/core/non_copyable.h>
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
 
 #include <ge/imgui/imgui_layer.h>
+
+#include <ge/renderer/buffer_layout.h>
+#include <ge/renderer/buffers.h>
+#include <ge/renderer/graphics_context.h>
+#include <ge/renderer/render_command.h>
+#include <ge/renderer/renderer.h>
+#include <ge/renderer/renderer_api.h>
+#include <ge/renderer/shader.h>
+#include <ge/renderer/shader_program.h>
+#include <ge/renderer/vertex_array.h>
 
 #include <ge/window/input.h>
 #include <ge/window/key_codes.h>
@@ -50,16 +61,16 @@
 #include <ge/window/window.h>
 #include <ge/window/window_event.h>
 
-#define GE_CREATE_FW_MANAGER() ::GE::FrameworkManager fw##__FILE__##__LINE__
-#define GE_INITIALIZE()        ::GE::FrameworkManager::initialize()
-#define GE_SHUTDOWN()          ::GE::FrameworkManager::shutdown()
+#define GE_CREATE_FW_MANAGER(api) ::GE::FrameworkManager fw##__FILE__##__LINE__(api)
+#define GE_INITIALIZE(api)        ::GE::FrameworkManager::initialize(api)
+#define GE_SHUTDOWN()             ::GE::FrameworkManager::shutdown()
 
 namespace GE {
 
-class GE_API FrameworkManager
+class GE_API FrameworkManager: public NonCopyable
 {
 public:
-    FrameworkManager() { initialize(); }
+    explicit FrameworkManager(RendererAPI::API api) { initialize(api); }
     FrameworkManager(const FrameworkManager& other) = delete;
     FrameworkManager(FrameworkManager&& other) = delete;
 
@@ -68,7 +79,7 @@ public:
 
     ~FrameworkManager() { shutdown(); } // NOLINT
 
-    static void initialize();
+    static void initialize(RendererAPI::API api);
     static void shutdown();
 
 private:

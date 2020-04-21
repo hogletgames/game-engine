@@ -30,57 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#ifndef GE_CORE_NON_COPYABLE_H_
+#define GE_CORE_NON_COPYABLE_H_
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include <ge/core/core.h>
 
-union SDL_Event;
-struct SDL_Window;
+namespace GE {
 
-namespace GE::UNIX {
-
-class Window: public ::GE::Window
+class GE_API NonCopyable
 {
 public:
-    explicit Window(properties_t prop);
-    ~Window() override;
-
-    static void initialize();
-    static void shutdown();
-
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
-
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
+    NonCopyable() = default;
+    NonCopyable(const NonCopyable& other) = delete;
+    NonCopyable(NonCopyable&& other) noexcept = default;
+    NonCopyable& operator=(const NonCopyable& other) = delete;
+    NonCopyable& operator=(NonCopyable&& other) noexcept = default;
+    virtual ~NonCopyable() = default;
 };
 
-} // namespace GE::UNIX
+} // namespace GE
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+#endif // GE_CORE_NON_COPYABLE_H_

@@ -48,8 +48,6 @@ public:
 
     static void newFrame();
     static void render();
-
-    static void updateViewport(const ImVec2& window_size);
 };
 
 } // namespace GE::UNIX

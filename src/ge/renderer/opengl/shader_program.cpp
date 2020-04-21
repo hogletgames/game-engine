@@ -30,66 +30,83 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "platform_imgui.h"
+#include "shader_program.h"
 #include "opengl_utils.h"
-#include "unix_utils.h"
 
-#include "ge/application.h"
-#include "ge/core/log.h"
-#include "ge/renderer/render_command.h"
-
-#include <SDL.h>
 #include <glad/glad.h>
-#include <imgui.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_sdl.h>
 
-#define GLSL_VERSION "#version 450"
+namespace GE::OpenGL {
 
-namespace GE::UNIX {
-
-void PlatformImGui::initialize()
+ShaderProgram::ShaderProgram()
 {
-    GE_CORE_TRACE("Initialize Unix::PlatformImGui");
-
-    void* window = Application::instance()->getNativeWindow();
-    void* context = Application::instance()->getNativeContext();
-
-    ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context);
-    ImGui_ImplOpenGL3_Init(GLSL_VERSION);
+    GLCall(m_id = glCreateProgram());
 }
 
-void PlatformImGui::shutdown()
+ShaderProgram::~ShaderProgram()
 {
-    GE_CORE_TRACE("Shutdown Unix::PlatformImGui");
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
+    GLCall(glDeleteProgram(m_id));
 }
 
-void PlatformImGui::newFrame()
+void ShaderProgram::addShader(Shared<Shader> shader)
 {
-    void* window = Application::instance()->getNativeWindow();
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));
+    m_shaders.emplace_back(std::move(shader));
 }
 
-void PlatformImGui::render()
+void ShaderProgram::addShaders(std::initializer_list<Shared<Shader>> shaders)
 {
-    ImGuiIO& io = ImGui::GetIO();
-    auto width = static_cast<int32_t>(io.DisplaySize.x);
-    auto height = static_cast<int32_t>(io.DisplaySize.y);
+    std::move(shaders.begin(), shaders.end(), std::back_inserter(m_shaders));
+}
 
-    RenderCommand::setViewport(0, 0, width, height);
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+bool ShaderProgram::link()
+{
+    GE_CORE_ASSERT(!m_shaders.empty(), "There are no shaders to link");
+    GLint status{GL_FALSE};
 
-    if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
-        SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-        SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        SDLCall(SDL_GL_MakeCurrent(backup_current_window, backup_current_context));
+    attachShaders();
+    GLCall(glLinkProgram(m_id));
+    GLCall(glGetProgramiv(m_id, GL_LINK_STATUS, &status));
+
+    if (status == GL_FALSE) {
+        GLint msg_len{};
+        GLCall(glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &msg_len));
+
+        std::vector<GLchar> msg(msg_len);
+        GLCall(glGetProgramInfoLog(m_id, msg_len, nullptr, msg.data()));
+        GE_CORE_ERR("Failed to link shader program: {}", msg.data());
+    }
+
+    detachShaders();
+    clear();
+    return status == GL_FALSE;
+}
+
+void ShaderProgram::clear()
+{
+    m_shaders.clear();
+}
+
+void ShaderProgram::bind() const
+{
+    GLCall(glUseProgram(m_id));
+}
+
+void ShaderProgram::unbind() const
+{
+    GLCall(glUseProgram(0));
+}
+
+void ShaderProgram::attachShaders()
+{
+    for (const auto& shader : m_shaders) {
+        GLCall(glAttachShader(m_id, shader->getNativeID()));
     }
 }
 
-} // namespace GE::UNIX
+void ShaderProgram::detachShaders()
+{
+    for (const auto& shader : m_shaders) {
+        GLCall(glDetachShader(m_id, shader->getNativeID()));
+    }
+}
+
+} // namespace GE::OpenGL

@@ -31,56 +31,37 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#ifndef GE_RENDERER_OPENGL_SHADER_PROGRAM_H_
+#define GE_RENDERER_OPENGL_SHADER_PROGRAM_H_
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include "ge/renderer/shader_program.h"
 
-union SDL_Event;
-struct SDL_Window;
+#include <vector>
 
-namespace GE::UNIX {
+namespace GE::OpenGL {
 
-class Window: public ::GE::Window
+class ShaderProgram: public ::GE::ShaderProgram
 {
 public:
-    explicit Window(properties_t prop);
-    ~Window() override;
+    ShaderProgram();
+    ~ShaderProgram() override;
 
-    static void initialize();
-    static void shutdown();
+    void addShader(Shared<Shader> shader) override;
+    void addShaders(std::initializer_list<Shared<Shader>> shaders) override;
+    bool link() override;
+    void clear() override;
 
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
+    void bind() const override;
+    void unbind() const override;
 
 private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
+    void attachShaders();
+    void detachShaders();
 
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
+    uint32_t m_id{0};
+    std::vector<Shared<Shader>> m_shaders;
 };
 
-} // namespace GE::UNIX
+} // namespace GE::OpenGL
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+#endif // GE_RENDERER_OPENGL_SHADER_PROGRAM_H_

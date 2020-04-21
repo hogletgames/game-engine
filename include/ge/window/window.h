@@ -33,7 +33,7 @@
 #ifndef GE_WINDOW_WINDOW_H_
 #define GE_WINDOW_WINDOW_H_
 
-#include <ge/core/interface.h>
+#include <ge/core/non_copyable.h>
 
 #include <cstdint>
 #include <functional>
@@ -48,7 +48,7 @@ namespace GE {
 
 class Event;
 
-class GE_API Window: public Interface
+class GE_API Window: public NonCopyable
 {
 public:
     using WinEventCallback = std::function<void(Event*)>;
@@ -67,7 +67,6 @@ public:
         {}
     };
 
-    static Scoped<Window> create(properties_t properties = properties_t{});
     static void initialize();
     static void shutdown();
 
@@ -75,11 +74,14 @@ public:
     virtual bool isVSync() const = 0;
 
     virtual void* getNativeWindow() const = 0;
+    virtual void* getNativeContext() const = 0;
     virtual uint32_t getWidth() const = 0;
     virtual uint32_t getHeight() const = 0;
 
     virtual void onUpdate() = 0;
     virtual void setEventCallback(WinEventCallback callback) = 0;
+
+    static Scoped<Window> create(properties_t properties = properties_t{});
 };
 
 } // namespace GE

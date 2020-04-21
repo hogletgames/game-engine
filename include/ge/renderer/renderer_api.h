@@ -30,57 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#ifndef GE_RENDERER_RENDERER_API_H_
+#define GE_RENDERER_RENDERER_API_H_
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include <ge/renderer/vertex_array.h>
 
-union SDL_Event;
-struct SDL_Window;
+#include <glm/glm.hpp>
 
-namespace GE::UNIX {
+#include <iostream>
+#include <memory>
 
-class Window: public ::GE::Window
+#define GE_NONE_API    ::GE::RendererAPI::API::NONE
+#define GE_OPEN_GL_API ::GE::RendererAPI::API::OPEN_GL
+
+namespace GE {
+
+class GE_API RendererAPI: public NonCopyable
 {
 public:
-    explicit Window(properties_t prop);
-    ~Window() override;
-
-    static void initialize();
-    static void shutdown();
-
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
+    enum class API : uint8_t
     {
-        m_event_callback = callback;
-    }
+        NONE = 0,
+        OPEN_GL
+    };
+
+    virtual void clear(const glm::vec4& color) = 0;
+    virtual void draw(const Shared<VertexArray>& vertex_array) = 0;
+    virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
+
+    static API getAPI() { return m_api; }
+    static Scoped<RendererAPI> create(API api);
 
 private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
+    static API m_api;
 };
 
-} // namespace GE::UNIX
+} // namespace GE
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+inline std::ostream& operator<<(std::ostream& os, ::GE::RendererAPI::API api)
+{
+    switch (api) {
+        case GE_NONE_API: return os << "None";
+        case GE_OPEN_GL_API: return os << "OpenGL";
+        default: return os << "Unknown API: " << static_cast<int>(api);
+    }
+}
+
+#endif // GE_RENDERER_RENDERER_API_H_

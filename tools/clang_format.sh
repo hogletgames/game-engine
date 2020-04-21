@@ -2,21 +2,27 @@
 
 CLANG_FORMAT_BIN=clang-format
 EXIT_CODE=0
-FILES=$(ls  examples/*.cpp              \
-            include/ge/*.h              \
-            include/ge/core/*.h         \
-            include/ge/imgui/*.h        \
-            include/ge/window/*.h       \
-            src/ge/*.cpp                \
-            src/ge/core/*.cpp           \
-            src/ge/imgui/*.cpp          \
-            src/ge/imgui/unix/*.h       \
-            src/ge/imgui/unix/*.cpp     \
-            src/ge/utils/*.h            \
-            src/ge/window/*.cpp         \
-            src/ge/window/unix/*.h      \
-            src/ge/window/unix/*.cpp    \
-            tests/*.cpp                 \
+FILES=$(ls  examples/*.cpp                              \
+            include/ge/*.h                              \
+            include/ge/core/*.h                         \
+            include/ge/imgui/*.h                        \
+            include/ge/renderer/*.h                     \
+            include/ge/window/*.h                       \
+            src/ge/*.cpp                                \
+            src/ge/core/*.cpp                           \
+            src/ge/imgui/*.cpp                          \
+            src/ge/imgui/unix/*.h                       \
+            src/ge/imgui/unix/*.cpp                     \
+            src/ge/renderer/*.cpp                       \
+            src/ge/renderer/opengl/*.h                  \
+            src/ge/renderer/opengl/*.cpp                \
+            src/ge/renderer/unix/*.h                    \
+            src/ge/renderer/unix/*.cpp                  \
+            src/ge/utils/*.h                            \
+            src/ge/window/*.cpp                         \
+            src/ge/window/unix/*.h                      \
+            src/ge/window/unix/*.cpp                    \
+            tests/*.cpp                                 \
         )
 
 while [ ! -z $1 ]; do

@@ -31,56 +31,68 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#ifndef GE_RENDERER_OPENGL_BUFFERS_H_
+#define GE_RENDERER_OPENGL_BUFFERS_H_
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include "ge/renderer/buffers.h"
 
-union SDL_Event;
-struct SDL_Window;
+namespace GE::OpenGL {
 
-namespace GE::UNIX {
-
-class Window: public ::GE::Window
+class BufferBase: public NonCopyable
 {
 public:
-    explicit Window(properties_t prop);
-    ~Window() override;
-
-    static void initialize();
-    static void shutdown();
-
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
+    enum class Type : uint8_t
     {
-        m_event_callback = callback;
-    }
+        NONE = 0,
+        VERTEX,
+        INDEX
+    };
+
+    BufferBase(Type type, void* data, uint32_t size);
+    ~BufferBase() override;
+
+    void bindBuffer() const;
+    void unbindBuffer() const;
 
 private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
+    uint32_t m_gl_type{0};
+    uint32_t m_id{0};
 };
 
-} // namespace GE::UNIX
+class VertexBuffer: public ::GE::VertexBuffer, public BufferBase
+{
+public:
+    VertexBuffer(float* vertices, uint32_t size)
+        : BufferBase{Type::VERTEX, vertices, size}
+    {}
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+    void bind() const override { bindBuffer(); }
+    void unbind() const override { unbindBuffer(); }
+
+    void setLayout(const BufferLayout& layout) override { m_layout = layout; }
+    const BufferLayout& getLayout() const override { return m_layout; }
+
+private:
+    BufferLayout m_layout;
+};
+
+class IndexBuffer: public ::GE::IndexBuffer, public BufferBase
+{
+public:
+    IndexBuffer(uint32_t* indexes, uint32_t count)
+        : BufferBase(Type::INDEX, indexes, sizeof(*indexes) * count)
+        , m_count{count}
+    {}
+
+    void bind() const override { bindBuffer(); }
+    void unbind() const override { unbindBuffer(); }
+
+    uint32_t getCount() const override { return m_count; }
+
+private:
+    uint32_t m_count{};
+};
+
+} // namespace GE::OpenGL
+
+#endif // GE_RENDERER_OPENGL_BUFFERS_H_

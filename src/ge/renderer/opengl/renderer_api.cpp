@@ -30,57 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#include "renderer_api.h"
+#include "opengl_utils.h"
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include <glad/glad.h>
 
-union SDL_Event;
-struct SDL_Window;
+namespace GE::OpenGL {
 
-namespace GE::UNIX {
-
-class Window: public ::GE::Window
+void RendererAPI::clear(const glm::vec4& color)
 {
-public:
-    explicit Window(properties_t prop);
-    ~Window() override;
+    GLCall(glClearColor(color.r, color.g, color.b, color.a));
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+}
 
-    static void initialize();
-    static void shutdown();
+void RendererAPI::draw(const Shared<VertexArray>& vertex_array)
+{
+    GLsizei count = vertex_array->getIndexBuffer()->getCount();
+    GLCall(glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr));
+}
 
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
+void RendererAPI::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    GLCall(glViewport(x, y, width, height));
+}
 
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
-
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
-};
-
-} // namespace GE::UNIX
-
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+} // namespace GE::OpenGL

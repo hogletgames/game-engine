@@ -30,57 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#include "graphics_context.h"
+#include "renderer.h"
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include "ge/core/asserts.h"
 
-union SDL_Event;
-struct SDL_Window;
+#if defined(GE_PLATFORM_UNIX)
+    #include "unix/opengl_context.h"
+using OpenGLContext = ::GE::UNIX::OpenGLContext;
+#else
+    #error "Unsupported platform"
+#endif
 
-namespace GE::UNIX {
+namespace GE {
 
-class Window: public ::GE::Window
+Scoped<GraphicsContext> GraphicsContext::create(void* window)
 {
-public:
-    explicit Window(properties_t prop);
-    ~Window() override;
-
-    static void initialize();
-    static void shutdown();
-
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
+    switch (Renderer::getAPI()) {
+        case GE_OPEN_GL_API: return makeScoped<OpenGLContext>(window);
+        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
     }
 
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
+    return nullptr;
+}
 
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
-};
-
-} // namespace GE::UNIX
-
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+} // namespace GE

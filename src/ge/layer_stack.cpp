@@ -37,24 +37,6 @@
 
 namespace GE {
 
-LayerStack::LayerStack(LayerStack&& other) noexcept(
-    std::is_nothrow_move_assignable<Container>::value)
-{
-    *this = std::move(other);
-}
-
-LayerStack& LayerStack::operator=(LayerStack&& other) noexcept(
-    std::is_nothrow_move_assignable<Container>::value)
-{
-    if (this == &other) {
-        return *this;
-    }
-
-    m_stack = std::move(other.m_stack);
-    m_last_layer_idx = std::exchange(other.m_last_layer_idx, 0);
-    return *this;
-}
-
 LayerStack::~LayerStack()
 {
     for (auto& layer : m_stack) {

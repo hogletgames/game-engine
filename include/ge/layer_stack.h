@@ -37,7 +37,6 @@
 
 #include <deque>
 #include <memory>
-#include <type_traits>
 
 namespace GE {
 
@@ -51,17 +50,6 @@ public:
     using reverse_iterator = typename Container::reverse_iterator;
     using const_iterator = typename Container::const_iterator;
     using const_reverse_iterator = typename Container::const_reverse_iterator;
-
-    LayerStack() = default;
-    LayerStack(const LayerStack& other) = default;
-
-    LayerStack(LayerStack&& other) noexcept(
-        std::is_nothrow_move_assignable<Container>::value);
-
-    LayerStack& operator=(const LayerStack& other) = default;
-
-    LayerStack& operator=(LayerStack&& other) noexcept(
-        std::is_nothrow_move_assignable<Container>::value);
 
     ~LayerStack();
 

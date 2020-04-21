@@ -30,57 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#ifndef GE_RENDERER_BUFFERS_H_
+#define GE_RENDERER_BUFFERS_H_
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include <ge/core/non_copyable.h>
+#include <ge/renderer/buffer_layout.h>
 
-union SDL_Event;
-struct SDL_Window;
+#include <memory>
 
-namespace GE::UNIX {
+namespace GE {
 
-class Window: public ::GE::Window
+class GE_API VertexBuffer: public NonCopyable
 {
 public:
-    explicit Window(properties_t prop);
-    ~Window() override;
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
-    static void initialize();
-    static void shutdown();
+    virtual void setLayout(const BufferLayout& layout) = 0;
+    virtual const BufferLayout& getLayout() const = 0;
 
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
-
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
+    static Scoped<VertexBuffer> create(float* vertices, uint32_t size);
 };
 
-} // namespace GE::UNIX
+class GE_API IndexBuffer: public NonCopyable
+{
+public:
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+    virtual uint32_t getCount() const = 0;
+
+    static Scoped<IndexBuffer> create(uint32_t* indexes, uint32_t count);
+};
+
+} // namespace GE
+
+#endif // GE_RENDERER_BUFFERS_H_

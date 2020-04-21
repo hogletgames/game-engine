@@ -33,7 +33,7 @@
 #ifndef GE_APPLICATION_H_
 #define GE_APPLICATION_H_
 
-#include <ge/core/core.h>
+#include <ge/core/interface.h>
 #include <ge/layer_stack.h>
 #include <ge/window/window.h>
 
@@ -45,18 +45,12 @@ class Event;
 class ImGuiLayer;
 class WindowClosedEvent;
 
-class GE_API Application
+class GE_API Application: public NonCopyable
 {
-public:
+protected:
     Application();
-    Application(const Application& other) = delete;
-    Application(Application&& other) = delete;
 
-    Application& operator=(const Application& other) = delete;
-    Application& operator=(Application&& other) = delete;
-
-    virtual ~Application() = default;
-
+public:
     void run();
 
     void pushLayer(Shared<Layer> layer);
@@ -64,6 +58,7 @@ public:
 
     const Window& getWindow() { return *m_window; }
     void* getNativeWindow() { return m_window->getNativeWindow(); }
+    void* getNativeContext() { return m_window->getNativeContext(); }
 
     static Application* instance() { return m_instance; }
 

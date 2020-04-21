@@ -30,57 +30,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#include "buffers.h"
+#include "opengl_utils.h"
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include <glad/glad.h>
 
-union SDL_Event;
-struct SDL_Window;
+namespace {
 
-namespace GE::UNIX {
+using BufferType = ::GE::OpenGL::BufferBase::Type;
 
-class Window: public ::GE::Window
+GLenum toGLBufferType(BufferType type)
 {
-public:
-    explicit Window(properties_t prop);
-    ~Window() override;
-
-    static void initialize();
-    static void shutdown();
-
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
+    switch (type) {
+        case BufferType::VERTEX: return GL_ARRAY_BUFFER;
+        case BufferType::INDEX: return GL_ELEMENT_ARRAY_BUFFER;
+        default: break;
     }
 
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
+    GE_CORE_ASSERT(false, "Unknown OpenGL buffer type: {}", static_cast<int>(type));
+    return 0;
+}
 
-    static bool m_initialized;
+} // namespace
 
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
+namespace GE::OpenGL {
 
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
-};
+BufferBase::BufferBase(Type type, void* data, uint32_t size)
+    : m_gl_type{toGLBufferType(type)}
+{
+    GE_CORE_ASSERT(m_gl_type, "Unknown buffer type");
+    GLCall(glCreateBuffers(1, &m_id));
+    GLCall(glBindBuffer(m_gl_type, m_id));
+    GLCall(glBufferData(m_gl_type, size, data, GL_STATIC_DRAW));
+}
 
-} // namespace GE::UNIX
+BufferBase::~BufferBase()
+{
+    GLCall(glDeleteBuffers(1, &m_id));
+}
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+void BufferBase::bindBuffer() const
+{
+    GLCall(glBindBuffer(m_gl_type, m_id));
+}
+
+void BufferBase::unbindBuffer() const
+{
+    GLCall(glBindBuffer(m_gl_type, 0));
+}
+
+} // namespace GE::OpenGL

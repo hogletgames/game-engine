@@ -30,57 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#include "renderer.h"
+#include "render_command.h"
+#include "vertex_array.h"
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include "ge/core/log.h"
 
-union SDL_Event;
-struct SDL_Window;
+namespace GE {
 
-namespace GE::UNIX {
-
-class Window: public ::GE::Window
+void Renderer::initialize(RendererAPI::API api)
 {
-public:
-    explicit Window(properties_t prop);
-    ~Window() override;
+    GE_CORE_TRACE("Initialize Renderer");
+    RenderCommand::initialize(api);
+}
 
-    static void initialize();
-    static void shutdown();
+void Renderer::shutdown()
+{
+    GE_CORE_TRACE("Shutdown Renderer");
+    RenderCommand::shutdown();
+}
 
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
+void Renderer::beginScene() {}
 
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
+void Renderer::endScene() {}
 
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
+void Renderer::submit(const Shared<VertexArray>& vertex_array)
+{
+    RenderCommand::draw(vertex_array);
+}
 
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
-};
-
-} // namespace GE::UNIX
-
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+} // namespace GE

@@ -31,56 +31,21 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_WINDOW_UNIX_WINDOW_H_
-#define GE_WINDOW_UNIX_WINDOW_H_
+#ifndef GE_RENDERER_OPENGL_RENDERER_API_H_
+#define GE_RENDERER_OPENGL_RENDERER_API_H_
 
-#include "ge/renderer/graphics_context.h"
-#include "ge/window/window.h"
+#include "ge/renderer/renderer_api.h"
 
-union SDL_Event;
-struct SDL_Window;
+namespace GE::OpenGL {
 
-namespace GE::UNIX {
-
-class Window: public ::GE::Window
+class RendererAPI: public ::GE::RendererAPI
 {
 public:
-    explicit Window(properties_t prop);
-    ~Window() override;
-
-    static void initialize();
-    static void shutdown();
-
-    void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
-
-    void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
-    uint32_t getWidth() const override { return m_prop.width; }
-    uint32_t getHeight() const override { return m_prop.height; }
-
-    void onUpdate() override;
-    void setEventCallback(WinEventCallback callback) override
-    {
-        m_event_callback = callback;
-    }
-
-private:
-    void pollEvents();
-    void onSDLMouseEvent(const SDL_Event& sdl_event);
-    void onSDLKeyEvent(const SDL_Event& sdl_event);
-    void onSDLWindowEvent(const SDL_Event& sdl_event);
-
-    static bool m_initialized;
-
-    SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
-
-    WinEventCallback m_event_callback;
-    properties_t m_prop;
-    bool m_vsync{true};
+    void clear(const glm::vec4& color) override;
+    void draw(const Shared<VertexArray>& vertex_array) override;
+    void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 };
 
-} // namespace GE::UNIX
+} // namespace GE::OpenGL
 
-#endif // GE_WINDOW_UNIX_WINDOW_H_
+#endif // GE_RENDERERL_OPENGL_RENDERER_API_H_

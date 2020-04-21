@@ -35,6 +35,7 @@
 #include "ge/core/asserts.h"
 #include "ge/imgui/imgui_layer.h"
 #include "ge/layer.h"
+#include "ge/renderer/render_command.h"
 #include "ge/window/window.h"
 #include "ge/window/window_event.h"
 
@@ -56,6 +57,8 @@ Application::Application()
 void Application::run()
 {
     while (m_runnign) {
+        GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+
         for (auto& layer : m_layer_stack) {
             layer->onUpdate();
         }

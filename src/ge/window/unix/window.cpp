@@ -34,6 +34,8 @@
 #include "input.h"
 #include "unix_utils.h"
 
+#include "ge/renderer/graphics_context.h"
+#include "ge/renderer/renderer.h"
 #include "ge/window/key_event.h"
 #include "ge/window/mouse_event.h"
 #include "ge/window/window_event.h"
@@ -41,10 +43,8 @@
 #include <SDL.h>
 #include <glad/glad.h>
 
-#define VSYNC_OFF       0
-#define VSYNC_ON        1
-#define GE_GL_MAJOR_VER 4
-#define GE_GL_MINOR_VER 5
+#define VSYNC_OFF 0
+#define VSYNC_ON  1
 
 namespace GE::UNIX {
 
@@ -53,69 +53,39 @@ bool Window::m_initialized{false};
 Window::Window(properties_t prop)
     : m_prop(std::move(prop))
 {
-    GE_CORE_TRACE("Creating window '{}', ({}, {})", m_prop.title, m_prop.width,
+    GE_CORE_TRACE("Create window '{}', ({}, {})", m_prop.title, m_prop.width,
                   m_prop.height);
 
-    int pos_x = SDL_WINDOWPOS_CENTERED;
-    int pos_y = SDL_WINDOWPOS_CENTERED;
-    Uint32 flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN |
-                   SDL_WINDOW_OPENGL;
+    int32_t pos_x = SDL_WINDOWPOS_CENTERED;
+    int32_t pos_y = SDL_WINDOWPOS_CENTERED;
+    uint32_t flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN;
+
+    if (Renderer::getAPI() == GE_OPEN_GL_API) {
+        flags |= SDL_WINDOW_OPENGL;
+    }
 
     m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
                                 m_prop.height, flags);
     GE_CORE_ASSERT(m_window, SDL_GetError());
 
-    m_gl_contex = SDL_GL_CreateContext(m_window);
-    GE_CORE_ASSERT(m_gl_contex, SDL_GetError());
+    m_contex = GraphicsContext::create(m_window);
+    GE_CORE_ASSERT(m_contex != nullptr, "Failed to create graphics context");
 
-    SDLCall(SDL_GL_MakeCurrent(m_window, m_gl_contex));
-
-    auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
-    int is_glad_loaded = gladLoadGLLoader(glad_load_proc);
-    GE_CORE_ASSERT(is_glad_loaded, "Failed to initialize GLAD");
-
-    GE_CORE_INFO("OpenGL Version: {}.{}", GLVersion.major, GLVersion.minor);
-    GE_CORE_INFO("OpenGL SHading Language Version: {}",
-                 glGetString(GL_SHADING_LANGUAGE_VERSION));
-    GE_CORE_INFO("OpenGL Vendor: {}", glGetString(GL_VENDOR));
-    GE_CORE_INFO("OpenGL Renderer: {}", glGetString(GL_RENDERER));
+    SDLCall(SDL_GL_MakeCurrent(m_window, m_contex->getNativeContext()));
+    m_contex->initialize();
 
     GE_CORE_TRACE("Window '{}' created", m_prop.title);
 }
 
-Window::Window(Window&& other) noexcept
+Window::~Window() // NOLINT
 {
-    *this = std::move(other);
-}
-
-Window& Window::operator=(Window&& other) noexcept
-{
-    if (this == &other) {
-        return *this;
-    }
-
-    m_window = std::exchange(other.m_window, nullptr);
-    m_gl_contex = std::exchange(other.m_gl_contex, nullptr);
-    m_event_callback = std::move(other.m_event_callback);
-    m_prop = std::exchange(other.m_prop, properties_t{});
-    m_vsync = std::exchange(other.m_vsync, true);
-    return *this;
-}
-
-Window::~Window()
-{
-    if (m_gl_contex != nullptr) {
-        SDL_GL_DeleteContext(m_gl_contex);
-        try {
-            GE_CORE_TRACE("SDL GL context has been deleted");
-        } catch (...) {}
+    if (m_contex != nullptr) {
+        m_contex->shutdown();
     }
 
     if (m_window != nullptr) {
         SDL_DestroyWindow(m_window);
-        try {
-            GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
-        } catch (...) {}
+        GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
     }
 }
 
@@ -123,10 +93,6 @@ void Window::initialize()
 {
     GE_CORE_TRACE("Initialize UNIX::Window");
     SDLCall(SDL_Init(SDL_INIT_VIDEO));
-    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, GE_GL_MAJOR_VER));
-    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, GE_GL_MINOR_VER));
-    SDLCall(
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE));
 }
 
 void Window::shutdown()
@@ -149,7 +115,7 @@ void Window::setVSync(bool enabled)
 void Window::onUpdate()
 {
     pollEvents();
-    SDL_GL_SwapWindow(m_window);
+    m_contex->swapBuffers();
 }
 
 void Window::pollEvents()
