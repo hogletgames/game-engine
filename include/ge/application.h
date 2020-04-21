@@ -33,7 +33,7 @@
 #ifndef GE_APPLICATION_H_
 #define GE_APPLICATION_H_
 
-#include <ge/core/interface.h>
+#include <ge/core/non_copyable.h>
 #include <ge/layer_stack.h>
 #include <ge/window/window.h>
 
@@ -42,7 +42,6 @@
 namespace GE {
 
 class Event;
-class ImGuiLayer;
 class WindowClosedEvent;
 
 class GE_API Application: public NonCopyable
@@ -69,7 +68,6 @@ private:
     static Application* m_instance;
 
     Scoped<Window> m_window;
-    Shared<ImGuiLayer> m_imgui_layer;
     LayerStack m_layer_stack;
     bool m_runnign{true};
 };

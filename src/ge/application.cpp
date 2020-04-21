@@ -49,9 +49,6 @@ Application::Application()
     GE_CORE_ASSERT(!m_instance, "Application already exists");
     m_instance = this;
     m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
-
-    m_imgui_layer = makeShared<ImGuiLayer>();
-    pushOverlay(m_imgui_layer);
 }
 
 void Application::run()
@@ -63,13 +60,12 @@ void Application::run()
             layer->onUpdate();
         }
 
-        m_imgui_layer->begin();
-
+        Gui::begin();
         for (auto& layer : m_layer_stack) {
-            layer->onImGuiRender();
+            layer->onGuiRender();
         }
+        Gui::end();
 
-        m_imgui_layer->end();
         m_window->onUpdate();
     }
 }

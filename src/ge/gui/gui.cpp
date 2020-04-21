@@ -44,7 +44,7 @@
 
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/gui.h"
-using PlatformImGui = ::GE::UNIX::PlatformImGui;
+using PlatformGui = ::GE::UNIX::Gui;
 #else
     #error "Unsupported platform"
 #endif
@@ -65,78 +65,7 @@ int32_t toImGuiButton(GE::MouseButton button)
     }
 }
 
-} // namespace
-
-namespace GE {
-
-void ImGuiLayer::onAttach()
-{
-    GE_CORE_TRACE("'{}' is attached", getName());
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-    ImGui::StyleColorsDark();
-    ImGuiStyle& style = ImGui::GetStyle();
-
-    if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
-
-    PlatformImGui::initialize();
-    mapKeys();
-}
-
-void ImGuiLayer::onDetach()
-{
-    GE_CORE_TRACE("'{}' is detached", getName());
-    PlatformImGui::shutdown();
-    ImGui::DestroyContext();
-}
-
-void ImGuiLayer::onEvent(Event* event)
-{
-    EventDispatcher dispatcher(event);
-
-    dispatcher.dispatch<KeyPressedEvent>(ImGuiLayer::onKeyPressed);
-    dispatcher.dispatch<KeyReleasedEvent>(ImGuiLayer::onKeyReleased);
-    dispatcher.dispatch<KeyTypedEvent>(ImGuiLayer::onKeyTyped);
-    dispatcher.dispatch<MouseMovedEvent>(ImGuiLayer::onMouseMoved);
-    dispatcher.dispatch<MouseScrolledEvent>(ImGuiLayer::onMouseScrolled);
-    dispatcher.dispatch<MouseButtonPressedEvent>(ImGuiLayer::onMouseButtonPressed);
-    dispatcher.dispatch<MouseButtonReleasedEvent>(ImGuiLayer::onMouseButtonReleased);
-    dispatcher.dispatch<WindowResizedEvent>(ImGuiLayer::onWindowResized);
-}
-
-void ImGuiLayer::onImGuiRender()
-{
-    static bool show_demo_window{true};
-    ImGui::ShowDemoWindow(&show_demo_window);
-}
-
-void ImGuiLayer::begin()
-{
-    PlatformImGui::newFrame();
-    ImGui::NewFrame();
-}
-
-void ImGuiLayer::end()
-{
-    ImGuiIO& io = ImGui::GetIO();
-    const auto& window = Application::instance()->getWindow();
-    io.DisplaySize = ImVec2(window.getWidth(), window.getHeight());
-
-    ImGui::Render();
-    PlatformImGui::render();
-}
-
-void ImGuiLayer::mapKeys()
+void mapKeys()
 {
     ImGuiIO& io = ImGui::GetIO();
 
@@ -164,7 +93,7 @@ void ImGuiLayer::mapKeys()
     io.KeyMap[ImGuiKey_Z] = CAST_KEY(GE_KEY_Z);
 }
 
-void ImGuiLayer::setControlKeys()
+void setControlKeys()
 {
     ImGuiIO& io = ImGui::GetIO();
 
@@ -180,7 +109,7 @@ void ImGuiLayer::setControlKeys()
                   io.KeysDown[CAST_KEY(GE_KEY_RSUPER)];
 }
 
-bool ImGuiLayer::onKeyPressed(const KeyPressedEvent& event)
+bool onKeyPressed(const GE::KeyPressedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = true;
@@ -188,7 +117,7 @@ bool ImGuiLayer::onKeyPressed(const KeyPressedEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onKeyReleased(const KeyReleasedEvent& event)
+bool onKeyReleased(const GE::KeyReleasedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = false;
@@ -196,21 +125,21 @@ bool ImGuiLayer::onKeyReleased(const KeyReleasedEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onKeyTyped(const KeyTypedEvent& event)
+bool onKeyTyped(const GE::KeyTypedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.AddInputCharactersUTF8(event.getText());
     return false;
 }
 
-bool ImGuiLayer::onMouseMoved(const MouseMovedEvent& event)
+bool onMouseMoved(const GE::MouseMovedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.MousePos = ImVec2(event.getPosX(), event.getPosY());
     return false;
 }
 
-bool ImGuiLayer::onMouseScrolled(const MouseScrolledEvent& event)
+bool onMouseScrolled(const GE::MouseScrolledEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.MouseWheelH = event.getOffsetX();
@@ -218,7 +147,7 @@ bool ImGuiLayer::onMouseScrolled(const MouseScrolledEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onMouseButtonPressed(const MouseButtonPressedEvent& event)
+bool onMouseButtonPressed(const GE::MouseButtonPressedEvent& event)
 {
     auto button = event.getMouseButton();
 
@@ -231,7 +160,7 @@ bool ImGuiLayer::onMouseButtonPressed(const MouseButtonPressedEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onMouseButtonReleased(const MouseButtonReleasedEvent& event)
+bool onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event)
 {
     auto button = event.getMouseButton();
 
@@ -244,13 +173,78 @@ bool ImGuiLayer::onMouseButtonReleased(const MouseButtonReleasedEvent& event)
     return false;
 }
 
-bool ImGuiLayer::onWindowResized(const WindowResizedEvent& event)
+bool onWindowResized(const GE::WindowResizedEvent& event)
 {
     ImGuiIO& io = ImGui::GetIO();
     io.DisplaySize = ImVec2(event.getWidth(), event.getHeight());
     io.DisplayFramebufferScale = ImVec2{1.0f, 1.0f};
-    RenderCommand::setViewport(0, 0, event.getWidth(), event.getHeight());
+    GE::RenderCommand::setViewport(0, 0, event.getWidth(), event.getHeight());
     return false;
+}
+
+} // namespace
+
+namespace GE {
+
+void Gui::initialize()
+{
+    GE_CORE_TRACE("Initialize GUI");
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+    ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    PlatformGui::initialize();
+    mapKeys();
+}
+
+void Gui::shutdown()
+{
+    GE_CORE_TRACE("Shutdown GUI");
+    PlatformGui::shutdown();
+    ImGui::DestroyContext();
+}
+
+void Gui::begin()
+{
+    PlatformGui::newFrame();
+    ImGui::NewFrame();
+}
+
+void Gui::end()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    const auto& window = Application::instance()->getWindow();
+    io.DisplaySize = ImVec2(window.getWidth(), window.getHeight());
+
+    ImGui::Render();
+    PlatformGui::render();
+}
+
+void Gui::onEvent(Event* event)
+{
+    EventDispatcher dispatcher(event);
+
+    dispatcher.dispatch<KeyPressedEvent>(onKeyPressed);
+    dispatcher.dispatch<KeyReleasedEvent>(onKeyReleased);
+    dispatcher.dispatch<KeyTypedEvent>(onKeyTyped);
+    dispatcher.dispatch<MouseMovedEvent>(onMouseMoved);
+    dispatcher.dispatch<MouseScrolledEvent>(onMouseScrolled);
+    dispatcher.dispatch<MouseButtonPressedEvent>(onMouseButtonPressed);
+    dispatcher.dispatch<MouseButtonReleasedEvent>(onMouseButtonReleased);
+    dispatcher.dispatch<WindowResizedEvent>(onWindowResized);
 }
 
 } // namespace GE

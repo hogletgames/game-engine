@@ -48,7 +48,7 @@
 
 namespace GE::UNIX {
 
-void PlatformImGui::initialize()
+void Gui::initialize()
 {
     GE_CORE_TRACE("Initialize Unix::PlatformImGui");
 
@@ -59,14 +59,14 @@ void PlatformImGui::initialize()
     ImGui_ImplOpenGL3_Init(GLSL_VERSION);
 }
 
-void PlatformImGui::shutdown()
+void Gui::shutdown()
 {
     GE_CORE_TRACE("Shutdown Unix::PlatformImGui");
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
 }
 
-void PlatformImGui::newFrame()
+void Gui::newFrame()
 {
     void* window = Application::instance()->getNativeWindow();
 
@@ -74,7 +74,7 @@ void PlatformImGui::newFrame()
     ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));
 }
 
-void PlatformImGui::render()
+void Gui::render()
 {
     ImGuiIO& io = ImGui::GetIO();
     auto width = static_cast<int32_t>(io.DisplaySize.x);

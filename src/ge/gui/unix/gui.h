@@ -31,17 +31,17 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_GUI_UNIX_PLATFORM_GUI_H_
-#define GE_GUI_UNIX_PLATFORM_GUI_H_
+#ifndef GE_GUI_UNIX_GUI_H_
+#define GE_GUI_UNIX_GUI_H_
 
 struct ImVec2;
 
 namespace GE::UNIX {
 
-class PlatformImGui
+class Gui
 {
 public:
-    PlatformImGui() = delete;
+    Gui() = delete;
 
     static void initialize();
     static void shutdown();
@@ -52,4 +52,4 @@ public:
 
 } // namespace GE::UNIX
 
-#endif // GE_GUI_UNIX_PLATFORM_GUI_H_
+#endif // GE_GUI_UNIX_GUI_H_
