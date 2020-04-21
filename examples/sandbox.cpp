@@ -30,20 +30,109 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "triangle_layer.h"
+
 #include <ge/ge.h>
+
+#include <docopt.h>
+
+#include <iostream>
+
+#define EXAMPLE_OPT      "--example"
+#define EXAMPLE_EMPTY    "empty"
+#define EXAMPLE_TRIANGLE "triangle"
+
+#define SHOW_GUI_OPT "--show-demo"
 
 namespace {
 
-class Sandbox: public GE::Application
-{};
+const char* usage = R"(Sanbox.
+Run one of the existing examples:
+    - empty
+    - triangle
+
+Usage:
+    sandbox [options] [-e <example>]
+    sandbox (-h | --help)
+
+Options:
+    -h --help                   Show this help.
+    -s --show-demo              Show GUI demo [default: false].
+    -e --example <example>      Example [default: empty].
+)";
+
+enum class LayerType : uint8_t
+{
+    EMPTY = 0,
+    TRIANGLE
+};
+
+struct ParseArgs {
+    LayerType layer{LayerType::EMPTY};
+    bool show_gui_demo{false};
+};
+
+ParseArgs parseArgs(int argc, char** argv)
+{
+    std::map<std::string, docopt::value> args;
+
+    try {
+        args = docopt::docopt_parse(usage, {argv + 1, argv + argc}, true);
+    } catch (const docopt::DocoptExitHelp& e) {
+        std::cout << usage << std::endl;
+        exit(0);
+    } catch (const docopt::DocoptArgumentError& e) {
+        std::cout << usage << std::endl;
+        exit(1);
+    }
+
+    ParseArgs parsed_args{};
+    std::string example = args[EXAMPLE_OPT].asString();
+
+    if (example == EXAMPLE_EMPTY) {
+        parsed_args.layer = LayerType::EMPTY;
+    } else if (example == EXAMPLE_TRIANGLE) {
+        parsed_args.layer = LayerType::TRIANGLE;
+    } else {
+        std::cout << "Unknown example: " << example << "\n\n";
+        std::cout << usage << std::endl;
+        exit(1);
+    }
+
+    if (args[SHOW_GUI_OPT].asBool()) {
+        parsed_args.show_gui_demo = true;
+    }
+
+    return parsed_args;
+}
+
+GE::Shared<GE::Layer> getLayer(const ParseArgs& args)
+{
+    using GE::Examples::GuiLayer;
+    using GE::Examples::TriangleLayer;
+
+    bool show_gui{args.show_gui_demo};
+
+    switch (args.layer) {
+        case LayerType::EMPTY: return GE::makeShared<GuiLayer>(show_gui);
+        case LayerType::TRIANGLE: return GE::makeShared<TriangleLayer>(show_gui);
+        default: break;
+    }
+
+    GE_ASSERT(false, "Unknown layer type: {}", static_cast<int>(args.layer));
+    return nullptr;
+}
 
 } // namespace
 
-int main()
+int main(int argc, char** argv) // NOLINT
 {
-    GE_CREATE_FW_MANAGER(GE_OPEN_GL_API);
+    ParseArgs args = parseArgs(argc, argv);
 
-    Sandbox app{};
+    GE_CREATE_FW_MANAGER(GE_OPEN_GL_API);
+    GE::Application app{};
+
+    app.pushLayer(getLayer(args));
     app.run();
 
     return 0;

@@ -58,9 +58,20 @@ Run tests with Valgrind:
 make test_valgrind
 ```
 
-### How to build examples
+### Examples
+Build examples:
 ```bash
 make CC=gcc CXX=g++ BUILD_EXAMPLES=ON -j$(nproc)
+```
+
+Run example:
+```bash
+$BUILD_DIR/examples/sandbox -e triangle
+```
+
+Get more info:
+```bash
+$BUILD_DIR/examples/sandbox -h
 ```
 
 ### Clang tools

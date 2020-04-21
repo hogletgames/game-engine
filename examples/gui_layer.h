@@ -30,49 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_APPLICATION_H_
-#define GE_APPLICATION_H_
+// NOLINTNEXTLINE
+#ifndef GE_EXAMPLES_GUI_LAYER_H_
+#define GE_EXAMPLES_GUI_LAYER_H_
 
-#include <ge/core/non_copyable.h>
-#include <ge/layer_stack.h>
-#include <ge/window/window.h>
+#include <ge/ge.h>
 
-#include <memory>
+#include <imgui.h>
 
-namespace GE {
+namespace GE::Examples {
 
-class Event;
-class WindowClosedEvent;
-
-class GE_API Application: public NonCopyable
+class GE_API GuiLayer: public EmptyLayer
 {
 public:
-    Application();
-    ~Application() override;
+    explicit GuiLayer(bool show_gui_demo, const char* name = "Gui Layer")
+        : EmptyLayer{name}
+        , m_show_gui_demo{show_gui_demo}
+    {}
 
-    static void initialize();
-    static void shutdown();
-
-    void run();
-
-    void pushLayer(Shared<Layer> layer);
-    void pushOverlay(Shared<Layer> overlay);
-
-    static const Window& getWindow() { return *m_window; }
-    static void* getNativeWindow() { return m_window->getNativeWindow(); }
-    static void* getNativeContext() { return m_window->getNativeContext(); }
+    void onGuiRender() override
+    {
+        if (m_show_gui_demo) {
+            ImGui::ShowDemoWindow(&m_show_gui_demo);
+        }
+    }
 
 private:
-    void onEvent(Event* event);
-    bool onWindowClosed(const WindowClosedEvent& event);
-
-    static Application* m_instance;
-    static Scoped<Window> m_window;
-
-    LayerStack m_layer_stack;
-    bool m_runnign{true};
+    bool m_show_gui_demo{false};
 };
 
-} // namespace GE
+} // namespace GE::Examples
 
-#endif // GE_APPLICATION_H_
+#endif // GE_EXAMPLES_GUI_LAYER_H_
