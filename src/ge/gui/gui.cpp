@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "imgui_layer.h"
+#include "gui.h"
 
 #include "ge/application.h"
 #include "ge/core/log.h"
@@ -43,7 +43,7 @@
 #include <imgui.h>
 
 #if defined(GE_PLATFORM_UNIX)
-    #include "unix/platform_imgui.h"
+    #include "unix/gui.h"
 using PlatformImGui = ::GE::UNIX::PlatformImGui;
 #else
     #error "Unsupported platform"

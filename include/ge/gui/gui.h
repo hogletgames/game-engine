@@ -30,26 +30,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
-#define GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
+#ifndef GE_GUI_GUI_H_
+#define GE_GUI_GUI_H_
 
-struct ImVec2;
+#include <ge/core/core.h>
+#include <ge/layer.h>
 
-namespace GE::UNIX {
+struct ImGuiIO;
 
-class PlatformImGui
+namespace GE {
+
+class KeyPressedEvent;
+class KeyReleasedEvent;
+class KeyTypedEvent;
+class MouseMovedEvent;
+class MouseScrolledEvent;
+class MouseButtonPressedEvent;
+class MouseButtonReleasedEvent;
+class WindowResizedEvent;
+
+class GE_API ImGuiLayer: public Layer
 {
 public:
-    PlatformImGui() = delete;
+    ImGuiLayer()
+        : Layer("ImGui layer")
+    {}
 
-    static void initialize();
-    static void shutdown();
+    void onAttach() override;
+    void onDetach() override;
+    void onUpdate() override {}
+    void onEvent(Event* event) override;
+    void onImGuiRender() override;
 
-    static void newFrame();
-    static void render();
+    static void begin();
+    static void end();
+
+private:
+    static void mapKeys();
+    static void setControlKeys();
+
+    static bool onKeyPressed(const KeyPressedEvent& event);
+    static bool onKeyReleased(const KeyReleasedEvent& event);
+    static bool onKeyTyped(const KeyTypedEvent& event);
+    static bool onMouseMoved(const MouseMovedEvent& event);
+    static bool onMouseScrolled(const MouseScrolledEvent& event);
+    static bool onMouseButtonPressed(const MouseButtonPressedEvent& event);
+    static bool onMouseButtonReleased(const MouseButtonReleasedEvent& event);
+    static bool onWindowResized(const WindowResizedEvent& event);
 };
 
-} // namespace GE::UNIX
+} // namespace GE
 
-#endif // GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
+#endif // GE_GUI_GUI_H_

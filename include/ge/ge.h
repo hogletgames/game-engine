@@ -41,7 +41,7 @@
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
 
-#include <ge/imgui/imgui_layer.h>
+#include <ge/gui/gui.h>
 
 #include <ge/renderer/buffer_layout.h>
 #include <ge/renderer/buffers.h>

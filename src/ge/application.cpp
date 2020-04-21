@@ -33,7 +33,7 @@
 #include "application.h"
 
 #include "ge/core/asserts.h"
-#include "ge/imgui/imgui_layer.h"
+#include "ge/gui/gui.h"
 #include "ge/layer.h"
 #include "ge/renderer/render_command.h"
 #include "ge/window/window.h"

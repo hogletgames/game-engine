@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "platform_imgui.h"
+#include "gui.h"
 #include "opengl_utils.h"
 #include "unix_utils.h"
 
