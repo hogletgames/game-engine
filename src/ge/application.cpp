@@ -42,19 +42,36 @@
 namespace GE {
 
 Application* Application::m_instance{nullptr};
+Scoped<Window> Application::m_window{nullptr};
 
 Application::Application()
-    : m_window(Window::create())
 {
     GE_CORE_ASSERT(!m_instance, "Application already exists");
     m_instance = this;
     m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
 }
 
+Application::~Application()
+{
+    m_instance = nullptr;
+}
+
+void Application::initialize()
+{
+    GE_TRACE("Initialize Application");
+    m_window = Window::create();
+}
+
+void Application::shutdown()
+{
+    GE_TRACE("Shutdown Application");
+    m_window.reset();
+}
+
 void Application::run()
 {
     while (m_runnign) {
-        GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+        RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
 
         for (auto& layer : m_layer_stack) {
             layer->onUpdate();
@@ -88,11 +105,11 @@ void Application::onEvent(Event* event)
     dispatcher.dispatch<WindowClosedEvent>(GE_BIND_MEM_FN(Application::onWindowClosed));
 
     for (auto layer = m_layer_stack.rbegin(); layer != m_layer_stack.rend(); ++layer) {
-        (*layer)->onEvent(event);
-
         if (event->handled()) {
             break;
         }
+
+        (*layer)->onEvent(event);
     }
 }
 

@@ -226,7 +226,7 @@ void Gui::begin()
 void Gui::end()
 {
     ImGuiIO& io = ImGui::GetIO();
-    const auto& window = Application::instance()->getWindow();
+    const auto& window = Application::getWindow();
     io.DisplaySize = ImVec2(window.getWidth(), window.getHeight());
 
     ImGui::Render();

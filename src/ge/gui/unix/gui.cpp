@@ -52,8 +52,8 @@ void Gui::initialize()
 {
     GE_CORE_TRACE("Initialize Unix::PlatformImGui");
 
-    void* window = Application::instance()->getNativeWindow();
-    void* context = Application::instance()->getNativeContext();
+    void* window = Application::getNativeWindow();
+    void* context = Application::getNativeContext();
 
     ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context);
     ImGui_ImplOpenGL3_Init(GLSL_VERSION);
@@ -68,7 +68,7 @@ void Gui::shutdown()
 
 void Gui::newFrame()
 {
-    void* window = Application::instance()->getNativeWindow();
+    void* window = Application::getNativeWindow();
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));

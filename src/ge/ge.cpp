@@ -43,9 +43,9 @@ void FrameworkManager::initialize(RendererAPI::API api)
     }
 
     Log::initialize();
-    Input::initialize();
     Renderer::initialize(api);
     Window::initialize();
+    Application::initialize();
     Gui::initialize();
     initialized = true;
     GE_CORE_TRACE("FM initialized");
@@ -59,9 +59,9 @@ void FrameworkManager::shutdown()
 
     GE_CORE_TRACE("FM shutdown");
     Gui::initialize();
+    Application::shutdown();
     Window::shutdown();
     Renderer::shutdown();
-    Input::shutdown();
     Log::shutdown();
     initialized = false;
 }
