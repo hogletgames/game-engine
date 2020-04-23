@@ -31,6 +31,7 @@
  */
 
 #include "window.h"
+#include "input.h"
 
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/window.h"
@@ -49,12 +50,14 @@ Scoped<Window> Window::create(properties_t prop)
 
 void Window::initialize()
 {
+    Input::initialize();
     PlatformWindow::initialize();
 }
 
 void Window::shutdown()
 {
     PlatformWindow::shutdown();
+    Input::shutdown();
 }
 
 } // namespace GE

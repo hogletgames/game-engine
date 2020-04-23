@@ -33,7 +33,7 @@
 #include "application.h"
 
 #include "ge/core/asserts.h"
-#include "ge/imgui/imgui_layer.h"
+#include "ge/gui/gui.h"
 #include "ge/layer.h"
 #include "ge/renderer/render_command.h"
 #include "ge/window/window.h"
@@ -42,34 +42,47 @@
 namespace GE {
 
 Application* Application::m_instance{nullptr};
+Scoped<Window> Application::m_window{nullptr};
 
 Application::Application()
-    : m_window(Window::create())
 {
     GE_CORE_ASSERT(!m_instance, "Application already exists");
     m_instance = this;
     m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
+}
 
-    m_imgui_layer = makeShared<ImGuiLayer>();
-    pushOverlay(m_imgui_layer);
+Application::~Application()
+{
+    m_instance = nullptr;
+}
+
+void Application::initialize()
+{
+    GE_TRACE("Initialize Application");
+    m_window = Window::create();
+}
+
+void Application::shutdown()
+{
+    GE_TRACE("Shutdown Application");
+    m_window.reset();
 }
 
 void Application::run()
 {
     while (m_runnign) {
-        GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+        RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
 
         for (auto& layer : m_layer_stack) {
             layer->onUpdate();
         }
 
-        m_imgui_layer->begin();
-
+        Gui::begin();
         for (auto& layer : m_layer_stack) {
-            layer->onImGuiRender();
+            layer->onGuiRender();
         }
+        Gui::end();
 
-        m_imgui_layer->end();
         m_window->onUpdate();
     }
 }
@@ -92,11 +105,11 @@ void Application::onEvent(Event* event)
     dispatcher.dispatch<WindowClosedEvent>(GE_BIND_MEM_FN(Application::onWindowClosed));
 
     for (auto layer = m_layer_stack.rbegin(); layer != m_layer_stack.rend(); ++layer) {
-        (*layer)->onEvent(event);
-
         if (event->handled()) {
             break;
         }
+
+        (*layer)->onEvent(event);
     }
 }
 

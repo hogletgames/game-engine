@@ -30,26 +30,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
-#define GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
+#ifndef GE_GUI_GUI_H_
+#define GE_GUI_GUI_H_
 
-struct ImVec2;
+#include <ge/core/core.h>
 
-namespace GE::UNIX {
+namespace GE {
 
-class PlatformImGui
+class Event;
+
+class GE_API Gui
 {
 public:
-    PlatformImGui() = delete;
+    Gui() = delete;
 
     static void initialize();
     static void shutdown();
 
-    static void newFrame();
-    static void render();
+    static void begin();
+    static void end();
+
+    static void onEvent(Event* event);
 };
 
-} // namespace GE::UNIX
+} // namespace GE
 
-#endif // GE_IMGUI_UNIX_PLATFORM_IMGUI_H_
+#endif // GE_GUI_GUI_H_

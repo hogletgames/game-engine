@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "platform_imgui.h"
+#include "gui.h"
 #include "opengl_utils.h"
 #include "unix_utils.h"
 
@@ -48,33 +48,33 @@
 
 namespace GE::UNIX {
 
-void PlatformImGui::initialize()
+void Gui::initialize()
 {
     GE_CORE_TRACE("Initialize Unix::PlatformImGui");
 
-    void* window = Application::instance()->getNativeWindow();
-    void* context = Application::instance()->getNativeContext();
+    void* window = Application::getNativeWindow();
+    void* context = Application::getNativeContext();
 
     ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context);
     ImGui_ImplOpenGL3_Init(GLSL_VERSION);
 }
 
-void PlatformImGui::shutdown()
+void Gui::shutdown()
 {
     GE_CORE_TRACE("Shutdown Unix::PlatformImGui");
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
 }
 
-void PlatformImGui::newFrame()
+void Gui::newFrame()
 {
-    void* window = Application::instance()->getNativeWindow();
+    void* window = Application::getNativeWindow();
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));
 }
 
-void PlatformImGui::render()
+void Gui::render()
 {
     ImGuiIO& io = ImGui::GetIO();
     auto width = static_cast<int32_t>(io.DisplaySize.x);
