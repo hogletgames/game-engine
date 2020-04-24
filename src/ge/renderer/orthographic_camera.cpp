@@ -30,62 +30,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#include "orthographic_camera.h"
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
+#include "ge/debug/profile.h"
 
-#include <ge/gui/gui.h>
+#include <glm/gtc/matrix_transform.hpp>
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/vertex_array.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_INITIALIZE(api) ::GE::FWManager::get()->initialize(api)
-#define GE_SHUTDOWN()      ::GE::FWManager::get()->shutdown()
+#define Z_NEAR (-1.0f)
+#define Z_FAR  1.0f
 
 namespace GE {
 
-class GE_API FWManager
+OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
 {
-public:
-    void initialize(RendererAPI::API api);
-    void shutdown();
+    GE_PROFILE_FUNC();
 
-    static FWManager* get();
+    setProjection(left, right, bottom, top);
+}
 
-private:
-    FWManager() = default;
-    ~FWManager(); // NOLINT
+void OrthographicCamera::setPosition(const glm::vec3& position)
+{
+    GE_PROFILE_FUNC();
 
-    bool m_initialized{false};
-};
+    m_position = position;
+    recalculateVPMatrix();
+}
+
+void OrthographicCamera::setRotation(float rotation)
+{
+    GE_PROFILE_FUNC();
+
+    m_rotation = rotation;
+    recalculateVPMatrix();
+}
+
+void OrthographicCamera::setProjection(float left, float right, float bottom, float top)
+{
+    GE_PROFILE_FUNC();
+
+    m_proj_mat = glm::ortho(left, right, bottom, top, Z_NEAR, Z_FAR);
+    m_vp_mat = m_proj_mat * m_view_mat;
+}
+
+void OrthographicCamera::recalculateVPMatrix()
+{
+    GE_PROFILE_FUNC();
+
+    auto transform = glm::translate(glm::mat4{1.0f}, m_position);
+    transform = glm::rotate(transform, glm::radians(m_rotation), glm::vec3{0, 0, 1});
+
+    m_view_mat = glm::inverse(transform);
+    m_vp_mat = m_proj_mat * m_view_mat;
+}
 
 } // namespace GE
-
-#endif // GE_GE_H_

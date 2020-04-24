@@ -30,62 +30,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_ORTHOGRAPHIC_CAMERA_H_
+#define GE_RENDERER_ORTHOGRAPHIC_CAMERA_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
+#include <ge/core/core.h>
 
-#include <ge/gui/gui.h>
-
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/vertex_array.h>
-
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_INITIALIZE(api) ::GE::FWManager::get()->initialize(api)
-#define GE_SHUTDOWN()      ::GE::FWManager::get()->shutdown()
+#include <glm/glm.hpp>
 
 namespace GE {
 
-class GE_API FWManager
+class GE_API OrthographicCamera
 {
 public:
-    void initialize(RendererAPI::API api);
-    void shutdown();
+    OrthographicCamera() = default;
+    OrthographicCamera(float left, float right, float bottom, float top);
 
-    static FWManager* get();
+    void setPosition(const glm::vec3& position);
+    void setRotation(float rotation);
+    void setProjection(float left, float right, float bottom, float top);
+
+    const glm::vec3& getPosition() const { return m_position; }
+    float getRotation() const { return m_rotation; }
+
+    const glm::mat4& getProjectionMatrix() const { return m_proj_mat; }
+    const glm::mat4& getViewMatrix() const { return m_view_mat; }
+    const glm::mat4& getVPMatrix() const { return m_vp_mat; }
 
 private:
-    FWManager() = default;
-    ~FWManager(); // NOLINT
+    void recalculateVPMatrix();
 
-    bool m_initialized{false};
+    glm::mat4 m_proj_mat{1.0f};
+    glm::mat4 m_view_mat{1.0f};
+    glm::mat4 m_vp_mat{1.0f};
+
+    glm::vec3 m_position{0.0f, 0.0f, 0.0f};
+    float m_rotation{0.0f};
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_RENDERER_ORTHOGRAPHIC_CAMERA_H_

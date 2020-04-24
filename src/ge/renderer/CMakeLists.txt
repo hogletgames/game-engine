@@ -2,6 +2,7 @@ set(GE_RENDERER_SRC
     buffer_layout.cpp
     buffers.cpp
     graphics_context.cpp
+    orthographic_camera.cpp
     render_command.cpp
     renderer_api.cpp
     renderer.cpp
