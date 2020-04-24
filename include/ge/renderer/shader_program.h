@@ -36,6 +36,8 @@
 #include <ge/core/non_copyable.h>
 #include <ge/renderer/shader.h>
 
+#include <glm/glm.hpp>
+
 #include <memory>
 
 namespace GE {
@@ -47,6 +49,16 @@ public:
     virtual void addShaders(std::initializer_list<Shared<Shader>> shaders) = 0;
     virtual bool link() = 0;
     virtual void clear() = 0;
+
+    virtual void setUniformInt(const std::string& name, int value) = 0;
+    virtual void setUniformIntArray(const std::string& name, const int* array,
+                                    uint32_t count) = 0;
+    virtual void setUniformFloat(const std::string& name, float value) = 0;
+    virtual void setUniformFloat2(const std::string& name, const glm::vec2& vector) = 0;
+    virtual void setUniformFloat3(const std::string& name, const glm::vec3& vector) = 0;
+    virtual void setUniformFloat4(const std::string& name, const glm::vec4& vector) = 0;
+    virtual void setUniformMat3(const std::string& name, const glm::mat3& matrix) = 0;
+    virtual void setUniformMat4(const std::string& name, const glm::mat4& matrix) = 0;
 
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
