@@ -30,34 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_LAYER_H_
-#define GE_LAYER_H_
+// NOLINTNEXTLINE
+#ifndef GE_EXAMPLES_GUI_LAYER_H_
+#define GE_EXAMPLES_GUI_LAYER_H_
 
-#include <ge/core/interface.h>
+#include <ge/ge.h>
 
-namespace GE {
+#include <imgui.h>
 
-class Event;
+namespace GE::Examples {
 
-class GE_API Layer: public Interface
+class GE_API GuiLayer: public EmptyLayer
 {
 public:
-    explicit Layer(const char* name = "Layer")
-        : m_name{name}
+    explicit GuiLayer(bool show_gui_demo, const char* name = "Gui Layer")
+        : EmptyLayer{name}
+        , m_show_gui_demo{show_gui_demo}
     {}
 
-    virtual void onAttach() = 0;
-    virtual void onDetach() = 0;
-    virtual void onUpdate() = 0;
-    virtual void onEvent(Event* event) = 0;
-    virtual void onGuiRender(){};
-
-    const char* getName() const { return m_name; }
+    void onGuiRender() override
+    {
+        if (m_show_gui_demo) {
+            ImGui::ShowDemoWindow(&m_show_gui_demo);
+        }
+    }
 
 private:
-    const char* m_name{nullptr};
+    bool m_show_gui_demo{false};
 };
 
-} // namespace GE
+} // namespace GE::Examples
 
-#endif // GE_LAYER_H_
+#endif // GE_EXAMPLES_GUI_LAYER_H_

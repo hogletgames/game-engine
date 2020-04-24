@@ -46,11 +46,10 @@ class WindowClosedEvent;
 
 class GE_API Application: public NonCopyable
 {
-protected:
+public:
     Application();
     ~Application() override;
 
-public:
     static void initialize();
     static void shutdown();
 

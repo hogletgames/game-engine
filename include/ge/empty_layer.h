@@ -30,34 +30,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_LAYER_H_
-#define GE_LAYER_H_
+#ifndef GE_EMPTY_LAYER_H_
+#define GE_EMPTY_LAYER_H_
 
-#include <ge/core/interface.h>
+#include <ge/layer.h>
 
 namespace GE {
 
 class Event;
 
-class GE_API Layer: public Interface
+class GE_API EmptyLayer: public Layer
 {
 public:
-    explicit Layer(const char* name = "Layer")
-        : m_name{name}
+    explicit EmptyLayer(const char* name = "Empty Layer")
+        : Layer{name}
     {}
 
-    virtual void onAttach() = 0;
-    virtual void onDetach() = 0;
-    virtual void onUpdate() = 0;
-    virtual void onEvent(Event* event) = 0;
-    virtual void onGuiRender(){};
-
-    const char* getName() const { return m_name; }
-
-private:
-    const char* m_name{nullptr};
+    void onAttach() override{};
+    void onDetach() override{};
+    void onUpdate() override{};
+    void onEvent([[maybe_unused]] Event* event) override{};
+    void onGuiRender() override{};
 };
 
 } // namespace GE
 
-#endif // GE_LAYER_H_
+#endif // GE_EMPTY_LAYER_H_

@@ -101,8 +101,10 @@ install(DIRECTORY include/ge
 # Include directories
 include_directories(include)
 include_directories(SYSTEM 
-    third-party/spdlog/include
+    third-party/docopt
     third-party/glm
+    third-party/imgui
+    third-party/spdlog/include
 )
 
 # Subdirectories
