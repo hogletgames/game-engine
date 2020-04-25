@@ -104,6 +104,8 @@ void Application::onEvent(Event* event)
     EventDispatcher dispatcher{event};
     dispatcher.dispatch<WindowClosedEvent>(GE_BIND_MEM_FN(Application::onWindowClosed));
 
+    Gui::onEvent(event);
+
     for (auto layer = m_layer_stack.rbegin(); layer != m_layer_stack.rend(); ++layer) {
         if (event->handled()) {
             break;
