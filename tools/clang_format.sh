@@ -5,14 +5,14 @@ EXIT_CODE=0
 FILES=$(ls  examples/*.cpp                              \
             include/ge/*.h                              \
             include/ge/core/*.h                         \
-            include/ge/imgui/*.h                        \
+            include/ge/gui/*.h                          \
             include/ge/renderer/*.h                     \
             include/ge/window/*.h                       \
             src/ge/*.cpp                                \
             src/ge/core/*.cpp                           \
-            src/ge/imgui/*.cpp                          \
-            src/ge/imgui/unix/*.h                       \
-            src/ge/imgui/unix/*.cpp                     \
+            src/ge/gui/*.cpp                            \
+            src/ge/gui/unix/*.h                         \
+            src/ge/gui/unix/*.cpp                       \
             src/ge/renderer/*.cpp                       \
             src/ge/renderer/opengl/*.h                  \
             src/ge/renderer/opengl/*.cpp                \
