@@ -66,9 +66,10 @@ KeyCode Input::toGEKeyCodeImpl(int32_t key_code) const
 
 bool Input::isKeyPressedImpl(KeyCode key_code) const
 {
-    uint16_t sdl_key = toNativeKeyCodeImpl(key_code);
     const uint8_t* keys_state = SDL_GetKeyboardState(nullptr);
-    return keys_state != nullptr ? keys_state[sdl_key] == 0 : false;
+    SDL_Keycode sdl_key = toNativeKeyCodeImpl(key_code);
+    SDL_Scancode scancode = SDL_GetScancodeFromKey(sdl_key);
+    return keys_state != nullptr ? keys_state[scancode] != 0 : false;
 }
 
 uint8_t Input::toNativeButtonImpl(MouseButton button_code) const
