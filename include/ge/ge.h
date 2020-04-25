@@ -35,6 +35,7 @@
 
 #include <ge/application.h>
 #include <ge/core/asserts.h>
+#include <ge/core/begin.h>
 #include <ge/core/interface.h>
 #include <ge/core/log.h>
 #include <ge/core/non_copyable.h>

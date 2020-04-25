@@ -33,6 +33,7 @@
 #include "application.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/begin.h"
 #include "ge/gui/gui.h"
 #include "ge/layer.h"
 #include "ge/renderer/render_command.h"
@@ -75,11 +76,13 @@ void Application::run()
             layer->onUpdate();
         }
 
-        Gui::begin();
-        for (auto& layer : m_layer_stack) {
-            layer->onGuiRender();
+        {
+            Begin<Gui> begin;
+
+            for (auto& layer : m_layer_stack) {
+                layer->onGuiRender();
+            }
         }
-        Gui::end();
 
         s_window->onUpdate();
     }

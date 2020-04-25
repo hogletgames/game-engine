@@ -46,8 +46,8 @@ public:
     static void initialize(RendererAPI::API api);
     static void shutdown();
 
-    static void beginScene();
-    static void endScene();
+    static void begin();
+    static void end();
 
     static void submit(const Shared<VertexArray>& vertex_array);
 

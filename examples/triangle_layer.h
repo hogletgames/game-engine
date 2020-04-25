@@ -86,10 +86,9 @@ public:
     void onUpdate() override
     {
         RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
-        Renderer::beginScene();
+        Begin<Renderer> begin{};
         m_shader_program->bind();
         Renderer::submit(m_vertex_array);
-        Renderer::endScene();
     }
 
 private:

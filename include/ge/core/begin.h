@@ -30,33 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
-#include "render_command.h"
-#include "vertex_array.h"
+#ifndef GE_CORE_BEGIN_H_
+#define GE_CORE_BEGIN_H_
 
-#include "ge/core/log.h"
+#include <ge/core/core.h>
+
+#include <utility>
 
 namespace GE {
 
-void Renderer::initialize(RendererAPI::API api)
+template<typename T>
+class GE_API Begin
 {
-    GE_CORE_TRACE("Initialize Renderer");
-    RenderCommand::initialize(api);
-}
+public:
+    template<typename... Args>
+    explicit Begin(Args&&... args)
+    {
+        T::begin(std::forward<Args>(args)...);
+    }
 
-void Renderer::shutdown()
-{
-    GE_CORE_TRACE("Shutdown Renderer");
-    RenderCommand::shutdown();
-}
-
-void Renderer::begin() {}
-
-void Renderer::end() {}
-
-void Renderer::submit(const Shared<VertexArray>& vertex_array)
-{
-    RenderCommand::draw(vertex_array);
-}
+    ~Begin() { T::end(); }
+};
 
 } // namespace GE
+
+#endif // GE_CORE_BEGIN_H_
