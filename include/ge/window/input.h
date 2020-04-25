@@ -51,37 +51,37 @@ public:
 
     static int32_t toNativeKeyCode(KeyCode key_code)
     {
-        return m_impl->toNativeKeyCodeImpl(key_code);
+        return s_impl->toNativeKeyCodeImpl(key_code);
     }
 
     static KeyCode toGEKeyCode(int32_t key_code)
     {
-        return m_impl->toGEKeyCodeImpl(key_code);
+        return s_impl->toGEKeyCodeImpl(key_code);
     }
 
     static bool isKeyPressed(KeyCode key_code)
     {
-        return m_impl->isKeyPressedImpl(key_code);
+        return s_impl->isKeyPressedImpl(key_code);
     }
 
     static uint8_t toNativeButton(MouseButton button)
     {
-        return m_impl->toNativeButtonImpl(button);
+        return s_impl->toNativeButtonImpl(button);
     }
 
     static MouseButton toGEMouseButton(uint8_t button)
     {
-        return m_impl->toGEMouseButtonImpl(button);
+        return s_impl->toGEMouseButtonImpl(button);
     }
 
     static bool isMouseButtonPressed(MouseButton button)
     {
-        return m_impl->isMouseButtonPressedImpl(button);
+        return s_impl->isMouseButtonPressedImpl(button);
     }
 
-    static std::pair<float, float> getMousePos() { return m_impl->getMousePosImpl(); }
-    static float getMousePosX() { return m_impl->getMousePosXImpl(); }
-    static float getMousePosY() { return m_impl->getMousePosYImpl(); }
+    static std::pair<float, float> getMousePos() { return s_impl->getMousePosImpl(); }
+    static float getMousePosX() { return s_impl->getMousePosXImpl(); }
+    static float getMousePosY() { return s_impl->getMousePosYImpl(); }
 
 protected:
     Input() = default;
@@ -101,7 +101,7 @@ protected:
     virtual float getMousePosYImpl() const = 0;
 
 private:
-    static Scoped<Input> m_impl;
+    static Scoped<Input> s_impl;
 };
 
 } // namespace GE

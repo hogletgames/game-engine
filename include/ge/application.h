@@ -58,16 +58,16 @@ public:
     void pushLayer(Shared<Layer> layer);
     void pushOverlay(Shared<Layer> overlay);
 
-    static const Window& getWindow() { return *m_window; }
-    static void* getNativeWindow() { return m_window->getNativeWindow(); }
-    static void* getNativeContext() { return m_window->getNativeContext(); }
+    static const Window& getWindow() { return *s_window; }
+    static void* getNativeWindow() { return s_window->getNativeWindow(); }
+    static void* getNativeContext() { return s_window->getNativeContext(); }
 
 private:
     void onEvent(Event* event);
     bool onWindowClosed(const WindowClosedEvent& event);
 
-    static Application* m_instance;
-    static Scoped<Window> m_window;
+    static Application* s_instance;
+    static Scoped<Window> s_window;
 
     LayerStack m_layer_stack;
     bool m_runnign{true};

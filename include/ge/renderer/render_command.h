@@ -55,7 +55,7 @@ public:
     static void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
 private:
-    static Scoped<RendererAPI> m_renderer_api;
+    static Scoped<RendererAPI> s_renderer_api;
 };
 
 } // namespace GE

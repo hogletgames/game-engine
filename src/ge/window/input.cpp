@@ -36,23 +36,23 @@
     #include "unix/input.h"
 using PlatformInput = ::GE::UNIX::Input;
 #else
-    #error "Unsupported platform"
+    #error "Platform is not defined!"
 #endif
 
 namespace GE {
 
-Scoped<Input> Input::m_impl{nullptr};
+Scoped<Input> Input::s_impl{nullptr};
 
 void Input::initialize()
 {
-    m_impl = makeScoped<PlatformInput>();
-    m_impl->initializeImpl();
+    s_impl = makeScoped<PlatformInput>();
+    s_impl->initializeImpl();
 }
 
 void Input::shutdown()
 {
-    m_impl->shutdownImpl();
-    m_impl.reset();
+    s_impl->shutdownImpl();
+    s_impl.reset();
 }
 
 } // namespace GE

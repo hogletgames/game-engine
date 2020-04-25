@@ -37,12 +37,12 @@
 
 namespace GE {
 
-RendererAPI::API RendererAPI::m_api{GE_NONE_API};
+RendererAPI::API RendererAPI::s_api{GE_NONE_API};
 
 Scoped<RendererAPI> RendererAPI::create(API api)
 {
     GE_CORE_TRACE("New Renderer API: {}", api);
-    m_api = api;
+    s_api = api;
 
     switch (api) {
         case GE_OPEN_GL_API: return makeScoped<OpenGL::RendererAPI>();

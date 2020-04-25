@@ -35,40 +35,33 @@
 
 #include <ge/core/log.h>
 
-#if !defined(GE_DISABLE_ASSERTS)
-    #define GE_CORE_ASSERT(x, ...) \
-        ::GE::core_assert(x, #x, __FILE__, __LINE__, __VA_ARGS__)
-
-    #define GE_ASSERT(x, ...) ::GE::client_assert(x, #x, __FILE__, __LINE__, __VA_ARGS__)
+#if defined(GE_PLATFORM_UNIX)
+    #include <csignal>
+    #define GE_DBGBREAK() raise(SIGTRAP)
+#elif defined(GE_PLATFORM_WIN32)
+    #define GE_DBGBREAK() __debugbreak()
 #else
-    #define GE_CORE_ASSERT(x, ...) static_cast<void>(x)
-    #define GE_ASSERT(x, ...)      static_cast<void>(x)
+    #error "Platform is not defined!"
 #endif
 
-namespace GE {
+#if !defined(GE_DISABLE_ASSERTS)
+    #define GE_CORE_ASSERT(expr, ...)                                              \
+        if (!(expr)) {                                                             \
+            GE_CORE_CRIT("assert failed: {}:{}: '{}'", __FILE__, __LINE__, #expr); \
+            GE_CORE_CRIT(__VA_ARGS__);                                             \
+            GE_DBGBREAK();                                                         \
+        }
 
-template<typename... Args>
-inline void core_assert(bool expr, const char* expr_str, const char* file, size_t line,
-                        Args&&... args)
-{
-    if (!expr) {
-        GE_CORE_CRIT("assert failed: {}:{}: '{}'", file, line, expr_str);
-        GE_CORE_CRIT(std::forward<Args>(args)...);
-        std::terminate();
-    }
-}
+    #define GE_ASSERT(expr, ...)                                              \
+        if (!(expr)) {                                                        \
+            GE_CRIT("assert failed: {}:{}: '{}'", __FILE__, __LINE__, #expr); \
+            GE_CRIT(__VA_ARGS__);                                             \
+            GE_DBGBREAK();                                                    \
+        }
 
-template<typename... Args>
-inline void client_assert(bool expr, const char* expr_str, const char* file, size_t line,
-                          Args&&... args)
-{
-    if (!expr) {
-        GE_CRIT("assert failed: {}:{}: '{}'", file, line, expr_str);
-        GE_CRIT(std::forward<Args>(args)...);
-        std::terminate();
-    }
-}
-
-} // namespace GE
+#else
+    #define GE_CORE_ASSERT(expr, ...) static_cast<void>(expr)
+    #define GE_ASSERT(expr, ...)      static_cast<void>(expr)
+#endif
 
 #endif // GE_CORE_ASSERTS_H_

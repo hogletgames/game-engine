@@ -36,34 +36,34 @@
 
 namespace GE {
 
-Scoped<RendererAPI> RenderCommand::m_renderer_api{nullptr};
+Scoped<RendererAPI> RenderCommand::s_renderer_api{nullptr};
 
 void RenderCommand::initialize(RendererAPI::API api)
 {
     GE_CORE_TRACE("Initialize Renderer Command");
-    m_renderer_api = RendererAPI::create(api);
+    s_renderer_api = RendererAPI::create(api);
 }
 
 void RenderCommand::shutdown()
 {
     GE_CORE_TRACE("Shutdown Renderer Command");
-    m_renderer_api.reset();
+    s_renderer_api.reset();
 }
 
 void RenderCommand::clear(const glm::vec4& color)
 {
-    m_renderer_api->clear(color);
+    s_renderer_api->clear(color);
 }
 
 void RenderCommand::draw(const Shared<VertexArray>& vertex_array)
 {
     vertex_array->bind();
-    m_renderer_api->draw(vertex_array);
+    s_renderer_api->draw(vertex_array);
 }
 
 void RenderCommand::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
-    m_renderer_api->setViewport(x, y, width, height);
+    s_renderer_api->setViewport(x, y, width, height);
 }
 
 } // namespace GE
