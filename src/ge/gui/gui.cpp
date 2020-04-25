@@ -46,7 +46,7 @@
     #include "unix/gui.h"
 using PlatformGui = ::GE::UNIX::Gui;
 #else
-    #error "Unsupported platform"
+    #error "Platform is not defined!"
 #endif
 
 #define CAST_KEY(key) static_cast<int>(key)

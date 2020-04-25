@@ -39,7 +39,7 @@
     #include "unix/opengl_context.h"
 using OpenGLContext = ::GE::UNIX::OpenGLContext;
 #else
-    #error "Unsupported platform"
+    #error "Platform is not defined!"
 #endif
 
 namespace GE {

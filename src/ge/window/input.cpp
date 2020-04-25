@@ -36,7 +36,7 @@
     #include "unix/input.h"
 using PlatformInput = ::GE::UNIX::Input;
 #else
-    #error "Unsupported platform"
+    #error "Platform is not defined!"
 #endif
 
 namespace GE {
