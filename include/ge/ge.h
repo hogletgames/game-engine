@@ -39,6 +39,7 @@
 #include <ge/core/interface.h>
 #include <ge/core/log.h>
 #include <ge/core/non_copyable.h>
+#include <ge/core/timestamp.h>
 #include <ge/empty_layer.h>
 #include <ge/layer.h>
 #include <ge/layer_stack.h>
