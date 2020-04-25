@@ -42,6 +42,7 @@ namespace GE::Examples {
 
 TriangleLayer::TriangleLayer(bool show_gui_demo)
     : GuiLayer{show_gui_demo, "Triangle Layer"}
+    , m_camera{-1.6f, 1.6f, -0.9f, 0.9f} // NOLINT
 {
     GE_PROFILE_FUNC();
 
@@ -59,9 +60,8 @@ void TriangleLayer::onUpdate()
 
     {
         GE_PROFILE_SCOPE("TriangleLayer Draw");
-        Begin<Renderer> begin{};
-        m_triangle_shader->bind();
-        Renderer::submit(m_triangle_vao);
+        Begin<Renderer> begin{m_camera};
+        Renderer::submit(m_triangle_shader, m_triangle_vao);
     }
 }
 

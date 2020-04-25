@@ -35,9 +35,14 @@
 #include "vertex_array.h"
 
 #include "ge/core/log.h"
+#include "ge/core/utils.h"
 #include "ge/debug/profile.h"
+#include "ge/renderer/orthographic_camera.h"
+#include "ge/renderer/shader_program.h"
 
 namespace GE {
+
+Scoped<Renderer::SceneData> Renderer::s_scene_data{nullptr};
 
 void Renderer::initialize(RendererAPI::API api)
 {
@@ -45,6 +50,7 @@ void Renderer::initialize(RendererAPI::API api)
 
     GE_CORE_TRACE("Initialize Renderer");
     RenderCommand::initialize(api);
+    s_scene_data = makeScoped<Renderer::SceneData>();
 }
 
 void Renderer::shutdown()
@@ -52,17 +58,27 @@ void Renderer::shutdown()
     GE_PROFILE_FUNC();
 
     GE_CORE_TRACE("Shutdown Renderer");
+    s_scene_data.reset();
     RenderCommand::shutdown();
 }
 
-void Renderer::begin() {}
-
-void Renderer::end() {}
-
-void Renderer::submit(const Shared<VertexArray>& vertex_array)
+void Renderer::begin(const OrthographicCamera& camera)
 {
     GE_PROFILE_FUNC();
 
+    s_scene_data->vp_matrix = camera.getVPMatrix();
+}
+
+void Renderer::end() {}
+
+void Renderer::submit(const Shared<ShaderProgram>& shader,
+                      const Shared<VertexArray>& vertex_array)
+{
+    GE_PROFILE_FUNC();
+
+    shader->bind();
+    shader->setUniformMat4(GE_UNIFORM_VP_MATRIX, s_scene_data->vp_matrix);
+    
     vertex_array->bind();
     RenderCommand::draw(vertex_array);
 }

@@ -36,7 +36,13 @@
 #include <ge/core/core.h>
 #include <ge/renderer/renderer_api.h>
 
+#include <glm/glm.hpp>
+
+#define GE_UNIFORM_VP_MATRIX "u_ViewProjection"
+
 namespace GE {
+class OrthographicCamera;
+class ShaderProgram;
 
 class GE_API Renderer
 {
@@ -46,12 +52,20 @@ public:
     static void initialize(RendererAPI::API api);
     static void shutdown();
 
-    static void begin();
+    static void begin(const OrthographicCamera& camera);
     static void end();
 
-    static void submit(const Shared<VertexArray>& vertex_array);
+    static void submit(const Shared<ShaderProgram>& shader,
+                       const Shared<VertexArray>& vertex_array);
 
     static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
+
+private:
+    struct SceneData {
+        glm::mat4 vp_matrix{1.0f};
+    };
+
+    static Scoped<SceneData> s_scene_data;
 };
 
 } // namespace GE

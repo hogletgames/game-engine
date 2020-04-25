@@ -50,6 +50,8 @@ private:
 
     Shared<ShaderProgram> m_triangle_shader;
     Shared<VertexArray> m_triangle_vao;
+
+    OrthographicCamera m_camera;
 };
 
 } // namespace GE::Examples
