@@ -39,16 +39,16 @@
 
 namespace GE {
 
-Shared<spdlog::logger> Log::m_core_logger;
-Shared<spdlog::logger> Log::m_client_logger;
+Shared<spdlog::logger> Log::s_core_logger;
+Shared<spdlog::logger> Log::s_client_logger;
 
 void Log::initialize()
 {
     spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
     spdlog::set_level(spdlog::level::trace);           // NOLINT
 
-    m_core_logger = spdlog::stdout_color_st(CORE_LOGGER);
-    m_client_logger = spdlog::stdout_color_st(CLIENT_LOGGER);
+    s_core_logger = spdlog::stdout_color_st(CORE_LOGGER);
+    s_client_logger = spdlog::stdout_color_st(CLIENT_LOGGER);
 }
 
 void Log::shutdown()
@@ -56,8 +56,8 @@ void Log::shutdown()
     spdlog::drop(CLIENT_LOGGER);
     spdlog::drop(CORE_LOGGER);
 
-    m_client_logger.reset();
-    m_core_logger.reset();
+    s_client_logger.reset();
+    s_core_logger.reset();
 }
 
 } // namespace GE

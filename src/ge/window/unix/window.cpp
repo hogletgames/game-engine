@@ -48,7 +48,7 @@
 
 namespace GE::UNIX {
 
-bool Window::m_initialized{false};
+bool Window::s_initialized{false};
 
 Window::Window(properties_t prop)
     : m_prop(std::move(prop))

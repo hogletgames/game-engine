@@ -71,7 +71,7 @@ private:
     void onSDLKeyEvent(const SDL_Event& sdl_event);
     void onSDLWindowEvent(const SDL_Event& sdl_event);
 
-    static bool m_initialized;
+    static bool s_initialized;
 
     SDL_Window* m_window{nullptr};
     Scoped<GraphicsContext> m_contex;

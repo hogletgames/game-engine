@@ -41,31 +41,31 @@
 
 namespace GE {
 
-Application* Application::m_instance{nullptr};
-Scoped<Window> Application::m_window{nullptr};
+Application* Application::s_instance{nullptr};
+Scoped<Window> Application::s_window{nullptr};
 
 Application::Application()
 {
-    GE_CORE_ASSERT(!m_instance, "Application already exists");
-    m_instance = this;
-    m_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
+    GE_CORE_ASSERT(!s_instance, "Application already exists");
+    s_instance = this;
+    s_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
 }
 
 Application::~Application()
 {
-    m_instance = nullptr;
+    s_instance = nullptr;
 }
 
 void Application::initialize()
 {
     GE_TRACE("Initialize Application");
-    m_window = Window::create();
+    s_window = Window::create();
 }
 
 void Application::shutdown()
 {
     GE_TRACE("Shutdown Application");
-    m_window.reset();
+    s_window.reset();
 }
 
 void Application::run()
@@ -83,7 +83,7 @@ void Application::run()
         }
         Gui::end();
 
-        m_window->onUpdate();
+        s_window->onUpdate();
     }
 }
 
