@@ -48,7 +48,7 @@ public:
 
     void onAttach() override{};
     void onDetach() override{};
-    void onUpdate() override{};
+    void onUpdate([[maybe_unused]] Timestamp delta_time) override{};
     void onEvent([[maybe_unused]] Event* event) override{};
     void onGuiRender() override{};
 };

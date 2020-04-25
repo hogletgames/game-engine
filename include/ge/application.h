@@ -33,6 +33,7 @@
 #ifndef GE_APPLICATION_H_
 #define GE_APPLICATION_H_
 
+#include "ge/core/timestamp.h"
 #include <ge/core/non_copyable.h>
 #include <ge/layer_stack.h>
 #include <ge/window/window.h>
@@ -71,6 +72,7 @@ private:
 
     LayerStack m_layer_stack;
     bool m_runnign{true};
+    Timestamp m_prev_frame_time;
 };
 
 } // namespace GE

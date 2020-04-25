@@ -146,7 +146,7 @@ class LayerMock: public GE::Layer
 public:
     MOCK_METHOD(void, onAttach, (), (override));
     MOCK_METHOD(void, onDetach, (), (override));
-    MOCK_METHOD(void, onUpdate, (), (override));
+    MOCK_METHOD(void, onUpdate, (GE::Timestamp delta_time), (override));
     MOCK_METHOD(void, onEvent, (GE::Event * event), (override));
 };
 
@@ -191,15 +191,15 @@ TEST_F(LayerStackTest, ReplaceLayerForwardOrder)
     {
         testing::InSequence seq;
 
-        EXPECT_CALL(*layer_1, onUpdate());
-        EXPECT_CALL(*layer_2, onUpdate()).Times(0);
-        EXPECT_CALL(*layer_3, onUpdate());
-        EXPECT_CALL(*overlay_1, onUpdate());
-        EXPECT_CALL(*overlay_2, onUpdate());
+        EXPECT_CALL(*layer_1, onUpdate({0.0}));
+        EXPECT_CALL(*layer_2, onUpdate({0.0})).Times(0);
+        EXPECT_CALL(*layer_3, onUpdate({0.0}));
+        EXPECT_CALL(*overlay_1, onUpdate({0.0}));
+        EXPECT_CALL(*overlay_2, onUpdate({0.0}));
     }
 
     for (auto& layer : layer_stack) {
-        layer->onUpdate();
+        layer->onUpdate(0.0);
     }
 }
 
@@ -215,15 +215,15 @@ TEST_F(LayerStackTest, ReplaceLayerReverseOrder)
     {
         testing::InSequence seq;
 
-        EXPECT_CALL(*overlay_2, onUpdate());
-        EXPECT_CALL(*overlay_1, onUpdate());
-        EXPECT_CALL(*layer_3, onUpdate());
-        EXPECT_CALL(*layer_2, onUpdate()).Times(0);
-        EXPECT_CALL(*layer_1, onUpdate());
+        EXPECT_CALL(*overlay_2, onUpdate({0.0}));
+        EXPECT_CALL(*overlay_1, onUpdate({0.0}));
+        EXPECT_CALL(*layer_3, onUpdate({0.0}));
+        EXPECT_CALL(*layer_2, onUpdate({0.0})).Times(0);
+        EXPECT_CALL(*layer_1, onUpdate({0.0}));
     }
 
     for (auto layer = layer_stack.rbegin(); layer != layer_stack.rend(); ++layer) {
-        (*layer)->onUpdate();
+        (*layer)->onUpdate(0.0);
     }
 }
 
@@ -239,15 +239,15 @@ TEST_F(LayerStackTest, ReplaceOverlayForwardOrder)
     {
         testing::InSequence seq;
 
-        EXPECT_CALL(*layer_1, onUpdate());
-        EXPECT_CALL(*layer_2, onUpdate());
-        EXPECT_CALL(*overlay_1, onUpdate()).Times(0);
-        EXPECT_CALL(*overlay_2, onUpdate());
-        EXPECT_CALL(*overlay_3, onUpdate());
+        EXPECT_CALL(*layer_1, onUpdate({0.0}));
+        EXPECT_CALL(*layer_2, onUpdate({0.0}));
+        EXPECT_CALL(*overlay_1, onUpdate({0.0})).Times(0);
+        EXPECT_CALL(*overlay_2, onUpdate({0.0}));
+        EXPECT_CALL(*overlay_3, onUpdate({0.0}));
     }
 
     for (auto& layer : layer_stack) {
-        layer->onUpdate();
+        layer->onUpdate(0.0);
     }
 }
 
@@ -263,15 +263,15 @@ TEST_F(LayerStackTest, ReplaceOverlayReverseOrder)
     {
         testing::InSequence seq;
 
-        EXPECT_CALL(*overlay_3, onUpdate());
-        EXPECT_CALL(*overlay_2, onUpdate());
-        EXPECT_CALL(*overlay_1, onUpdate()).Times(0);
-        EXPECT_CALL(*layer_2, onUpdate());
-        EXPECT_CALL(*layer_1, onUpdate());
+        EXPECT_CALL(*overlay_3, onUpdate({0.0}));
+        EXPECT_CALL(*overlay_2, onUpdate({0.0}));
+        EXPECT_CALL(*overlay_1, onUpdate({0.0})).Times(0);
+        EXPECT_CALL(*layer_2, onUpdate({0.0}));
+        EXPECT_CALL(*layer_1, onUpdate({0.0}));
     }
 
     for (auto layer = layer_stack.rbegin(); layer != layer_stack.rend(); ++layer) {
-        (*layer)->onUpdate();
+        (*layer)->onUpdate(0.0);
     }
 }
 

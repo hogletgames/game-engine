@@ -80,15 +80,19 @@ void Application::shutdown()
 void Application::run()
 {
     GE_PROFILE_FUNC();
+    m_prev_frame_time = Timestamp::now();
 
     while (m_runnign) {
         GE_PROFILE_SCOPE("MainLoop");
 
         {
             GE_PROFILE_SCOPE("LayerStack onUpdate");
+            Timestamp now = Timestamp::now();
+            Timestamp delta_time = now - m_prev_frame_time;
+            m_prev_frame_time = now;
 
             for (auto& layer : m_layer_stack) {
-                layer->onUpdate();
+                layer->onUpdate(delta_time);
             }
         }
 
