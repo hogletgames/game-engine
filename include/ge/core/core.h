@@ -46,7 +46,7 @@
     #define GE_API
 #endif
 
-#define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1) // NOLINT
+#define GE_BIND_EVENT_FN(fn) [this](const auto& event) { return fn(event); }
 
 namespace GE {
 

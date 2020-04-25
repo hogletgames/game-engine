@@ -49,7 +49,7 @@ Application::Application()
 {
     GE_CORE_ASSERT(!s_instance, "Application already exists");
     s_instance = this;
-    s_window->setEventCallback(GE_BIND_MEM_FN(Application::onEvent));
+    s_window->setEventCallback([this](Event* event) { onEvent(event); });
 }
 
 Application::~Application()
@@ -103,7 +103,7 @@ void Application::pushOverlay(Shared<Layer> overlay)
 void Application::onEvent(Event* event)
 {
     EventDispatcher dispatcher{event};
-    dispatcher.dispatch<WindowClosedEvent>(GE_BIND_MEM_FN(Application::onWindowClosed));
+    dispatcher.dispatch<WindowClosedEvent>(GE_BIND_EVENT_FN(onWindowClosed));
 
     Gui::onEvent(event);
 
