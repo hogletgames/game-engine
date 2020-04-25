@@ -46,8 +46,7 @@
     #define GE_API
 #endif
 
-// NOLINTNEXTLINE
-#define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+#define GE_BIND_MEM_FN(fn) std::bind(&fn, this, std::placeholders::_1) // NOLINT
 
 namespace GE {
 

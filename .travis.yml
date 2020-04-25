@@ -5,10 +5,13 @@ dist: bionic
 compiler: gcc
 addons:
   apt:
+    sources:
+      - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+        key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
     packages:
+      - clang-format-10
+      - clang-tidy-10
       - cmake
-      - clang-format-9
-      - clang-tidy-9
       - valgrind
 
 env:
@@ -27,5 +30,5 @@ jobs:
   include:
     - name: clang-tools
       script:
-        - bash tools/clang_format.sh --clang-format-bin clang-format-9
-        - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-9
+        - bash tools/clang_format.sh --clang-format-bin clang-format-10
+        - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-10
