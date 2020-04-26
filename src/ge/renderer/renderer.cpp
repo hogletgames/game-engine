@@ -72,13 +72,14 @@ void Renderer::begin(const OrthographicCamera& camera)
 void Renderer::end() {}
 
 void Renderer::submit(const Shared<ShaderProgram>& shader,
-                      const Shared<VertexArray>& vertex_array)
+                      const Shared<VertexArray>& vertex_array, const glm::mat4& transform)
 {
     GE_PROFILE_FUNC();
 
     shader->bind();
     shader->setUniformMat4(GE_UNIFORM_VP_MATRIX, s_scene_data->vp_matrix);
-    
+    shader->setUniformMat4(GE_UNIFORM_TRANSFORM, transform);
+
     vertex_array->bind();
     RenderCommand::draw(vertex_array);
 }

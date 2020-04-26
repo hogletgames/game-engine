@@ -39,6 +39,7 @@
 #include <glm/glm.hpp>
 
 #define GE_UNIFORM_VP_MATRIX "u_ViewProjection"
+#define GE_UNIFORM_TRANSFORM "u_Transform"
 
 namespace GE {
 class OrthographicCamera;
@@ -56,7 +57,8 @@ public:
     static void end();
 
     static void submit(const Shared<ShaderProgram>& shader,
-                       const Shared<VertexArray>& vertex_array);
+                       const Shared<VertexArray>& vertex_array,
+                       const glm::mat4& transform = glm::mat4{1.0});
 
     static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 
