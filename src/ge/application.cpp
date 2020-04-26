@@ -71,8 +71,6 @@ void Application::shutdown()
 void Application::run()
 {
     while (m_runnign) {
-        RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
-
         for (auto& layer : m_layer_stack) {
             layer->onUpdate();
         }
