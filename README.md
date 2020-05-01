@@ -10,6 +10,7 @@
 - [Dear ImGui](https://github.com/ocornut/imgui)
 - [glm](https://github.com/g-truc/glm)
 - [docopt.cpp](https://github.com/docopt/docopt.cpp)
+- [stb](https://github.com/nothings/stb)
 
 ### Dependencies
 - [Boost v1.65](https://www.boost.org/doc/libs/1_65_0/)
