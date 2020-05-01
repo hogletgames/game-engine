@@ -30,45 +30,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+// NOLINTNEXTLINE
+#ifndef GE_RENDERER_OPENGL_TEXTURE_H_
+#define GE_RENDERER_OPENGL_TEXTURE_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
-
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-
-#include <ge/gui/gui.h>
-
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
 #include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+namespace GE::OpenGL {
 
-#endif // GE_GE_H_
+class Texture2D: public ::GE::Texture2D
+{
+public:
+    explicit Texture2D(std::string path);
+    Texture2D(uint32_t width, uint32_t height, uint32_t bpp);
+    ~Texture2D() override;
+
+    uint32_t getWidth() const override { return m_width; }
+    uint32_t getHeight() const override { return m_height; }
+
+    void setData(const void* data, uint32_t size) override;
+
+    uint32_t getNativeID() const override { return m_id; };
+
+    void bind(uint32_t slot) const override;
+
+private:
+    void createTexture(uint32_t internal_format);
+
+    std::string m_path;
+    uint32_t m_id{0};
+    uint32_t m_width{};
+    uint32_t m_height{};
+    uint32_t m_bpp{};
+};
+
+} // namespace GE::OpenGL
+
+#endif // GE_RENDERER_OPENGL_TEXTURE_H_

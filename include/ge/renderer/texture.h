@@ -30,45 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_TEXTURE_H_
+#define GE_RENDERER_TEXTURE_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
-
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
 #include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
 
-#include <ge/gui/gui.h>
+#include <string>
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
+namespace GE {
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+class GE_API Texture: public Interface
+{
+public:
+    virtual uint32_t getWidth() const = 0;
+    virtual uint32_t getHeight() const = 0;
 
-#endif // GE_GE_H_
+    virtual void setData(const void* data, uint32_t size) = 0;
+
+    virtual uint32_t getNativeID() const = 0;
+
+    virtual void bind(uint32_t slot = 0) const = 0;
+};
+
+class GE_API Texture2D: public Texture
+{
+public:
+    static Scoped<Texture2D> create(std::string path);
+    static Scoped<Texture2D> create(uint32_t width, uint32_t height, uint32_t bpp);
+};
+
+} // namespace GE
+
+#endif // GE_RENDERER_TEXTURE_H_

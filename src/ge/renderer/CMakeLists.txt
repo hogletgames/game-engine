@@ -9,6 +9,7 @@ set(GE_RENDERER_SRC
     renderer.cpp
     shader_program.cpp
     shader.cpp
+    texture.cpp
     vertex_array.cpp
 )
 
