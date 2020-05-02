@@ -4,6 +4,7 @@
 #include "ge/layer.h"
 #include "ge/layer_stack.h"
 #include "ge/window/key_event.h"
+#include <ge/ge.h>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -13,8 +14,8 @@ namespace {
 class GECoreTest: public ::testing::Test
 {
 protected:
-    void SetUp() override { GE::Log::initialize(); }
-    void TearDown() override { GE::Log::shutdown(); }
+    void SetUp() override { GE_INITIALIZE(GE_OPEN_GL_API); }
+    void TearDown() override { GE_SHUTDOWN(); }
 };
 
 TEST_F(GECoreTest, CoreLogger)

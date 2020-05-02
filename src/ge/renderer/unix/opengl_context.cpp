@@ -36,16 +36,14 @@
 #include <SDL.h>
 #include <glad/glad.h>
 
-#define OPENGL_MAJOR_VERSION 4
-#define OPENGL_MINOR_VERSION 5
+#define OPENGL_MAJOR_VERSION 3
+#define OPENGL_MINOR_VERSION 1
 
 namespace GE::UNIX {
 
 OpenGLContext::OpenGLContext(void* window)
     : m_window{reinterpret_cast<SDL_Window*>(window)}
-{
-    GE_CORE_TRACE("OpenGL context has been created");
-}
+{}
 
 void OpenGLContext::initialize()
 {
@@ -55,12 +53,13 @@ void OpenGLContext::initialize()
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE));
 
     m_gl_context = SDL_GL_CreateContext(m_window);
-    GE_CORE_ASSERT(m_gl_context, "Failed to create graphics context");
+    GE_CORE_ASSERT(m_gl_context, "Failed to create graphics context: {}", SDL_GetError());
 
     auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
     int is_glad_loaded = gladLoadGLLoader(glad_load_proc);
     GE_CORE_ASSERT(is_glad_loaded, "Failed to initialize GLAD");
 
+    GE_CORE_TRACE("OpenGL context has been created");
     GE_CORE_INFO("OpenGL Version: {}", glGetString(GL_VERSION));
     GE_CORE_INFO("OpenGL Shading Language Version: {}",
                  glGetString(GL_SHADING_LANGUAGE_VERSION));

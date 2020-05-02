@@ -28,6 +28,7 @@ RUN_CLANG_TIDY_BIN      ?= run-clang-tidy
 
 ifeq ($(VALGRIND),ON)
 	VALGRIND_BIN = valgrind --leak-check=full --error-exitcode=1
+	VALGRIND_PYTEST = --valgrind
 endif
 
 # Build project
@@ -62,6 +63,11 @@ clean:
 .PHONY: test_ge_core
 test_ge_core:
 	$(VALGRIND_BIN) ${BUILD_DIR}/tests/test_ge_core
+
+# Run sanbox examples test
+.PHONY: test_examples
+test_examples:
+	pytest tests -v $(VALGRIND_PYTEST)
 
 # Run all tests
 .PHONY: test
