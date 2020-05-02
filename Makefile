@@ -24,8 +24,11 @@ CMAKE_FLAGS += -DGE_BUILD_TESTS=$(BUILD_TESTS) -DGE_ENABLE_ASAN=$(ENABLE_ASAN)
 CMAKE_FLAGS += -DGE_ENABLE_USAN=$(ENABLE_USAN) CMAKE_FLAGS -DGE_ENABLE_TSAN=$(ENABLE_TSAN)
 CMAKE_FLAGS += -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS) -DGE_DEBUG=$(ENABLE_DEBUG)
 
-VALGRIND_BIN             = valgrind --leak-check=full --error-exitcode=1
 RUN_CLANG_TIDY_BIN      ?= run-clang-tidy
+
+ifeq ($(VALGRIND),ON)
+	VALGRIND_BIN = valgrind --leak-check=full --error-exitcode=1
+endif
 
 # Build project
 .PHONY: all
@@ -58,13 +61,8 @@ clean:
 # Run GE core test
 .PHONY: test_ge_core
 test_ge_core:
-	$(VALGRIND) ${BUILD_DIR}/tests/test_ge_core
+	$(VALGRIND_BIN) ${BUILD_DIR}/tests/test_ge_core
 
 # Run all tests
 .PHONY: test
 test: test_ge_core
-
-# Run all tests with valgrind
-.PHONY: test_valgrind
-test_valgrind: VALGRIND = $(VALGRIND_BIN)
-test_valgrind: test
