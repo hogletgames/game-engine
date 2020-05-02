@@ -37,8 +37,9 @@
 #define VER_COUNT       3
 #define VERT_DATA_COUNT 7
 
-#define VERT_PATH "examples/shaders/pass_through.vert"
-#define FRAG_PATH "examples/shaders/pass_through.frag"
+#define VERT_PATH   "examples/shaders/pass_through.vert"
+#define FRAG_PATH   "examples/shaders/pass_through.frag"
+#define SHADER_NAME "PassThrough"
 
 #define ATTR_POSITION "a_Position"
 #define ATTR_COLOR    "a_Color"
@@ -80,7 +81,7 @@ void TriangleLayer::onAttach()
     Shared<Shader> fragment_shader = Shader::create(GE_FRAGMENT_SHADER);
     fragment_shader->compileFromFile(FRAG_PATH);
 
-    m_shader = ShaderProgram::create();
+    m_shader = ShaderProgram::create(SHADER_NAME);
     m_shader->addShaders({vertex_shader, fragment_shader});
 
     GE_ASSERT_MSG(m_shader->link(), "Failed to link shader");

@@ -34,19 +34,127 @@
 #include "opengl/shader_program.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/log.h"
 #include "ge/core/utils.h"
+#include "ge/debug/profile.h"
 #include "ge/renderer/renderer.h"
+
+#include <filesystem>
+
+namespace {
+
+bool compileShader(const GE::Shared<GE::Shader>& shader, const std::string& path)
+{
+    GE_PROFILE_FUNC();
+
+    if (!shader->compileFromFile(path)) {
+        GE_CORE_ERR("Failed to compile '{}'", path);
+        return false;
+    }
+
+    return true;
+}
+
+} // namespace
 
 namespace GE {
 
-Scoped<ShaderProgram> ShaderProgram::create()
+Scoped<ShaderProgram> ShaderProgram::create(std::string name)
 {
+    GE_PROFILE_FUNC();
+
     switch (Renderer::getAPI()) {
-        case GE_OPEN_GL_API: return makeScoped<OpenGL::ShaderProgram>();
+        case GE_OPEN_GL_API: return makeScoped<OpenGL::ShaderProgram>(std::move(name));
         default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
     }
 
     return nullptr;
+}
+
+bool ShaderLibrary::add(Shared<ShaderProgram> shader_program)
+{
+    GE_PROFILE_FUNC();
+
+    std::string name = shader_program->getName();
+    return add(std::move(shader_program), name);
+}
+
+bool ShaderLibrary::add(Shared<ShaderProgram> shader_program, std::string name)
+{
+    GE_PROFILE_FUNC();
+
+    if (exists(name)) {
+        GE_CORE_ERR("Shader '{}' already exists", name);
+        return false;
+    }
+
+    m_shaders.emplace(std::move(name), std::move(shader_program));
+    return true;
+}
+
+Shared<ShaderProgram> ShaderLibrary::load(const std::string& vertex_path,
+                                          const std::string& fragment_path)
+{
+    GE_PROFILE_FUNC();
+
+    std::string name = std::filesystem::path(vertex_path).stem();
+    return load(vertex_path, fragment_path, name);
+}
+
+Shared<ShaderProgram> ShaderLibrary::load(const std::string& vertex_path,
+                                          const std::string& fragment_path,
+                                          const std::string& name)
+{
+    GE_PROFILE_FUNC();
+
+    if (exists(name)) {
+        GE_CORE_ERR("Shader '{}' already exists", name);
+        return nullptr;
+    }
+
+    Shared<ShaderProgram> shader_program = ShaderProgram::create(name);
+    Shared<Shader> vertex = Shader::create(GE_VERTEX_SHADER);
+    Shared<Shader> fragment = Shader::create(GE_FRAGMENT_SHADER);
+
+    if (!compileShader(vertex, vertex_path) || !compileShader(fragment, fragment_path)) {
+        return nullptr;
+    }
+
+    shader_program->addShaders({fragment, vertex});
+
+    if (!shader_program->link()) {
+        GE_CORE_ERR("Failed to link '{}'", shader_program->getName());
+        return nullptr;
+    }
+
+    if (!add(shader_program, name)) {
+        GE_CORE_ERR("Failed to add '{}'", shader_program->getName());
+        return nullptr;
+    }
+
+    return shader_program;
+}
+
+void ShaderLibrary::clear()
+{
+    m_shaders.clear();
+}
+
+Shared<ShaderProgram> ShaderLibrary::get(const std::string& name)
+{
+    GE_PROFILE_FUNC();
+
+    if (!exists(name)) {
+        GE_CORE_ERR("Shader '{}' doesn't exists", name);
+        return nullptr;
+    }
+
+    return m_shaders[name];
+}
+
+bool ShaderLibrary::exists(const std::string& name) const
+{
+    return m_shaders.find(name) != m_shaders.end();
 }
 
 } // namespace GE

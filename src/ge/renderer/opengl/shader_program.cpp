@@ -42,7 +42,8 @@
 
 namespace GE::OpenGL {
 
-ShaderProgram::ShaderProgram()
+ShaderProgram::ShaderProgram(std::string name)
+    : m_name(std::move(name))
 {
     GE_PROFILE_FUNC();
 
