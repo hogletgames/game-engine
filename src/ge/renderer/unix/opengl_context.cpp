@@ -31,6 +31,7 @@
  */
 
 #include "opengl_context.h"
+#include "opengl_utils.h"
 #include "unix_utils.h"
 
 #include "ge/core/asserts.h"
@@ -120,6 +121,9 @@ void OpenGLContext::initialize()
     SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG));
     enableGlDbgCallback();
 #endif
+
+    GLCall(glEnable(GL_BLEND));
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }
 
 void OpenGLContext::shutdown()
