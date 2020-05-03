@@ -30,63 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_ORTHO_CAMERA_CONTROLLER_H_
+#define GE_RENDERER_ORTHO_CAMERA_CONTROLLER_H_
 
-#include <ge/application.h>
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
+#include <ge/core/core.h>
 #include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-
-#include <ge/gui/gui.h>
-
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
 #include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/vertex_array.h>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
-
-#define GE_INITIALIZE(api) ::GE::FWManager::get()->initialize(api)
-#define GE_SHUTDOWN()      ::GE::FWManager::get()->shutdown()
+#include <glm/glm.hpp>
 
 namespace GE {
 
-class GE_API FWManager
+class Event;
+class MouseScrolledEvent;
+class WindowResizedEvent;
+
+class GE_API OrthoCameraController
 {
 public:
-    void initialize(RendererAPI::API api);
-    void shutdown();
+    explicit OrthoCameraController(float aspect_ratio, bool rotation = false);
 
-    static FWManager* get();
+    void onUpdate(Timestamp delta_time);
+    void onEvent(Event* event);
+
+    const OrthographicCamera& getCamera() const { return m_camera; }
 
 private:
-    FWManager() = default;
-    ~FWManager(); // NOLINT
+    bool onMouseScrolled(const MouseScrolledEvent& event);
+    bool onWindowResizedEvent(const WindowResizedEvent& event);
 
-    bool m_initialized{false};
+    float m_aspect_ratio{};
+    float m_zoom{1.0f};
+    OrthographicCamera m_camera;
+
+    bool m_rotation_enable{false};
+    glm::vec3 m_camera_pos{0.0f, 0.0f, 0.0f};
+    float m_camera_rotation{0.0f};
+    float m_camera_translation_speed{1.0f};
 };
 
 } // namespace GE
 
-#endif // GE_GE_H_
+#endif // GE_RENDERER_ORTHO_CAMERA_CONTROLLER_H_
