@@ -72,12 +72,23 @@ TEST(EventTest, Window)
 
     GE::WindowResizedEvent win_resized{win_resize_width, win_resize_height};
     GE::WindowClosedEvent win_closed{};
+    GE::WindowMaximizedEvent win_max{};
+    GE::WindowMinimizedEvent win_min{};
+    GE::WindowRestoredEvent win_restored{};
 
     EXPECT_EQ(GE::WindowResizedEvent::getStaticType(), GE::Event::Type::WINDOW_RESIZED);
     EXPECT_EQ(GE::WindowClosedEvent::getStaticType(), GE::Event::Type::WINDOW_CLOSED);
+    EXPECT_EQ(GE::WindowMaximizedEvent::getStaticType(),
+              GE::Event::Type::WINDOW_MAXIMIZED);
+    EXPECT_EQ(GE::WindowMinimizedEvent::getStaticType(),
+              GE::Event::Type::WINDOW_MINIMIZED);
+    EXPECT_EQ(GE::WindowRestoredEvent::getStaticType(), GE::Event::Type::WINDOW_RESTORED);
 
     EXPECT_EQ(win_resized.getType(), GE::Event::Type::WINDOW_RESIZED);
     EXPECT_EQ(win_closed.getType(), GE::Event::Type::WINDOW_CLOSED);
+    EXPECT_EQ(win_max.getType(), GE::Event::Type::WINDOW_MAXIMIZED);
+    EXPECT_EQ(win_min.getType(), GE::Event::Type::WINDOW_MINIMIZED);
+    EXPECT_EQ(win_restored.getType(), GE::Event::Type::WINDOW_RESTORED);
 
     EXPECT_EQ(win_resized.getWidth(), win_resize_width);
     EXPECT_EQ(win_resized.getHeight(), win_resize_height);
@@ -94,7 +105,8 @@ using EventTypeList = ::testing::Types<
     GE::MouseMovedEvent, GE::MouseScrolledEvent, GE::MouseButtonPressedEvent,
     GE::MouseButtonReleasedEvent,
     // Window events
-    GE::WindowResizedEvent, GE::WindowClosedEvent>;
+    GE::WindowResizedEvent, GE::WindowClosedEvent, GE::WindowMaximizedEvent,
+    GE::WindowMinimizedEvent, GE::WindowRestoredEvent>;
 
 TYPED_TEST_SUITE(EventDispatcherTest, EventTypeList);
 

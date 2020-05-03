@@ -65,7 +65,10 @@ public:
         MOUSE_BUTTON_RELEASED,
         // Window events
         WINDOW_RESIZED,
-        WINDOW_CLOSED
+        WINDOW_CLOSED,
+        WINDOW_MAXIMIZED,
+        WINDOW_MINIMIZED,
+        WINDOW_RESTORED
     };
 
     virtual Type getType() const = 0;

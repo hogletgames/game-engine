@@ -249,6 +249,22 @@ void Window::onSDLWindowEvent(const SDL_Event& sdl_event)
             m_event_callback(&event);
             break;
         }
+        case SDL_WINDOWEVENT_MAXIMIZED: {
+            WindowMaximizedEvent event{};
+            m_event_callback(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_MINIMIZED: {
+            WindowMinimizedEvent event{};
+            m_event_callback(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_SHOWN:
+        case SDL_WINDOWEVENT_RESTORED: {
+            WindowRestoredEvent event{};
+            m_event_callback(&event);
+            break;
+        }
         default: break;
     }
 }
