@@ -43,7 +43,11 @@
 namespace GE {
 
 class Event;
+class WindowResizedEvent;
 class WindowClosedEvent;
+class WindowMinimizedEvent;
+class WindowMaximizedEvent;
+class WindowRestoredEvent;
 
 class GE_API Application: public NonCopyable
 {
@@ -64,14 +68,27 @@ public:
     static void* getNativeContext() { return s_window->getNativeContext(); }
 
 private:
+    enum class WindowState : uint8_t
+    {
+        NONE = 0,
+        MAXIMIZED,
+        MINIMIZED
+    };
+
+    void updateLayers(Timestamp delta_time);
+
     void onEvent(Event* event);
     bool onWindowClosed(const WindowClosedEvent& event);
+    bool onWindowMaximized(const WindowMaximizedEvent& event);
+    bool onWindowMinimized(const WindowMinimizedEvent& event);
+    bool onWindowRestored(const WindowRestoredEvent& event);
 
     static Application* s_instance;
     static Scoped<Window> s_window;
 
     LayerStack m_layer_stack;
     bool m_runnign{true};
+    WindowState m_window_state{WindowState::NONE};
     Timestamp m_prev_frame_time;
 };
 

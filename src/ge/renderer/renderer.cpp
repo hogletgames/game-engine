@@ -39,6 +39,7 @@
 #include "ge/debug/profile.h"
 #include "ge/renderer/orthographic_camera.h"
 #include "ge/renderer/shader_program.h"
+#include "ge/window/window_event.h"
 
 namespace GE {
 
@@ -60,6 +61,14 @@ void Renderer::shutdown()
     GE_CORE_TRACE("Shutdown Renderer");
     s_scene_data.reset();
     RenderCommand::shutdown();
+}
+
+bool Renderer::onWindowResized(const WindowResizedEvent& event)
+{
+    GE_PROFILE_FUNC();
+
+    RenderCommand::setViewport(0, 0, event.getWidth(), event.getHeight());
+    return false;
 }
 
 void Renderer::begin(const OrthographicCamera& camera)

@@ -44,6 +44,7 @@
 namespace GE {
 class OrthographicCamera;
 class ShaderProgram;
+class WindowResizedEvent;
 
 class GE_API Renderer
 {
@@ -52,6 +53,8 @@ public:
 
     static void initialize(RendererAPI::API api);
     static void shutdown();
+
+    static bool onWindowResized(const WindowResizedEvent& event);
 
     static void begin(const OrthographicCamera& camera);
     static void end();
