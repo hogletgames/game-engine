@@ -36,6 +36,7 @@
 #include "render_command.h"
 #include "renderer.h"
 #include "shader_program.h"
+#include "texture.h"
 #include "vertex_array.h"
 
 #include "ge/core/log.h"

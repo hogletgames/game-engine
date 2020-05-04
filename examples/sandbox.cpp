@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "renderer_2d.h"
 #include "square_layer.h"
 #include "triangle_layer.h"
 
@@ -46,9 +47,10 @@
 #define PROFILE_OPT  "--profiling"
 #define CONFIG_OPT   "--config"
 
-#define EXAMPLE_EMPTY    "empty"
-#define EXAMPLE_SQUARE   "square"
-#define EXAMPLE_TRIANGLE "triangle"
+#define EXAMPLE_EMPTY       "empty"
+#define EXAMPLE_RENDERER_2D "renderer2d"
+#define EXAMPLE_SQUARE      "square"
+#define EXAMPLE_TRIANGLE    "triangle"
 
 #define PROFILE_SESSION_NAME "Sandbox Profiling"
 #define PROFILE_FILE         "profile.json"
@@ -58,6 +60,7 @@ namespace {
 const char* usage = R"(Sanbox.
 Run one of the existing examples:
     - empty
+    - renderer2d
     - square
     - triangle
 
@@ -77,6 +80,7 @@ enum class LayerType : uint8_t
 {
     NONE = 0,
     EMPTY,
+    RENDERER_2D,
     SQUARE,
     TRIANGLE
 };
@@ -92,6 +96,7 @@ LayerType toLayerType(const std::string& example)
 {
     static std::unordered_map<std::string, LayerType> example_to_layer{
         {EXAMPLE_EMPTY, LayerType::EMPTY},
+        {EXAMPLE_RENDERER_2D, LayerType::RENDERER_2D},
         {EXAMPLE_SQUARE, LayerType::SQUARE},
         {EXAMPLE_TRIANGLE, LayerType::TRIANGLE}};
 
@@ -139,6 +144,7 @@ ParseArgs parseArgs(int argc, char** argv)
 GE::Shared<GE::Layer> getLayer(const ParseArgs& args)
 {
     using GE::Examples::GuiLayer;
+    using GE::Examples::Renderer2DLayer;
     using GE::Examples::SquareLayer;
     using GE::Examples::TriangleLayer;
 
@@ -146,6 +152,7 @@ GE::Shared<GE::Layer> getLayer(const ParseArgs& args)
 
     switch (args.layer) {
         case LayerType::EMPTY: return GE::makeShared<GuiLayer>(show_gui);
+        case LayerType::RENDERER_2D: return GE::makeShared<Renderer2DLayer>(show_gui);
         case LayerType::SQUARE: return GE::makeShared<SquareLayer>(show_gui);
         case LayerType::TRIANGLE: return GE::makeShared<TriangleLayer>(show_gui);
         default: break;
