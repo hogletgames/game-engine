@@ -38,8 +38,18 @@
 
 #include <glm/glm.hpp>
 
-#define GE_UNIFORM_VP_MATRIX "u_ViewProjection"
-#define GE_UNIFORM_TRANSFORM "u_Transform"
+#define GE_UNIFORM_VP_MATRIX     "u_ViewProjection"
+#define GE_UNIFORM_TRANSFORM     "u_Transform"
+#define GE_UNIFORM_TILING_FACTOR "u_TilingFactor"
+#define GE_UNIFORM_COLOR         "u_Color"
+#define GE_UNIFORM_TEXTURE       "u_Texture"
+
+#define GE_ATTR_POSITION  "a_Position"
+#define GE_ATTR_TEX_COORD "a_TexCoord"
+
+#define GE_ASSETS_DIR          "assets"
+#define GE_COLOR_SHADER_PATH   "shaders/flat_color"
+#define GE_TEXTURE_SHADER_PATH "shaders/texture"
 
 namespace GE {
 class OrthographicCamera;

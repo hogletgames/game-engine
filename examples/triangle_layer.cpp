@@ -38,8 +38,8 @@
 #define VERT_ELEM_COUNT 7
 #define IND_COUNT       3
 
-#define VERT_PATH   "examples/shaders/pass_through.vert"
-#define FRAG_PATH   "examples/shaders/pass_through.frag"
+#define VERT_PATH   "examples/assets/shaders/pass_through.vert"
+#define FRAG_PATH   "examples/assets/shaders/pass_through.frag"
 #define SHADER_NAME "PassThrough"
 
 #define ATTR_POSITION "a_Position"
@@ -80,7 +80,6 @@ void TriangleLayer::onAttach()
     auto shader = m_shader_library.load(VERT_PATH, FRAG_PATH, SHADER_NAME);
     GE_ASSERT_MSG(shader, "Failed to load '{}' shader", SHADER_NAME);
 }
-
 
 void TriangleLayer::onDetach()
 {

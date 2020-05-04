@@ -35,6 +35,7 @@
 #include "ge/core/asserts.h"
 #include "ge/core/log.h"
 #include "ge/debug/profile.h"
+#include "ge/renderer/renderer.h"
 
 #include <boost/property_tree/ini_parser.hpp>
 
@@ -44,6 +45,7 @@
 #define PROP_RENDER_API    "general.render_api"
 #define PROP_CORE_LOGLVL   "general.core_loglvl"
 #define PROP_CLIENT_LOGLVL "general.client_loglvl"
+#define PROP_ASSETS_DIR    "general.assets_dir"
 
 namespace {
 
@@ -93,6 +95,7 @@ bool AppProperties::read(const std::string& filename, properties_t* props)
     props->api = toRendAPI(render_api_str);
     props->core_log_lvl = toLogLvl(core_log_lvl);
     props->client_log_lvl = toLogLvl(client_log_lvl);
+    props->assets_dir = ptree.get<std::string>(PROP_ASSETS_DIR, GE_ASSETS_DIR);
 
     return true;
 }
@@ -109,6 +112,7 @@ bool AppProperties::write(const std::string& filename, const properties_t& props
         ptree.put<std::string>(PROP_RENDER_API, toString(props.api));
         ptree.put<std::string>(PROP_CORE_LOGLVL, toString(props.core_log_lvl));
         ptree.put<std::string>(PROP_CLIENT_LOGLVL, toString(props.client_log_lvl));
+        ptree.put<std::string>(PROP_ASSETS_DIR, props.assets_dir);
 
         boost::property_tree::ini_parser::write_ini(filename, ptree);
     } catch (const std::exception& e) {

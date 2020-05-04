@@ -38,6 +38,7 @@
 #include "ge/debug/profile.h"
 #include "ge/gui/gui.h"
 #include "ge/renderer/renderer.h"
+#include "ge/renderer/renderer_2d.h"
 #include "ge/window/window.h"
 
 namespace GE {
@@ -60,7 +61,8 @@ bool Manager::initialize(std::string props_file)
     }
 
     if (!AppProperties::read(props_file, &props) || !Renderer::initialize(props.api) ||
-        !Window::initialize() || !Application::initialize() || !Gui::initialize()) {
+        !Window::initialize() || !Application::initialize() ||
+        !Renderer2D::initialize(props.assets_dir) || !Gui::initialize()) {
         return false;
     }
 
@@ -81,6 +83,7 @@ void Manager::shutdown()
     get()->saveProperties();
 
     Gui::shutdown();
+    Renderer2D::shutdown();
     Application::shutdown();
     Window::shutdown();
     Renderer::shutdown();
@@ -99,6 +102,7 @@ void Manager::saveProperties() const
     props.api = Renderer::getAPI();
     props.core_log_lvl = Log::core()->getLvel();
     props.client_log_lvl = Log::client()->getLvel();
+    props.assets_dir = Renderer2D::getAssetsDir();
 
     AppProperties::write(m_props_file, props);
 }
