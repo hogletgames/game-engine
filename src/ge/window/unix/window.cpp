@@ -238,6 +238,8 @@ void Window::onSDLWindowEvent(const SDL_Event& sdl_event)
         case SDL_WINDOWEVENT_RESIZED: {
             uint32_t width = sdl_event.window.data1;
             uint32_t height = sdl_event.window.data2;
+            m_prop.width = width;
+            m_prop.height = height;
             WindowResizedEvent event{width, height};
             m_event_callback(&event);
             break;
