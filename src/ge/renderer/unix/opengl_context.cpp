@@ -124,6 +124,7 @@ void OpenGLContext::initialize()
 
     GLCall(glEnable(GL_BLEND));
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    GLCall(glEnable(GL_DEPTH_TEST));
 }
 
 void OpenGLContext::shutdown()
