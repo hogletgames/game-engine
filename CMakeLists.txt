@@ -10,6 +10,7 @@ option(GE_ENABLE_USAN           "Build with USAN"           OFF)
 option(GE_ENABLE_TSAN           "Build with TSAN"           OFF)
 option(GE_DISABLE_ASSERTS       "Disable asserts"           OFF)
 option(GE_DEBUG                 "Enable debug"              OFF)
+option(GE_PROFILING             "Enable profiling"          OFF)
 option(GE_EXPORT_COMPILE_CMD    "Export compile commands"   OFF)
 
 # Compile options
@@ -81,6 +82,13 @@ if(GE_DEBUG)
     add_definitions(-DGE_DEBUG)
 else()
     message("Debug is disabled")
+endif()
+
+if (GE_PROFILING)
+    message("Profiling is enabled")
+    add_definitions(-DGE_PROFILING)
+else()
+    message("Profiling is disabled")
 endif()
 
 if(UNIX)

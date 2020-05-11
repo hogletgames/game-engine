@@ -45,6 +45,14 @@
     #define GE_API
 #endif
 
+#if defined(__GNUC__)
+    #define GE_FUNC_NAME __PRETTY_FUNCTION__
+#elif defined(__FUNCSIG__)
+    #define GE_FUNC_NAME __FUNCSIG__
+#else
+    #define GE_FUNC_NAME __func__
+#endif
+
 #define GE_BIND_EVENT_FN(fn) [this](const auto& event) { return fn(event); }
 
 #define _GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
