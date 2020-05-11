@@ -32,6 +32,8 @@
 
 #include "log.h"
 
+#include "ge/debug/profile.h"
+
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #define CORE_LOGGER   "CORE"
@@ -44,6 +46,8 @@ Shared<spdlog::logger> Log::s_client_logger;
 
 void Log::initialize()
 {
+    GE_PROFILE_FUNC();
+
     spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
     spdlog::set_level(spdlog::level::trace);           // NOLINT
 
@@ -53,6 +57,8 @@ void Log::initialize()
 
 void Log::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     spdlog::drop(CLIENT_LOGGER);
     spdlog::drop(CORE_LOGGER);
 

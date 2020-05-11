@@ -57,7 +57,6 @@ void RenderCommand::clear(const glm::vec4& color)
 
 void RenderCommand::draw(const Shared<VertexArray>& vertex_array)
 {
-    vertex_array->bind();
     s_renderer_api->draw(vertex_array);
 }
 

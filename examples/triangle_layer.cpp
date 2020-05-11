@@ -32,6 +32,8 @@
 
 #include "triangle_layer.h"
 
+#include "ge/debug/profile.h"
+
 #define VER_COUNT            3
 #define VERTEX_SOURCE_FILE   "examples/shaders/pass_through.vert"
 #define FRAGMENT_SOURCE_FILE "examples/shaders/pass_through.frag"
@@ -41,19 +43,32 @@ namespace GE::Examples {
 TriangleLayer::TriangleLayer(bool show_gui_demo)
     : GuiLayer{show_gui_demo, "Triangle Layer"}
 {
+    GE_PROFILE_FUNC();
+
     initializeTriangle();
 }
 
 void TriangleLayer::onUpdate()
 {
-    RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
-    Begin<Renderer> begin{};
-    m_triangle_shader->bind();
-    Renderer::submit(m_triangle_vao);
+    GE_PROFILE_FUNC();
+
+    {
+        GE_PROFILE_SCOPE("TriangleLayer Prepare");
+        RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+    }
+
+    {
+        GE_PROFILE_SCOPE("TriangleLayer Draw");
+        Begin<Renderer> begin{};
+        m_triangle_shader->bind();
+        Renderer::submit(m_triangle_vao);
+    }
 }
 
 void TriangleLayer::initializeTriangle()
 {
+    GE_PROFILE_FUNC();
+
     // NOLINTNEXTLINE
     std::array<float, VER_COUNT* 7> vertices = {
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // NOLINT

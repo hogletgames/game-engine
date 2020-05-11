@@ -33,6 +33,7 @@
 #include "input.h"
 
 #include "ge/core/utils.h"
+#include "ge/debug/profile.h"
 
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/input.h"
@@ -47,12 +48,16 @@ Scoped<Input> Input::s_impl{nullptr};
 
 void Input::initialize()
 {
+    GE_PROFILE_FUNC();
+
     s_impl = makeScoped<PlatformInput>();
     s_impl->initializeImpl();
 }
 
 void Input::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     s_impl->shutdownImpl();
     s_impl.reset();
 }

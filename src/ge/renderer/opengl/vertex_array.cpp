@@ -33,6 +33,8 @@
 #include "vertex_array.h"
 #include "opengl_utils.h"
 
+#include "ge/debug/profile.h"
+
 #include <glad/glad.h>
 
 namespace {
@@ -64,26 +66,36 @@ namespace GE::OpenGL {
 
 VertexArray::VertexArray()
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glCreateVertexArrays(1, &m_id));
 }
 
 VertexArray::~VertexArray()
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glDeleteVertexArrays(1, &m_id));
 }
 
 void VertexArray::bind() const
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glBindVertexArray(m_id));
 }
 
 void VertexArray::unbind() const
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glBindVertexArray(0));
 }
 
 void VertexArray::addVertexBuffer(Shared<VertexBuffer> vertex_buffer)
 {
+    GE_PROFILE_FUNC();
+
     const auto& layout = vertex_buffer->getLayout();
     GE_CORE_ASSERT(!layout.getElements().empty(), "Vertex Buffer has no layout");
 
@@ -107,6 +119,8 @@ void VertexArray::addVertexBuffer(Shared<VertexBuffer> vertex_buffer)
 
 void VertexArray::setIndexBuffer(Shared<IndexBuffer> index_buffer)
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glBindVertexArray(m_id));
     index_buffer->bind();
     m_index_buffer = std::move(index_buffer);

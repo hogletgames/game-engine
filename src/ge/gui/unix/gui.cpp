@@ -36,6 +36,7 @@
 
 #include "ge/application.h"
 #include "ge/core/log.h"
+#include "ge/debug/profile.h"
 #include "ge/renderer/render_command.h"
 
 #include <SDL.h>
@@ -50,6 +51,7 @@ namespace GE::UNIX {
 
 void Gui::initialize()
 {
+    GE_PROFILE_FUNC();
     GE_CORE_TRACE("Initialize Unix::PlatformImGui");
 
     void* window = Application::getNativeWindow();
@@ -61,6 +63,8 @@ void Gui::initialize()
 
 void Gui::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_TRACE("Shutdown Unix::PlatformImGui");
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
@@ -68,6 +72,7 @@ void Gui::shutdown()
 
 void Gui::newFrame()
 {
+    GE_PROFILE_FUNC();
     void* window = Application::getNativeWindow();
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -76,6 +81,8 @@ void Gui::newFrame()
 
 void Gui::render()
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     auto width = static_cast<int32_t>(io.DisplaySize.x);
     auto height = static_cast<int32_t>(io.DisplaySize.y);

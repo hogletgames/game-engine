@@ -32,6 +32,7 @@
 
 #include "triangle_layer.h"
 
+#include <ge/debug/profile.h>
 #include <ge/ge.h>
 
 #include <docopt.h>
@@ -129,9 +130,11 @@ int main(int argc, char** argv) // NOLINT
 {
     ParseArgs args = parseArgs(argc, argv);
 
+    GE_PROFILE_ENABLE(true);
+    GE_PROFILE_BEGIN_SESSION("Sandbox Run", "profile.json");
     GE_CREATE_FW_MANAGER(GE_OPEN_GL_API);
-    GE::Application app{};
 
+    GE::Application app{};
     app.pushLayer(getLayer(args));
     app.run();
 
