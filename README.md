@@ -55,7 +55,7 @@ make test
 
 Run tests with Valgrind:
 ```bash
-make test_valgrind
+make VALGRIND=ON test
 ```
 
 ### Examples

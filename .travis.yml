@@ -1,34 +1,42 @@
 language: cpp
-
+fast_finish: true
 os: linux
 dist: bionic
-compiler: gcc
 addons:
   apt:
     sources:
-      - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
-        key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+    - ubuntu-toolchain-r-test
+    - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+      key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
     packages:
-      - clang-format-10
-      - clang-tidy-10
-      - cmake
-      - valgrind
+    - clang-format-10
+    - clang-tidy-10
+    - cmake
+    - gcc-10
+    - g++-10
+    - valgrind
 
 env:
-  - MATRIX_EVAL="export BUILD_EXAMPLES=ON DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF"
-  - MATRIX_EVAL="export VALGRIND='valgrind --leak-check=full --error-exitcode=1'"
+  global:
+  - CC=gcc-10 CXX=g++-10
+  - BUILD_TESTS=ON
+  - BUILD_EXAMPLES=ON
+  matrix:
+  - MATRIX_EVAL="export DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF"
+  - MATRIX_EVAL="export VALGRIND=ON"
   - MATRIX_EVAL="export ENABLE_ASAN=ON"
   - MATRIX_EVAL="export ENABLE_USAN=ON"
   - MATRIX_EVAL="export ENABLE_TSAN=ON"
 
-script:
-  - eval "${MATRIX_EVAL}"
-  - make BUILD_TESTS=ON -j$(nproc)
-  - make test
-
 jobs:
   include:
-    - name: clang-tools
-      script:
-        - bash tools/clang_format.sh --clang-format-bin clang-format-10
-        - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-10
+  - name: clang-tools
+    script:
+    - bash tools/clang_format.sh --clang-format-bin clang-format-10
+    - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-10
+
+script:
+- eval "${MATRIX_EVAL}"
+- make -j$(nproc)
+- make test
+
