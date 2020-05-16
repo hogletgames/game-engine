@@ -41,6 +41,38 @@
 #define OPENGL_MAJOR_VERSION 4
 #define OPENGL_MINOR_VERSION 5
 
+namespace {
+
+#if defined(GE_DEBUG)
+void openglDbgCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type,
+                       [[maybe_unused]] GLuint id, GLenum severity,
+                       [[maybe_unused]] GLsizei length, const GLchar* message,
+                       [[maybe_unused]] const void* userParam)
+{
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_HIGH: GE_CORE_CRIT(message); return;
+        case GL_DEBUG_SEVERITY_MEDIUM: GE_CORE_ERR(message); return;
+        case GL_DEBUG_SEVERITY_LOW: GE_CORE_WARN(message); return;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+        case GL_DONT_CARE: GE_CORE_TRACE(message); return;
+        default: GE_CORE_ASSERT(false, "Unknown severity level: {}", severity);
+    }
+}
+
+void enableGlDbgCallback()
+{
+    GE_PROFILE_FUNC();
+
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openglDbgCallback, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0,
+                          nullptr, GL_FALSE);
+}
+#endif // defined(GE_DEBUG)
+
+} // namespace
+
 namespace GE::UNIX {
 
 OpenGLContext::OpenGLContext(void* window)
@@ -73,6 +105,11 @@ void OpenGLContext::initialize()
                  glGetString(GL_SHADING_LANGUAGE_VERSION));
     GE_CORE_INFO("OpenGL Vendor: {}", glGetString(GL_VENDOR));
     GE_CORE_INFO("OpenGL Renderer: {}", glGetString(GL_RENDERER));
+
+#if defined(GE_DEBUG)
+    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG));
+    enableGlDbgCallback();
+#endif
 }
 
 void OpenGLContext::shutdown()
