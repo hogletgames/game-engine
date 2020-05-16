@@ -31,17 +31,16 @@
  */
 
 #include "ge.h"
+
 #include "ge/debug/profile.h"
 
 namespace GE {
 
-bool FrameworkManager::initialized{false};
-
-void FrameworkManager::initialize(RendererAPI::API api)
+void FWManager::initialize(RendererAPI::API api)
 {
     GE_PROFILE_FUNC();
 
-    if (initialized) {
+    if (m_initialized) {
         return;
     }
 
@@ -50,25 +49,39 @@ void FrameworkManager::initialize(RendererAPI::API api)
     Window::initialize();
     Application::initialize();
     Gui::initialize();
-    initialized = true;
+
+    m_initialized = true;
+
     GE_CORE_TRACE("FM initialized");
 }
 
-void FrameworkManager::shutdown()
+void FWManager::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    if (!initialized) {
+    if (!m_initialized) {
         return;
     }
 
     GE_CORE_TRACE("FM shutdown");
-    Gui::initialize();
+    Gui::shutdown();
     Application::shutdown();
     Window::shutdown();
     Renderer::shutdown();
     Log::shutdown();
-    initialized = false;
+
+    m_initialized = false;
+}
+
+FWManager* FWManager::get()
+{
+    static FWManager fw_manager;
+    return &fw_manager;
+}
+
+FWManager::~FWManager()
+{
+    shutdown();
 }
 
 } // namespace GE

@@ -132,7 +132,7 @@ int main(int argc, char** argv) // NOLINT
 
     GE_PROFILE_ENABLE(true);
     GE_PROFILE_BEGIN_SESSION("Sandbox Run", "profile.json");
-    GE_CREATE_FW_MANAGER(GE_OPEN_GL_API);
+    GE_INITIALIZE(GE_OPEN_GL_API);
 
     GE::Application app{};
     app.pushLayer(getLayer(args));
