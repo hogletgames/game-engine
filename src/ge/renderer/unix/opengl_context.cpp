@@ -81,6 +81,13 @@ OpenGLContext::OpenGLContext(void* window)
     GE_CORE_TRACE("OpenGL context has been created");
 }
 
+OpenGLContext::~OpenGLContext() // NOLINT
+{
+    GE_PROFILE_FUNC();
+
+    deleteContext();
+}
+
 void OpenGLContext::initialize()
 {
     GE_PROFILE_FUNC();
@@ -116,8 +123,7 @@ void OpenGLContext::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    SDL_GL_DeleteContext(m_gl_context);
-    GE_CORE_TRACE("OpenGL context has been deleted");
+    deleteContext();
 }
 
 void OpenGLContext::swapBuffers()
@@ -125,6 +131,18 @@ void OpenGLContext::swapBuffers()
     GE_PROFILE_FUNC();
 
     SDL_GL_SwapWindow(m_window);
+}
+
+void OpenGLContext::deleteContext()
+{
+    GE_PROFILE_FUNC();
+
+    if (m_gl_context != nullptr) {
+        SDL_GL_DeleteContext(m_gl_context);
+        m_gl_context = nullptr;
+        m_window = nullptr;
+        GE_CORE_TRACE("OpenGL context has been deleted");
+    }
 }
 
 } // namespace GE::UNIX
