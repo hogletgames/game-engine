@@ -3,6 +3,7 @@
 #include "ge/core/log.h"
 #include "ge/core/timestamp.h"
 #include "ge/core/utils.h"
+#include "ge/debug/profile.h"
 #include "ge/layer.h"
 #include "ge/layer_stack.h"
 #include "ge/window/key_event.h"
@@ -47,6 +48,41 @@ TEST_F(GECoreTest, Asserts)
 #endif
     GE_CORE_ASSERT(true, "True =)");
     GE_ASSERT(2 * 2 == 4, "Yes");
+}
+
+TEST_F(GECoreTest, Profiler)
+{
+    const char* profile_log = "profile_test.json";
+
+    auto profile_writer = [](const char* name) {
+        for (uint32_t i{0}; i < 10; i++) {
+            GE_PROFILE_SCOPE(name);
+            GE::sleep(0.001);
+        }
+    };
+
+    auto write_profile = [&profile_writer](const char* name) {
+        constexpr uint8_t thread_count{10};
+        std::vector<std::thread> threads;
+        threads.reserve(thread_count);
+
+        for (uint32_t i{0}; i < thread_count; i++) {
+            threads.emplace_back(profile_writer, name);
+        }
+
+        for (auto& thread : threads) {
+            thread.join();
+        }
+    };
+
+    write_profile("BeforeSession");
+    GE_PROFILE_ENABLE(true);
+    GE_PROFILE_BEGIN_SESSION("ProfileTest", profile_log);
+    write_profile("InsideSession");
+    GE_PROFILE_END_SESSION();
+    write_profile("AfterSession");
+
+    std::remove(profile_log);
 }
 
 TEST(TimestampTest, Conversion)
