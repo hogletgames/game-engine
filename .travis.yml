@@ -12,36 +12,10 @@ addons:
     - clang-format-10
     - clang-tidy-10
     - cmake
-#    - mesa-utils
-    - python3
-    - python3-pip
     - gcc-10
     - g++-10
+    - libegl1-mesa-dev
     - valgrind
-    # SDL2 dependencies
-#    - libegl1-mesa-dev
-#    - libgles2-mesa-dev
-#    - libsdl2-dev
-#    - libsdl2-image-dev
-#    - libsdl2-mixer-dev
-#    - libsdl2-ttf-dev
-#    - libgl1-mesa-dev
-#    - mesa-common-dev
-#    # SDL2 additional
-#    - linux-generic-lts-wily
-#    - xserver-xorg-core-lts-wily
-#    - xserver-xorg-lts-wily
-#    - xserver-xorg-video-all-lts-wily
-#    - xserver-xorg-input-all-lts-wily
-#    - libwayland-egl1-mesa-lts-wily
-#    - mesa-utils
-#    - linux-generic
-#    - xserver-xorg-core
-#    - xserver-xorg
-#    - xserver-xorg-video-all
-#    - xserver-xorg-input-all
-#    - libwayland-egl1-mesa
-    - xorg-dev
 
 services:
 - xvfb
@@ -53,28 +27,20 @@ env:
   - BUILD_TESTS=ON
   - BUILD_EXAMPLES=ON
   matrix:
-  - MATRIX_EVAL=""
-#  - MATRIX_EVAL="export DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF"
-#  - MATRIX_EVAL="export VALGRIND=ON"
-#  - MATRIX_EVAL="export ENABLE_ASAN=ON"
-#  - MATRIX_EVAL="export ENABLE_USAN=ON"
-#  - MATRIX_EVAL="export ENABLE_TSAN=ON"
+  - MATRIX_EVAL="export DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF"
+  - MATRIX_EVAL="export VALGRIND=ON"
+  - MATRIX_EVAL="export ENABLE_ASAN=ON"
+  - MATRIX_EVAL="export ENABLE_USAN=ON"
+  - MATRIX_EVAL="export ENABLE_TSAN=ON"
 
-#jobs:
-#  include:
-#  - name: clang-tools
-#    script:
-#    - bash tools/clang_format.sh --clang-format-bin clang-format-10
-#    - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-10
-
-install:
-  - pip3 install --user pytest
+jobs:
+  include:
+  - name: clang-tools
+    script:
+    - bash tools/clang_format.sh --clang-format-bin clang-format-10
+    - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-10
 
 script:
   - eval "${MATRIX_EVAL}"
   - make -j$(nproc)
-  - glxinfo | grep "OpenGL version"
-  - sudo lspci -vnn | grep VGA -A 12
-  - cat /var/log/Xorg.0.log | grep DRI
-  - xvfb-run -a -n 1 -s "-screen 0 1024x768x24 -dpi 96" make test
-  - xvfb-run -a pytest
+  - xvfb-run -a make test

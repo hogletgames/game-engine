@@ -67,7 +67,7 @@ test_ge_core:
 # Run sanbox examples test
 .PHONY: test_examples
 test_examples:
-	pytest tests -v $(VALGRIND_PYTEST)
+	python3 -m pytest tests -v $(VALGRIND_PYTEST)
 
 # Run all tests
 .PHONY: test

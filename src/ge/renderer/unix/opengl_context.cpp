@@ -36,8 +36,8 @@
 #include <SDL.h>
 #include <glad/glad.h>
 
-#define OPENGL_MAJOR_VERSION 3
-#define OPENGL_MINOR_VERSION 1
+#define OPENGL_MAJOR_VERSION 4
+#define OPENGL_MINOR_VERSION 5
 
 namespace GE::UNIX {
 
@@ -47,10 +47,10 @@ OpenGLContext::OpenGLContext(void* window)
 
 void OpenGLContext::initialize()
 {
-    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_MAJOR_VERSION));
-    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_MINOR_VERSION));
-    SDLCall(
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE));
+//    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_MAJOR_VERSION));
+//    SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_MINOR_VERSION));
+//    SDLCall(
+//        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE));
 
     m_gl_context = SDL_GL_CreateContext(m_window);
     GE_CORE_ASSERT(m_gl_context, "Failed to create graphics context: {}", SDL_GetError());

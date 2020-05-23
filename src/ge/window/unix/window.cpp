@@ -56,16 +56,16 @@ Window::Window(properties_t prop)
     GE_CORE_TRACE("Create window '{}', ({}, {})", m_prop.title, m_prop.width,
                   m_prop.height);
 
-    int32_t pos_x = SDL_WINDOWPOS_CENTERED;
-    int32_t pos_y = SDL_WINDOWPOS_CENTERED;
+    int32_t pos_x = 0;
+    int32_t pos_y = 0;
     uint32_t flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN;
 
     if (Renderer::getAPI() == GE_OPEN_GL_API) {
         flags |= SDL_WINDOW_OPENGL;
     }
 
-    m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
-                                m_prop.height, flags);
+    m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, 320, 240, flags);
+    GE_CORE_TRACE("Window ptr: {:p}", reinterpret_cast<void*>(m_window));
     GE_CORE_ASSERT(m_window, SDL_GetError());
 
     m_contex = GraphicsContext::create(m_window);
