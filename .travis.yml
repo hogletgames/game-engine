@@ -14,13 +14,18 @@ addons:
     - cmake
     - gcc-10
     - g++-10
+    - libegl1-mesa-dev
     - valgrind
+
+services:
+- xvfb
 
 env:
   global:
   - CC=gcc-10 CXX=g++-10
   - BUILD_TESTS=ON
   - BUILD_EXAMPLES=ON
+  - DISABLE_GL_ATTR=ON
   matrix:
   - MATRIX_EVAL="export DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF"
   - MATRIX_EVAL="export VALGRIND=ON"
@@ -38,5 +43,4 @@ jobs:
 script:
 - eval "${MATRIX_EVAL}"
 - make -j$(nproc)
-- make test
-
+- xvfb-run -a make test

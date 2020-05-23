@@ -11,6 +11,7 @@ option(GE_ENABLE_TSAN           "Build with TSAN"           OFF)
 option(GE_DISABLE_ASSERTS       "Disable asserts"           OFF)
 option(GE_DEBUG                 "Enable debug"              OFF)
 option(GE_EXPORT_COMPILE_CMD    "Export compile commands"   OFF)
+option(GE_DISABLE_OPENGL_ATTR   "Disable OpenGL attributes" OFF)
 
 # Compile options
 set(GE_COMPILER_FLAGS "-Wall -Wextra -Werror -pedantic")
@@ -91,6 +92,11 @@ elseif(WIN32)
     message("Platform: windows")
     set(GE_PLATFORM_WINDOWS ON)
     add_definitions(-DGE_PLATFORM_WINDOWS)
+endif()
+
+if(GE_DISABLE_OPENGL_ATTR)
+    message("Disable OpenGL attributes")
+    add_definitions(-DGE_DISABLE_OPENGL_ATTR)
 endif()
 
 # Install

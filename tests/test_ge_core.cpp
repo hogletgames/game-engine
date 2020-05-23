@@ -1,9 +1,4 @@
-#include "ge/core/asserts.h"
-#include "ge/core/core.h"
-#include "ge/core/log.h"
-#include "ge/layer.h"
-#include "ge/layer_stack.h"
-#include "ge/window/key_event.h"
+#include "ge/ge.h"
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -45,6 +40,11 @@ TEST_F(GECoreTest, Asserts)
 #endif
     GE_CORE_ASSERT(true, "True =)");
     GE_ASSERT(2 * 2 == 4, "Yes");
+}
+
+TEST(FWTest, OpenGLAPI)
+{
+    GE_INITIALIZE(GE_OPEN_GL_API);
 }
 
 class LayerMock: public GE::Layer
