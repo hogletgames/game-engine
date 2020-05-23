@@ -34,6 +34,7 @@
 #include "renderer.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/utils.h"
 
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/opengl_context.h"

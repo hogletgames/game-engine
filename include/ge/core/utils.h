@@ -30,31 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "input.h"
+#ifndef GE_CORE_UTILS_H_
+#define GE_CORE_UTILS_H_
 
-#include "ge/core/utils.h"
+#include <memory>
+#include <thread>
 
-#if defined(GE_PLATFORM_UNIX)
-    #include "unix/input.h"
-using PlatformInput = ::GE::UNIX::Input;
-#else
-    #error "Platform is not defined!"
-#endif
+#include <ge/core/core.h>
+#include <ge/core/timestamp.h>
 
 namespace GE {
 
-Scoped<Input> Input::s_impl{nullptr};
-
-void Input::initialize()
+template<typename Type, typename... Args>
+inline Scoped<Type> makeScoped(Args&&... args)
 {
-    s_impl = makeScoped<PlatformInput>();
-    s_impl->initializeImpl();
+    return std::make_unique<Type>(std::forward<Args>(args)...);
 }
 
-void Input::shutdown()
+template<typename Type, typename... Args>
+inline Shared<Type> makeShared(Args&&... args)
 {
-    s_impl->shutdownImpl();
-    s_impl.reset();
+    return std::make_shared<Type>(std::forward<Args>(args)...);
+}
+
+inline void sleep(Timestamp duration)
+{
+    std::this_thread::sleep_for(Timestamp::DurationSec{duration});
 }
 
 } // namespace GE
+
+#endif // GE_CORE_UTILS_H_

@@ -33,6 +33,8 @@
 #include "window.h"
 #include "input.h"
 
+#include "ge/core/utils.h"
+
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/window.h"
 

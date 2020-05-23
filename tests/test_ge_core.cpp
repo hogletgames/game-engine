@@ -2,6 +2,7 @@
 #include "ge/core/core.h"
 #include "ge/core/log.h"
 #include "ge/core/timestamp.h"
+#include "ge/core/utils.h"
 #include "ge/layer.h"
 #include "ge/layer_stack.h"
 #include "ge/window/key_event.h"

@@ -33,7 +33,6 @@
 #ifndef GE_CORE_CORE_H_
 #define GE_CORE_CORE_H_
 
-#include <functional>
 #include <memory>
 
 #if defined(GE_PLATFORM_WINDOWS)
@@ -48,6 +47,9 @@
 
 #define GE_BIND_EVENT_FN(fn) [this](const auto& event) { return fn(event); }
 
+#define _GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
+#define GE_CONCAT(lhs, rhs)       _GE_CONCAT_IMPL(lhs, rhs)
+
 namespace GE {
 
 template<typename Type>
@@ -55,18 +57,6 @@ using Scoped = std::unique_ptr<Type>;
 
 template<typename Type>
 using Shared = std::shared_ptr<Type>;
-
-template<typename Type, typename... Args>
-Scoped<Type> makeScoped(Args&&... args)
-{
-    return std::make_unique<Type>(std::forward<Args>(args)...);
-}
-
-template<typename Type, typename... Args>
-Shared<Type> makeShared(Args&&... args)
-{
-    return std::make_shared<Type>(std::forward<Args>(args)...);
-}
 
 } // namespace GE
 
