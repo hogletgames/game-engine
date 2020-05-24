@@ -47,8 +47,8 @@ void Log::initialize()
     spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
     spdlog::set_level(spdlog::level::trace);           // NOLINT
 
-    s_core_logger = spdlog::stdout_color_st(CORE_LOGGER);
-    s_client_logger = spdlog::stdout_color_st(CLIENT_LOGGER);
+    s_core_logger = spdlog::stdout_color_mt(CORE_LOGGER);
+    s_client_logger = spdlog::stdout_color_mt(CLIENT_LOGGER);
 }
 
 void Log::shutdown()
