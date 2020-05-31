@@ -75,24 +75,17 @@ void TriangleLayer::onAttach()
     m_vao->addVertexBuffer(std::move(vertex_buffer));
     m_vao->setIndexBuffer(std::move(index_buffer));
 
-    Shared<Shader> vertex_shader = Shader::create(GE_VERTEX_SHADER);
-    vertex_shader->compileFromFile(VERT_PATH);
-
-    Shared<Shader> fragment_shader = Shader::create(GE_FRAGMENT_SHADER);
-    fragment_shader->compileFromFile(FRAG_PATH);
-
-    m_shader = ShaderProgram::create(SHADER_NAME);
-    m_shader->addShaders({vertex_shader, fragment_shader});
-
-    GE_ASSERT_MSG(m_shader->link(), "Failed to link shader");
+    auto shader = m_shader_library.load(VERT_PATH, FRAG_PATH, SHADER_NAME);
+    GE_ASSERT_MSG(shader, "Failed to load '{}' shader", SHADER_NAME);
 }
+
 
 void TriangleLayer::onDetach()
 {
     GE_PROFILE_FUNC();
 
     m_vao.reset();
-    m_shader.reset();
+    m_shader_library.clear();
 }
 
 void TriangleLayer::onUpdate(Timestamp delta_time)
@@ -108,7 +101,7 @@ void TriangleLayer::onUpdate(Timestamp delta_time)
     {
         GE_PROFILE_SCOPE("TriangleLayer Draw");
         Begin<Renderer> begin{m_camera_controller.getCamera()};
-        Renderer::submit(m_shader, m_vao);
+        Renderer::submit(m_shader_library.get(SHADER_NAME), m_vao);
     }
 }
 

@@ -49,7 +49,8 @@ public:
     void onEvent(Event* event) override;
 
 private:
-    Shared<ShaderProgram> m_shader;
+    ShaderLibrary m_shader_library;
+    OrthographicCamera m_camera;
     Shared<VertexArray> m_vao;
 };
 
