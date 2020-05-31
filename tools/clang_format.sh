@@ -2,28 +2,8 @@
 
 CLANG_FORMAT_BIN=clang-format
 EXIT_CODE=0
-FILES=$(ls  examples/*.cpp                              \
-            include/ge/*.h                              \
-            include/ge/core/*.h                         \
-            include/ge/gui/*.h                          \
-            include/ge/renderer/*.h                     \
-            include/ge/window/*.h                       \
-            src/ge/*.cpp                                \
-            src/ge/core/*.cpp                           \
-            src/ge/gui/*.cpp                            \
-            src/ge/gui/unix/*.h                         \
-            src/ge/gui/unix/*.cpp                       \
-            src/ge/renderer/*.cpp                       \
-            src/ge/renderer/opengl/*.h                  \
-            src/ge/renderer/opengl/*.cpp                \
-            src/ge/renderer/unix/*.h                    \
-            src/ge/renderer/unix/*.cpp                  \
-            src/ge/utils/*.h                            \
-            src/ge/window/*.cpp                         \
-            src/ge/window/unix/*.h                      \
-            src/ge/window/unix/*.cpp                    \
-            tests/*.cpp                                 \
-        )
+PATHS_TO_SRC="./examples ./include/ge ./src/ge ./tests"
+SRC_FILES=$(find $PATHS_TO_SRC -name "*.h" -o -name "*.cpp")
 
 while [ ! -z $1 ]; do
     case $1 in
@@ -42,14 +22,14 @@ while [ ! -z $1 ]; do
 done
 
 function clang_format_fix() {
-    for FILE in $FILES; do
+    for FILE in $SRC_FILES; do
         echo "clang-format fix: $FILE"
         $CLANG_FORMAT_BIN --style=file -i $FILE
     done
 }
 
 function clang_format_check() {
-    for FILE in $FILES; do
+    for FILE in $SRC_FILES; do
         echo "clang-format check: $FILE"
 
         $CLANG_FORMAT_BIN --style=file --output-replacements-xml $FILE | \

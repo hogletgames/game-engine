@@ -33,6 +33,7 @@
 #include "buffer_layout.h"
 
 #include "ge/core/asserts.h"
+#include "ge/debug/profile.h"
 
 #define FLOAT_SIZE sizeof(float)
 #define INT_SIZE   sizeof(int32_t)
@@ -90,6 +91,7 @@ BufferLayout::BufferLayout(std::initializer_list<BufferElement> elements)
 
 void BufferLayout::calculateOffsetsAndStride()
 {
+    GE_PROFILE_FUNC();
     m_stride = 0;
 
     for (auto& element : m_elements) {

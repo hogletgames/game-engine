@@ -34,9 +34,9 @@
 
 #include "ge/core/asserts.h"
 #include "ge/core/begin.h"
+#include "ge/debug/profile.h"
 #include "ge/gui/gui.h"
 #include "ge/layer.h"
-#include "ge/renderer/render_command.h"
 #include "ge/window/window.h"
 #include "ge/window/window_event.h"
 
@@ -47,6 +47,8 @@ Scoped<Window> Application::s_window{nullptr};
 
 Application::Application()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_ASSERT(!s_instance, "Application already exists");
     s_instance = this;
     s_window->setEventCallback([this](Event* event) { onEvent(event); });
@@ -54,29 +56,44 @@ Application::Application()
 
 Application::~Application()
 {
+    GE_PROFILE_FUNC();
+
     s_instance = nullptr;
 }
 
 void Application::initialize()
 {
-    GE_TRACE("Initialize Application");
+    GE_PROFILE_FUNC();
+
+    GE_CORE_TRACE("Initialize Application");
     s_window = Window::create();
 }
 
 void Application::shutdown()
 {
-    GE_TRACE("Shutdown Application");
+    GE_PROFILE_FUNC();
+
+    GE_CORE_TRACE("Shutdown Application");
     s_window.reset();
 }
 
 void Application::run()
 {
+    GE_PROFILE_FUNC();
+
     while (m_runnign) {
-        for (auto& layer : m_layer_stack) {
-            layer->onUpdate();
+        GE_PROFILE_SCOPE("MainLoop");
+
+        {
+            GE_PROFILE_SCOPE("LayerStack onUpdate");
+
+            for (auto& layer : m_layer_stack) {
+                layer->onUpdate();
+            }
         }
 
         {
+            GE_PROFILE_SCOPE("LayerStack onGuiRender");
             Begin<Gui> begin;
 
             for (auto& layer : m_layer_stack) {
@@ -90,18 +107,24 @@ void Application::run()
 
 void Application::pushLayer(Shared<Layer> layer)
 {
+    GE_PROFILE_FUNC();
+
     layer->onAttach();
     m_layer_stack.pushLayer(std::move(layer));
 }
 
 void Application::pushOverlay(Shared<Layer> overlay)
 {
+    GE_PROFILE_FUNC();
+
     overlay->onAttach();
     m_layer_stack.pushOverlay(std::move(overlay));
 }
 
 void Application::onEvent(Event* event)
 {
+    GE_PROFILE_FUNC();
+
     EventDispatcher dispatcher{event};
     dispatcher.dispatch<WindowClosedEvent>(GE_BIND_EVENT_FN(onWindowClosed));
 
@@ -118,6 +141,8 @@ void Application::onEvent(Event* event)
 
 bool Application::onWindowClosed([[maybe_unused]] const WindowClosedEvent& event)
 {
+    GE_PROFILE_FUNC();
+
     m_runnign = false;
     return true;
 }

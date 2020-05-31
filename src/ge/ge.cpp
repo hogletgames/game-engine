@@ -31,6 +31,7 @@
  */
 
 #include "ge.h"
+#include "ge/debug/profile.h"
 
 namespace GE {
 
@@ -38,6 +39,8 @@ bool FrameworkManager::initialized{false};
 
 void FrameworkManager::initialize(RendererAPI::API api)
 {
+    GE_PROFILE_FUNC();
+
     if (initialized) {
         return;
     }
@@ -53,6 +56,8 @@ void FrameworkManager::initialize(RendererAPI::API api)
 
 void FrameworkManager::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     if (!initialized) {
         return;
     }

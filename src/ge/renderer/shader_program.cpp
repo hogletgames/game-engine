@@ -34,6 +34,7 @@
 #include "opengl/shader_program.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/utils.h"
 #include "ge/renderer/renderer.h"
 
 namespace GE {

@@ -33,6 +33,9 @@
 #include "window.h"
 #include "input.h"
 
+#include "ge/core/utils.h"
+#include "ge/debug/profile.h"
+
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/window.h"
 
@@ -50,12 +53,16 @@ Scoped<Window> Window::create(properties_t prop)
 
 void Window::initialize()
 {
+    GE_PROFILE_FUNC();
+
     Input::initialize();
     PlatformWindow::initialize();
 }
 
 void Window::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     PlatformWindow::shutdown();
     Input::shutdown();
 }

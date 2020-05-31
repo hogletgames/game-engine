@@ -30,40 +30,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "log.h"
+#ifndef GE_THREAD_POOL_H_
+#define GE_THREAD_POOL_H_
 
-#include "ge/debug/profile.h"
+#include <ge/core/core.h>
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-
-#define CORE_LOGGER   "CORE"
-#define CLIENT_LOGGER "APP"
+#include <functional>
+#include <future>
+#include <queue>
 
 namespace GE {
 
-Shared<spdlog::logger> Log::s_core_logger;
-Shared<spdlog::logger> Log::s_client_logger;
-
-void Log::initialize()
+class GE_API ThreadPool
 {
-    GE_PROFILE_FUNC();
+public:
+    explicit ThreadPool(const char* name);
+    ~ThreadPool();
 
-    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
-    spdlog::set_level(spdlog::level::trace);           // NOLINT
+    void start(uint32_t threads_num);
+    void stop();
 
-    s_core_logger = spdlog::stdout_color_mt(CORE_LOGGER);
-    s_client_logger = spdlog::stdout_color_mt(CLIENT_LOGGER);
-}
+    template<typename Func, typename... Args>
+    void enqueue(Func&& func, Args&&... args)
+    {
+        if (m_terminated) {
+            return;
+        }
 
-void Log::shutdown()
-{
-    GE_PROFILE_FUNC();
+        std::unique_lock lock{m_queue_mtx};
+        // NOLINTNEXTLINE
+        m_queue.emplace(std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
+        lock.unlock();
+        m_condition.notify_one();
+    }
 
-    spdlog::drop(CLIENT_LOGGER);
-    spdlog::drop(CORE_LOGGER);
+private:
+    using Task = std::function<void()>;
 
-    s_client_logger.reset();
-    s_core_logger.reset();
-}
+    void workerThread();
+
+    std::atomic_bool m_terminated{true};
+    std::condition_variable m_condition;
+    std::vector<std::thread> m_workers;
+    const char* m_name{nullptr};
+    std::queue<Task> m_queue;
+    std::mutex m_queue_mtx;
+};
 
 } // namespace GE
+
+#endif // GE_THREAD_POOL_H_

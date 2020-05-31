@@ -30,40 +30,72 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "log.h"
+#include "thread_pool.h"
 
-#include "ge/debug/profile.h"
-
-#include <spdlog/sinks/stdout_color_sinks.h>
-
-#define CORE_LOGGER   "CORE"
-#define CLIENT_LOGGER "APP"
+#include "ge/core/asserts.h"
 
 namespace GE {
 
-Shared<spdlog::logger> Log::s_core_logger;
-Shared<spdlog::logger> Log::s_client_logger;
+ThreadPool::ThreadPool(const char* name)
+    : m_name{name}
+{}
 
-void Log::initialize()
+ThreadPool::~ThreadPool()
 {
-    GE_PROFILE_FUNC();
-
-    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
-    spdlog::set_level(spdlog::level::trace);           // NOLINT
-
-    s_core_logger = spdlog::stdout_color_mt(CORE_LOGGER);
-    s_client_logger = spdlog::stdout_color_mt(CLIENT_LOGGER);
+    if (!m_terminated) {
+        stop();
+    }
 }
 
-void Log::shutdown()
+void ThreadPool::start(uint32_t threads_num)
 {
-    GE_PROFILE_FUNC();
+    GE_CORE_ASSERT(m_terminated, "Thread pool '{}' has already ran", m_name);
 
-    spdlog::drop(CLIENT_LOGGER);
-    spdlog::drop(CORE_LOGGER);
+    m_terminated = false;
+    m_workers.clear();
 
-    s_client_logger.reset();
-    s_core_logger.reset();
+    std::lock_guard lock{m_queue_mtx};
+    m_queue = {};
+
+    for (uint32_t i{0}; i < threads_num; i++) {
+        m_workers.emplace_back(&ThreadPool::workerThread, this);
+    }
+
+    GE_CORE_TRACE("Thread pool '{}' has been started", m_name);
+}
+
+void ThreadPool::stop()
+{
+    m_terminated = true;
+    m_condition.notify_all();
+
+    for (auto& worker : m_workers) {
+        if (worker.joinable()) {
+            worker.join();
+        }
+    }
+
+    GE_CORE_TRACE("Thread pool '{}' has been stopped", m_name);
+}
+
+void ThreadPool::workerThread()
+{
+    auto wake_up_cond = [this] { return m_terminated || !m_queue.empty(); };
+
+    while (true) {
+        std::unique_lock lock{m_queue_mtx};
+        m_condition.wait(lock, wake_up_cond);
+
+        if (m_terminated) {
+            break;
+        }
+
+        auto task = m_queue.front();
+        m_queue.pop();
+        lock.unlock();
+
+        task();
+    }
 }
 
 } // namespace GE

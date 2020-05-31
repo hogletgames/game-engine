@@ -30,40 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "log.h"
+#ifndef GE_CORE_UTILS_H_
+#define GE_CORE_UTILS_H_
 
-#include "ge/debug/profile.h"
+#include <memory>
+#include <thread>
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-
-#define CORE_LOGGER   "CORE"
-#define CLIENT_LOGGER "APP"
+#include <ge/core/core.h>
+#include <ge/core/timestamp.h>
 
 namespace GE {
 
-Shared<spdlog::logger> Log::s_core_logger;
-Shared<spdlog::logger> Log::s_client_logger;
-
-void Log::initialize()
+template<typename Type, typename... Args>
+inline Scoped<Type> makeScoped(Args&&... args)
 {
-    GE_PROFILE_FUNC();
-
-    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
-    spdlog::set_level(spdlog::level::trace);           // NOLINT
-
-    s_core_logger = spdlog::stdout_color_mt(CORE_LOGGER);
-    s_client_logger = spdlog::stdout_color_mt(CLIENT_LOGGER);
+    return std::make_unique<Type>(std::forward<Args>(args)...);
 }
 
-void Log::shutdown()
+template<typename Type, typename... Args>
+inline Shared<Type> makeShared(Args&&... args)
 {
-    GE_PROFILE_FUNC();
+    return std::make_shared<Type>(std::forward<Args>(args)...);
+}
 
-    spdlog::drop(CLIENT_LOGGER);
-    spdlog::drop(CORE_LOGGER);
-
-    s_client_logger.reset();
-    s_core_logger.reset();
+inline void sleep(Timestamp duration)
+{
+    std::this_thread::sleep_for(Timestamp::DurationSec{duration});
 }
 
 } // namespace GE
+
+#endif // GE_CORE_UTILS_H_

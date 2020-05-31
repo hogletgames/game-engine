@@ -35,28 +35,44 @@
 
 #include <ge/core/core.h>
 
-#if !defined(SPDLOG_ACTIVE_LEVEL)
-    #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-#endif
 #define FMT_HEADER_ONLY
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
 
-#define GE_CORE_TRACE(...) SPDLOG_LOGGER_TRACE(::GE::Log::getCoreLogger(), __VA_ARGS__)
-#define GE_CORE_DBG(...)   SPDLOG_LOGGER_DEBUG(::GE::Log::getCoreLogger(), __VA_ARGS__)
-#define GE_CORE_INFO(...)  SPDLOG_LOGGER_INFO(::GE::Log::getCoreLogger(), __VA_ARGS__)
-#define GE_CORE_WARN(...)  SPDLOG_LOGGER_WARN(::GE::Log::getCoreLogger(), __VA_ARGS__)
-#define GE_CORE_ERR(...)   SPDLOG_LOGGER_ERROR(::GE::Log::getCoreLogger(), __VA_ARGS__)
-#define GE_CORE_CRIT(...)  SPDLOG_LOGGER_CRITICAL(::GE::Log::getCoreLogger(), __VA_ARGS__)
+#define _GE_LOG_IF_EXIST(logger, level, ...)   \
+    do {                                       \
+        if (logger) {                          \
+            (logger)->log(level, __VA_ARGS__); \
+        }                                      \
+    } while (false)
 
-#define GE_TRACE(...) SPDLOG_LOGGER_TRACE(::GE::Log::getClientLogger(), __VA_ARGS__)
-#define GE_DBG(...)   SPDLOG_LOGGER_DEBUG(::GE::Log::getClientLogger(), __VA_ARGS__)
-#define GE_INFO(...)  SPDLOG_LOGGER_INFO(::GE::Log::getClientLogger(), __VA_ARGS__)
-#define GE_WARN(...)  SPDLOG_LOGGER_WARN(::GE::Log::getClientLogger(), __VA_ARGS__)
-#define GE_ERR(...)   SPDLOG_LOGGER_ERROR(::GE::Log::getClientLogger(), __VA_ARGS__)
-#define GE_CRIT(...)  SPDLOG_LOGGER_CRITICAL(::GE::Log::getClientLogger(), __VA_ARGS__)
+#define GE_CORE_TRACE(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::trace, __VA_ARGS__)
+#define GE_CORE_DBG(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::debug, __VA_ARGS__)
+#define GE_CORE_INFO(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::info, __VA_ARGS__)
+#define GE_CORE_WARN(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::warn, __VA_ARGS__)
+#define GE_CORE_ERR(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::err, __VA_ARGS__)
+#define GE_CORE_CRIT(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::critical, __VA_ARGS__)
+
+#define GE_TRACE(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::trace, __VA_ARGS__)
+#define GE_DBG(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::debug, __VA_ARGS__)
+#define GE_INFO(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::info, __VA_ARGS__)
+#define GE_WARN(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::warn, __VA_ARGS__)
+#define GE_ERR(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::err, __VA_ARGS__)
+#define GE_CRIT(...) \
+    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::critical, __VA_ARGS__)
 
 namespace GE {
 

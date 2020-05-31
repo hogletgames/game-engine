@@ -33,32 +33,44 @@
 #include "shader_program.h"
 #include "opengl_utils.h"
 
+#include "ge/debug/profile.h"
+
 #include <glad/glad.h>
 
 namespace GE::OpenGL {
 
 ShaderProgram::ShaderProgram()
 {
+    GE_PROFILE_FUNC();
+
     GLCall(m_id = glCreateProgram());
 }
 
 ShaderProgram::~ShaderProgram()
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glDeleteProgram(m_id));
 }
 
 void ShaderProgram::addShader(Shared<Shader> shader)
 {
+    GE_PROFILE_FUNC();
+
     m_shaders.emplace_back(std::move(shader));
 }
 
 void ShaderProgram::addShaders(std::initializer_list<Shared<Shader>> shaders)
 {
+    GE_PROFILE_FUNC();
+
     std::move(shaders.begin(), shaders.end(), std::back_inserter(m_shaders));
 }
 
 bool ShaderProgram::link()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_ASSERT(!m_shaders.empty(), "There are no shaders to link");
     GLint status{GL_FALSE};
 
@@ -82,21 +94,29 @@ bool ShaderProgram::link()
 
 void ShaderProgram::clear()
 {
+    GE_PROFILE_FUNC();
+
     m_shaders.clear();
 }
 
 void ShaderProgram::bind() const
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glUseProgram(m_id));
 }
 
 void ShaderProgram::unbind() const
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glUseProgram(0));
 }
 
 void ShaderProgram::attachShaders()
 {
+    GE_PROFILE_FUNC();
+
     for (const auto& shader : m_shaders) {
         GLCall(glAttachShader(m_id, shader->getNativeID()));
     }
@@ -104,6 +124,8 @@ void ShaderProgram::attachShaders()
 
 void ShaderProgram::detachShaders()
 {
+    GE_PROFILE_FUNC();
+
     for (const auto& shader : m_shaders) {
         GLCall(glDetachShader(m_id, shader->getNativeID()));
     }

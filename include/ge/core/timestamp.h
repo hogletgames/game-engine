@@ -30,40 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "log.h"
+#ifndef GE_CORE_TIMESTAMP_H_
+#define GE_CORE_TIMESTAMP_H_
 
-#include "ge/debug/profile.h"
+#include <ge/core/core.h>
 
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include <chrono>
 
-#define CORE_LOGGER   "CORE"
-#define CLIENT_LOGGER "APP"
+#define GE_MS_IN_SEC 1e3
+#define GE_US_IN_SEC 1e6
+#define GE_NS_IN_SEC 1e9
 
 namespace GE {
 
-Shared<spdlog::logger> Log::s_core_logger;
-Shared<spdlog::logger> Log::s_client_logger;
-
-void Log::initialize()
+class GE_API Timestamp
 {
-    GE_PROFILE_FUNC();
+public:
+    using DurationSec = std::chrono::duration<double>;
+    using DurationMilli = std::chrono::duration<double, std::milli>;
+    using DurationMicro = std::chrono::duration<double, std::micro>;
+    using DurationNano = std::chrono::duration<double, std::nano>;
 
-    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
-    spdlog::set_level(spdlog::level::trace);           // NOLINT
+    Timestamp(double time_sec = 0.0) // NOLINT
+        : m_time_sec{time_sec}
+    {}
 
-    s_core_logger = spdlog::stdout_color_mt(CORE_LOGGER);
-    s_client_logger = spdlog::stdout_color_mt(CLIENT_LOGGER);
-}
+    static Timestamp now()
+    {
+        using std::chrono::duration_cast;
+        auto now = std::chrono::steady_clock::now();
+        return duration_cast<DurationSec>(now.time_since_epoch()).count();
+    }
 
-void Log::shutdown()
-{
-    GE_PROFILE_FUNC();
+    double sec() const { return m_time_sec; }
+    double ms() const { return m_time_sec * GE_MS_IN_SEC; }
+    double us() const { return m_time_sec * GE_US_IN_SEC; }
+    double ns() const { return m_time_sec * GE_NS_IN_SEC; }
 
-    spdlog::drop(CLIENT_LOGGER);
-    spdlog::drop(CORE_LOGGER);
+    operator double() const { return m_time_sec; } // NOLINT
+    Timestamp operator-(Timestamp rhs) const { return m_time_sec - rhs.m_time_sec; }
+    Timestamp operator+(Timestamp rhs) const { return m_time_sec + rhs.m_time_sec; }
 
-    s_client_logger.reset();
-    s_core_logger.reset();
-}
+    Timestamp& operator-=(Timestamp rhs)
+    {
+        m_time_sec -= rhs.m_time_sec;
+        return *this;
+    }
+
+    Timestamp& operator+=(Timestamp rhs)
+    {
+        m_time_sec += rhs.m_time_sec;
+        return *this;
+    }
+
+private:
+    double m_time_sec{};
+};
 
 } // namespace GE
+
+#endif // GE_CORE_TIMESTAMP_H_

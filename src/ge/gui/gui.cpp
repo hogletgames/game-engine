@@ -34,6 +34,7 @@
 
 #include "ge/application.h"
 #include "ge/core/log.h"
+#include "ge/debug/profile.h"
 #include "ge/renderer/render_command.h"
 #include "ge/window/input.h"
 #include "ge/window/key_event.h"
@@ -67,6 +68,7 @@ int32_t toImGuiButton(GE::MouseButton button)
 
 void mapKeys()
 {
+    GE_PROFILE_FUNC();
     ImGuiIO& io = ImGui::GetIO();
 
     io.KeyMap[ImGuiKey_Tab] = CAST_KEY(GE_KEY_TAB);
@@ -95,6 +97,7 @@ void mapKeys()
 
 void setControlKeys()
 {
+    GE_PROFILE_FUNC();
     ImGuiIO& io = ImGui::GetIO();
 
     io.KeyAlt = io.KeysDown[CAST_KEY(GE_KEY_LALT)] || io.KeysDown[CAST_KEY(GE_KEY_RALT)];
@@ -111,6 +114,8 @@ void setControlKeys()
 
 bool onKeyPressed(const GE::KeyPressedEvent& event)
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = true;
     setControlKeys();
@@ -119,6 +124,8 @@ bool onKeyPressed(const GE::KeyPressedEvent& event)
 
 bool onKeyReleased(const GE::KeyReleasedEvent& event)
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = false;
     setControlKeys();
@@ -127,6 +134,8 @@ bool onKeyReleased(const GE::KeyReleasedEvent& event)
 
 bool onKeyTyped(const GE::KeyTypedEvent& event)
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     io.AddInputCharactersUTF8(event.getText());
     return false;
@@ -134,6 +143,8 @@ bool onKeyTyped(const GE::KeyTypedEvent& event)
 
 bool onMouseMoved(const GE::MouseMovedEvent& event)
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     io.MousePos = ImVec2(event.getPosX(), event.getPosY());
     return false;
@@ -141,6 +152,8 @@ bool onMouseMoved(const GE::MouseMovedEvent& event)
 
 bool onMouseScrolled(const GE::MouseScrolledEvent& event)
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     io.MouseWheelH = event.getOffsetX();
     io.MouseWheel = event.getOffsetY();
@@ -149,6 +162,7 @@ bool onMouseScrolled(const GE::MouseScrolledEvent& event)
 
 bool onMouseButtonPressed(const GE::MouseButtonPressedEvent& event)
 {
+    GE_PROFILE_FUNC();
     auto button = event.getMouseButton();
 
     if (button == GE_BUTTON_UNKNOWN) {
@@ -162,6 +176,7 @@ bool onMouseButtonPressed(const GE::MouseButtonPressedEvent& event)
 
 bool onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event)
 {
+    GE_PROFILE_FUNC();
     auto button = event.getMouseButton();
 
     if (button == GE_BUTTON_UNKNOWN) {
@@ -175,6 +190,8 @@ bool onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event)
 
 bool onWindowResized(const GE::WindowResizedEvent& event)
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     io.DisplaySize = ImVec2(event.getWidth(), event.getHeight());
     io.DisplayFramebufferScale = ImVec2{1.0f, 1.0f};
@@ -188,6 +205,8 @@ namespace GE {
 
 void Gui::initialize()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_TRACE("Initialize GUI");
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -212,6 +231,8 @@ void Gui::initialize()
 
 void Gui::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_TRACE("Shutdown GUI");
     PlatformGui::shutdown();
     ImGui::DestroyContext();
@@ -219,12 +240,16 @@ void Gui::shutdown()
 
 void Gui::begin()
 {
+    GE_PROFILE_FUNC();
+
     PlatformGui::newFrame();
     ImGui::NewFrame();
 }
 
 void Gui::end()
 {
+    GE_PROFILE_FUNC();
+
     ImGuiIO& io = ImGui::GetIO();
     const auto& window = Application::getWindow();
     io.DisplaySize = ImVec2(window.getWidth(), window.getHeight());
@@ -235,6 +260,7 @@ void Gui::end()
 
 void Gui::onEvent(Event* event)
 {
+    GE_PROFILE_FUNC();
     EventDispatcher dispatcher(event);
 
     dispatcher.dispatch<KeyPressedEvent>(onKeyPressed);

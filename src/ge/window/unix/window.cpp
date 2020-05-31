@@ -34,6 +34,7 @@
 #include "input.h"
 #include "unix_utils.h"
 
+#include "ge/debug/profile.h"
 #include "ge/renderer/graphics_context.h"
 #include "ge/renderer/renderer.h"
 #include "ge/window/key_event.h"
@@ -53,6 +54,7 @@ bool Window::s_initialized{false};
 Window::Window(properties_t prop)
     : m_prop(std::move(prop))
 {
+    GE_PROFILE_FUNC();
     GE_CORE_TRACE("Create window '{}', ({}, {})", m_prop.title, m_prop.width,
                   m_prop.height);
 
@@ -64,9 +66,12 @@ Window::Window(properties_t prop)
         flags |= SDL_WINDOW_OPENGL;
     }
 
-    m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
-                                m_prop.height, flags);
-    GE_CORE_ASSERT(m_window, SDL_GetError());
+    {
+        GE_PROFILE_SCOPE("UNIX::Window Create Window");
+        m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
+                                    m_prop.height, flags);
+        GE_CORE_ASSERT(m_window, SDL_GetError());
+    }
 
     m_contex = GraphicsContext::create(m_window);
     GE_CORE_ASSERT(m_contex != nullptr, "Failed to create graphics context");
@@ -79,6 +84,8 @@ Window::Window(properties_t prop)
 
 Window::~Window() // NOLINT
 {
+    GE_PROFILE_FUNC();
+
     if (m_contex != nullptr) {
         m_contex->shutdown();
     }
@@ -91,18 +98,24 @@ Window::~Window() // NOLINT
 
 void Window::initialize()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_TRACE("Initialize UNIX::Window");
     SDLCall(SDL_Init(SDL_INIT_VIDEO));
 }
 
 void Window::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_TRACE("Shutdown UNIX::Window");
     SDL_Quit();
 }
 
 void Window::setVSync(bool enabled)
 {
+    GE_PROFILE_FUNC();
+
     if (enabled) {
         SDLCall(SDL_GL_SetSwapInterval(VSYNC_ON));
     } else {
@@ -114,12 +127,16 @@ void Window::setVSync(bool enabled)
 
 void Window::onUpdate()
 {
+    GE_PROFILE_FUNC();
+
     pollEvents();
     m_contex->swapBuffers();
 }
 
 void Window::pollEvents()
 {
+    GE_PROFILE_FUNC();
+
     SDL_Event sdl_event;
 
     while (SDL_PollEvent(&sdl_event) != 0) {
@@ -153,6 +170,8 @@ void Window::pollEvents()
 
 void Window::onSDLMouseEvent(const SDL_Event& sdl_event)
 {
+    GE_PROFILE_FUNC();
+
     switch (sdl_event.type) {
         case SDL_MOUSEMOTION: {
             float x = sdl_event.motion.x;
@@ -186,6 +205,8 @@ void Window::onSDLMouseEvent(const SDL_Event& sdl_event)
 
 void Window::onSDLKeyEvent(const SDL_Event& sdl_event)
 {
+    GE_PROFILE_FUNC();
+
     switch (sdl_event.type) {
         case SDL_KEYDOWN: {
             KeyCode code = Input::toGEKeyCode(sdl_event.key.keysym.sym);
@@ -211,6 +232,8 @@ void Window::onSDLKeyEvent(const SDL_Event& sdl_event)
 
 void Window::onSDLWindowEvent(const SDL_Event& sdl_event)
 {
+    GE_PROFILE_FUNC();
+
     switch (sdl_event.window.event) {
         case SDL_WINDOWEVENT_RESIZED: {
             uint32_t width = sdl_event.window.data1;

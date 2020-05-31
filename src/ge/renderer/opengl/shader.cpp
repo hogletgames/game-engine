@@ -34,6 +34,7 @@
 #include "opengl_utils.h"
 
 #include "ge/core/asserts.h"
+#include "ge/debug/profile.h"
 
 #include <glad/glad.h>
 
@@ -55,6 +56,8 @@ GLenum toGlType(::GE::Shader::Type type)
 
 std::string loadShader(const std::string& filepath)
 {
+    GE_PROFILE_FUNC();
+
     std::ifstream fin(filepath, std::ios_base::binary);
 
     if (!fin.is_open()) {
@@ -74,22 +77,30 @@ namespace GE::OpenGL {
 Shader::Shader(Type type)
     : m_type{toGlType(type)}
 {
+    GE_PROFILE_FUNC();
+
     GLCall(m_id = glCreateShader(m_type));
 }
 
 Shader::~Shader()
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glDeleteShader(m_id));
 }
 
 bool Shader::compileFromFile(const std::string& filepath)
 {
+    GE_PROFILE_FUNC();
+
     std::string source_code = loadShader(filepath);
     return !source_code.empty() ? compileFromSource(source_code) : false;
 }
 
 bool Shader::compileFromSource(const std::string& source_code)
 {
+    GE_PROFILE_FUNC();
+
     const GLchar* source = source_code.c_str();
     GLint status{GL_FALSE};
 

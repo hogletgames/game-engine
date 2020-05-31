@@ -35,17 +35,22 @@
 #include "vertex_array.h"
 
 #include "ge/core/log.h"
+#include "ge/debug/profile.h"
 
 namespace GE {
 
 void Renderer::initialize(RendererAPI::API api)
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_TRACE("Initialize Renderer");
     RenderCommand::initialize(api);
 }
 
 void Renderer::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_TRACE("Shutdown Renderer");
     RenderCommand::shutdown();
 }
@@ -56,6 +61,9 @@ void Renderer::end() {}
 
 void Renderer::submit(const Shared<VertexArray>& vertex_array)
 {
+    GE_PROFILE_FUNC();
+
+    vertex_array->bind();
     RenderCommand::draw(vertex_array);
 }
 

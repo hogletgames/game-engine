@@ -33,6 +33,8 @@
 #include "buffers.h"
 #include "opengl_utils.h"
 
+#include "ge/debug/profile.h"
+
 #include <glad/glad.h>
 
 namespace {
@@ -58,6 +60,8 @@ namespace GE::OpenGL {
 BufferBase::BufferBase(Type type, void* data, uint32_t size)
     : m_gl_type{toGLBufferType(type)}
 {
+    GE_PROFILE_FUNC();
+
     GE_CORE_ASSERT(m_gl_type, "Unknown buffer type");
     GLCall(glCreateBuffers(1, &m_id));
     GLCall(glBindBuffer(m_gl_type, m_id));
@@ -66,16 +70,22 @@ BufferBase::BufferBase(Type type, void* data, uint32_t size)
 
 BufferBase::~BufferBase()
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glDeleteBuffers(1, &m_id));
 }
 
 void BufferBase::bindBuffer() const
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glBindBuffer(m_gl_type, m_id));
 }
 
 void BufferBase::unbindBuffer() const
 {
+    GE_PROFILE_FUNC();
+
     GLCall(glBindBuffer(m_gl_type, 0));
 }
 

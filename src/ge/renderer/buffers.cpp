@@ -35,6 +35,7 @@
 #include "renderer.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/utils.h"
 
 namespace GE {
 

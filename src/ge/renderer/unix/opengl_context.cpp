@@ -33,6 +33,8 @@
 #include "opengl_context.h"
 #include "unix_utils.h"
 
+#include "ge/debug/profile.h"
+
 #include <SDL.h>
 #include <glad/glad.h>
 
@@ -49,13 +51,18 @@ OpenGLContext::OpenGLContext(void* window)
 
 void OpenGLContext::initialize()
 {
+    GE_PROFILE_FUNC();
+
     SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_MAJOR_VERSION));
     SDLCall(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_MINOR_VERSION));
     SDLCall(
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE));
 
-    m_gl_context = SDL_GL_CreateContext(m_window);
-    GE_CORE_ASSERT(m_gl_context, "Failed to create graphics context");
+    {
+        GE_PROFILE_SCOPE("UNIX::OpenGLContext Create Context");
+        m_gl_context = SDL_GL_CreateContext(m_window);
+        GE_CORE_ASSERT(m_gl_context, "Failed to create graphics context");
+    }
 
     auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
     int is_glad_loaded = gladLoadGLLoader(glad_load_proc);
@@ -70,12 +77,16 @@ void OpenGLContext::initialize()
 
 void OpenGLContext::shutdown()
 {
+    GE_PROFILE_FUNC();
+
     SDL_GL_DeleteContext(m_gl_context);
     GE_CORE_TRACE("OpenGL context has been deleted");
 }
 
 void OpenGLContext::swapBuffers()
 {
+    GE_PROFILE_FUNC();
+
     SDL_GL_SwapWindow(m_window);
 }
 
