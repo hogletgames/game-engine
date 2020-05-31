@@ -44,6 +44,7 @@ class OpenGLContext: public GraphicsContext
 {
 public:
     explicit OpenGLContext(void* window);
+    ~OpenGLContext() override; // NOLINT
 
     void initialize() override;
     void shutdown() override;
@@ -52,6 +53,8 @@ public:
     void* getNativeContext() const override { return m_gl_context; }
 
 private:
+    void deleteContext();
+
     SDL_Window* m_window{nullptr};
     void* m_gl_context{nullptr};
 };

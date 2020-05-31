@@ -65,29 +65,24 @@
 #include <ge/window/window.h>
 #include <ge/window/window_event.h>
 
-#define GE_CREATE_FW_MANAGER(api) ::GE::FrameworkManager fw##__FILE__##__LINE__(api)
-#define GE_INITIALIZE(api)        ::GE::FrameworkManager::initialize(api)
-#define GE_SHUTDOWN()             ::GE::FrameworkManager::shutdown()
+#define GE_INITIALIZE(api) ::GE::FWManager::get()->initialize(api)
+#define GE_SHUTDOWN()      ::GE::FWManager::get()->shutdown()
 
 namespace GE {
 
-class GE_API FrameworkManager: public NonCopyable
+class GE_API FWManager
 {
 public:
-    explicit FrameworkManager(RendererAPI::API api) { initialize(api); }
-    FrameworkManager(const FrameworkManager& other) = delete;
-    FrameworkManager(FrameworkManager&& other) = delete;
+    void initialize(RendererAPI::API api);
+    void shutdown();
 
-    FrameworkManager& operator=(const FrameworkManager& other) = delete;
-    FrameworkManager& operator=(FrameworkManager&& other) = delete;
-
-    ~FrameworkManager() { shutdown(); } // NOLINT
-
-    static void initialize(RendererAPI::API api);
-    static void shutdown();
+    static FWManager* get();
 
 private:
-    static bool initialized;
+    FWManager() = default;
+    ~FWManager(); // NOLINT
+
+    bool m_initialized{false};
 };
 
 } // namespace GE

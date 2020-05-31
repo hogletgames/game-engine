@@ -86,13 +86,13 @@ Window::~Window() // NOLINT
 {
     GE_PROFILE_FUNC();
 
-    if (m_contex != nullptr) {
-        m_contex->shutdown();
-    }
-
     if (m_window != nullptr) {
         SDL_DestroyWindow(m_window);
         GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
+    }
+
+    if (m_contex != nullptr) {
+        m_contex->shutdown();
     }
 }
 

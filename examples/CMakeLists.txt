@@ -8,3 +8,6 @@ target_link_libraries(sandbox_example
     docopt
     ge
 )
+target_include_directories(sandbox_example SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/third-party/docopt
+)
