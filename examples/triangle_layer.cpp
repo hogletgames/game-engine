@@ -34,71 +34,88 @@
 
 #include "ge/debug/profile.h"
 
-#define VER_COUNT            3
-#define VERTEX_SOURCE_FILE   "examples/shaders/pass_through.vert"
-#define FRAGMENT_SOURCE_FILE "examples/shaders/pass_through.frag"
+#define VER_COUNT       3
+#define VERT_DATA_COUNT 7
+
+#define VERT_PATH "examples/shaders/pass_through.vert"
+#define FRAG_PATH "examples/shaders/pass_through.frag"
+
+#define ATTR_POSITION "a_Position"
+#define ATTR_COLOR    "a_Color"
 
 namespace GE::Examples {
 
 TriangleLayer::TriangleLayer(bool show_gui_demo)
     : GuiLayer{show_gui_demo, "Triangle Layer"}
-    , m_camera{-1.6f, 1.6f, -0.9f, 0.9f} // NOLINT
-{
-    GE_PROFILE_FUNC();
+{}
 
-    initializeTriangle();
-}
-
-void TriangleLayer::onUpdate()
-{
-    GE_PROFILE_FUNC();
-
-    {
-        GE_PROFILE_SCOPE("TriangleLayer Prepare");
-        RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
-    }
-
-    {
-        GE_PROFILE_SCOPE("TriangleLayer Draw");
-        Begin<Renderer> begin{m_camera};
-        Renderer::submit(m_triangle_shader, m_triangle_vao);
-    }
-}
-
-void TriangleLayer::initializeTriangle()
+void TriangleLayer::onAttach()
 {
     GE_PROFILE_FUNC();
 
     // NOLINTNEXTLINE
-    std::array<float, VER_COUNT* 7> vertices = {
+    std::array<float, VER_COUNT* VERT_DATA_COUNT> vertices = {
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // NOLINT
         0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // NOLINT
         0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f  // NOLINT
     };
 
-    Shared<VertexBuffer> vertex_buffer =
-        VertexBuffer::create(vertices.data(), vertices.size() * sizeof(float));
-    BufferLayout layout{{GE_ELEMENT_FLOAT3, "a_Position"},
-                        {GE_ELEMENT_FLOAT4, "a_Color"}};
+    uint32_t vert_data_size = vertices.size() * sizeof(float);
+    auto vertex_buffer = VertexBuffer::create(vertices.data(), vert_data_size);
+
+    BufferLayout layout{{GE_ELEMENT_FLOAT3, ATTR_POSITION},
+                        {GE_ELEMENT_FLOAT4, ATTR_COLOR}};
     vertex_buffer->setLayout(layout);
 
     std::array<uint32_t, VER_COUNT> indices = {0, 1, 2};
-    Shared<IndexBuffer> index_buffer =
-        IndexBuffer::create(indices.data(), indices.size());
+    auto index_buffer = IndexBuffer::create(indices.data(), indices.size());
 
-    m_triangle_vao = VertexArray::create();
-    m_triangle_vao->addVertexBuffer(vertex_buffer);
-    m_triangle_vao->setIndexBuffer(index_buffer);
+    m_vao = VertexArray::create();
+    m_vao->addVertexBuffer(std::move(vertex_buffer));
+    m_vao->setIndexBuffer(std::move(index_buffer));
 
     Shared<Shader> vertex_shader = Shader::create(GE_VERTEX_SHADER);
-    vertex_shader->compileFromFile(VERTEX_SOURCE_FILE);
+    vertex_shader->compileFromFile(VERT_PATH);
 
     Shared<Shader> fragment_shader = Shader::create(GE_FRAGMENT_SHADER);
-    fragment_shader->compileFromFile(FRAGMENT_SOURCE_FILE);
+    fragment_shader->compileFromFile(FRAG_PATH);
 
-    m_triangle_shader = ShaderProgram::create();
-    m_triangle_shader->addShaders({vertex_shader, fragment_shader});
-    m_triangle_shader->link();
+    m_shader = ShaderProgram::create();
+    m_shader->addShaders({vertex_shader, fragment_shader});
+
+    GE_ASSERT(m_shader->link(), "Failed to link shader");
+}
+
+void TriangleLayer::onDetach()
+{
+    GE_PROFILE_FUNC();
+
+    m_vao.reset();
+    m_shader.reset();
+}
+
+void TriangleLayer::onUpdate(Timestamp delta_time)
+{
+    GE_PROFILE_FUNC();
+
+    {
+        GE_PROFILE_SCOPE("TriangleLayer Prepare");
+        m_camera_controller.onUpdate(delta_time);
+        RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+    }
+
+    {
+        GE_PROFILE_SCOPE("TriangleLayer Draw");
+        Begin<Renderer> begin{m_camera_controller.getCamera()};
+        Renderer::submit(m_shader, m_vao);
+    }
+}
+
+void TriangleLayer::onEvent(Event* event)
+{
+    GE_PROFILE_FUNC();
+
+    GuiLayer::onEvent(event);
 }
 
 } // namespace GE::Examples

@@ -43,15 +43,14 @@ class GE_API TriangleLayer: public GuiLayer
 public:
     explicit TriangleLayer(bool show_gui_demo);
 
-    void onUpdate() override;
+    void onAttach() override;
+    void onDetach() override;
+    void onUpdate(Timestamp delta_time) override;
+    void onEvent(Event* event) override;
 
 private:
-    void initializeTriangle();
-
-    Shared<ShaderProgram> m_triangle_shader;
-    Shared<VertexArray> m_triangle_vao;
-
-    OrthographicCamera m_camera;
+    Shared<ShaderProgram> m_shader;
+    Shared<VertexArray> m_vao;
 };
 
 } // namespace GE::Examples
