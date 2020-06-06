@@ -51,6 +51,16 @@ public:
     bool link() override;
     void clear() override;
 
+    void setUniformInt(const std::string& name, int value) override;
+    void setUniformIntArray(const std::string& name, const int* array,
+                            uint32_t count) override;
+    void setUniformFloat(const std::string& name, float value) override;
+    void setUniformFloat2(const std::string& name, const glm::vec2& vector) override;
+    void setUniformFloat3(const std::string& name, const glm::vec3& vector) override;
+    void setUniformFloat4(const std::string& name, const glm::vec4& vector) override;
+    void setUniformMat3(const std::string& name, const glm::mat3& matrix) override;
+    void setUniformMat4(const std::string& name, const glm::mat4& matrix) override;
+
     void bind() const override;
     void unbind() const override;
 

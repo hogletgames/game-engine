@@ -30,32 +30,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_EXAMPLES_GUI_LAYER_H_
-#define GE_EXAMPLES_GUI_LAYER_H_
+#include "orthographic_camera.h"
 
-#include <ge/ge.h>
+#include "ge/debug/profile.h"
 
-#include <imgui.h>
+#include <glm/gtc/matrix_transform.hpp>
 
-namespace GE::Examples {
+#define Z_NEAR (-1.0f)
+#define Z_FAR  1.0f
 
-class GE_API GuiLayer: public EmptyLayer
+namespace GE {
+
+OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
 {
-public:
-    explicit GuiLayer(bool show_gui_demo, const char* name = "Gui Layer");
+    GE_PROFILE_FUNC();
 
-    void onUpdate(Timestamp delta_time) override;
-    void onEvent(Event* event) override;
-    void onGuiRender() override;
+    setProjection(left, right, bottom, top);
+}
 
-protected:
-    OrthoCameraController m_camera_controller;
+void OrthographicCamera::setPosition(const glm::vec3& position)
+{
+    GE_PROFILE_FUNC();
 
-private:
-    bool m_show_gui_demo{false};
-};
+    m_position = position;
+    recalculateVPMatrix();
+}
 
-} // namespace GE::Examples
+void OrthographicCamera::setRotation(float rotation)
+{
+    GE_PROFILE_FUNC();
 
-#endif // GE_EXAMPLES_GUI_LAYER_H_
+    m_rotation = rotation;
+    recalculateVPMatrix();
+}
+
+void OrthographicCamera::setProjection(float left, float right, float bottom, float top)
+{
+    GE_PROFILE_FUNC();
+
+    m_proj_mat = glm::ortho(left, right, bottom, top, Z_NEAR, Z_FAR);
+    m_vp_mat = m_proj_mat * m_view_mat;
+}
+
+void OrthographicCamera::recalculateVPMatrix()
+{
+    GE_PROFILE_FUNC();
+
+    auto transform = glm::translate(glm::mat4{1.0f}, m_position);
+    transform = glm::rotate(transform, glm::radians(m_rotation), glm::vec3{0, 0, 1});
+
+    m_view_mat = glm::inverse(transform);
+    m_vp_mat = m_proj_mat * m_view_mat;
+}
+
+} // namespace GE

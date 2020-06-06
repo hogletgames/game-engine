@@ -34,6 +34,7 @@
 #define GE_LAYER_H_
 
 #include <ge/core/interface.h>
+#include <ge/core/timestamp.h>
 
 namespace GE {
 
@@ -48,7 +49,7 @@ public:
 
     virtual void onAttach() = 0;
     virtual void onDetach() = 0;
-    virtual void onUpdate() = 0;
+    virtual void onUpdate(Timestamp delta_time) = 0;
     virtual void onEvent(Event* event) = 0;
     virtual void onGuiRender(){};
 

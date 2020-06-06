@@ -37,11 +37,11 @@
 #include "ge/debug/profile.h"
 #include "ge/gui/gui.h"
 #include "ge/layer.h"
+#include "ge/renderer/renderer.h"
 #include "ge/window/window.h"
 #include "ge/window/window_event.h"
 
 namespace GE {
-
 Application* Application::s_instance{nullptr};
 Scoped<Window> Application::s_window{nullptr};
 
@@ -80,25 +80,17 @@ void Application::shutdown()
 void Application::run()
 {
     GE_PROFILE_FUNC();
+    m_prev_frame_time = Timestamp::now();
 
     while (m_runnign) {
         GE_PROFILE_SCOPE("MainLoop");
 
-        {
-            GE_PROFILE_SCOPE("LayerStack onUpdate");
+        Timestamp now = Timestamp::now();
+        Timestamp delta_time = now - m_prev_frame_time;
+        m_prev_frame_time = now;
 
-            for (auto& layer : m_layer_stack) {
-                layer->onUpdate();
-            }
-        }
-
-        {
-            GE_PROFILE_SCOPE("LayerStack onGuiRender");
-            Begin<Gui> begin;
-
-            for (auto& layer : m_layer_stack) {
-                layer->onGuiRender();
-            }
+        if (m_window_state != WindowState::MINIMIZED) {
+            updateLayers(delta_time);
         }
 
         s_window->onUpdate();
@@ -121,12 +113,38 @@ void Application::pushOverlay(Shared<Layer> overlay)
     m_layer_stack.pushOverlay(std::move(overlay));
 }
 
+void Application::updateLayers(Timestamp delta_time)
+{
+    GE_PROFILE_FUNC();
+
+    {
+        GE_PROFILE_SCOPE("LayerStack onUpdate");
+
+        for (auto& layer : m_layer_stack) {
+            layer->onUpdate(delta_time);
+        }
+    }
+
+    {
+        GE_PROFILE_SCOPE("LayerStack onGuiRender");
+        Begin<Gui> begin;
+
+        for (auto& layer : m_layer_stack) {
+            layer->onGuiRender();
+        }
+    }
+}
+
 void Application::onEvent(Event* event)
 {
     GE_PROFILE_FUNC();
 
     EventDispatcher dispatcher{event};
+    dispatcher.dispatch<WindowResizedEvent>(Renderer::onWindowResized);
     dispatcher.dispatch<WindowClosedEvent>(GE_BIND_EVENT_FN(onWindowClosed));
+    dispatcher.dispatch<WindowMaximizedEvent>(GE_BIND_EVENT_FN(onWindowMaximized));
+    dispatcher.dispatch<WindowMinimizedEvent>(GE_BIND_EVENT_FN(onWindowMinimized));
+    dispatcher.dispatch<WindowRestoredEvent>(GE_BIND_EVENT_FN(onWindowRestored));
 
     Gui::onEvent(event);
 
@@ -145,6 +163,30 @@ bool Application::onWindowClosed([[maybe_unused]] const WindowClosedEvent& event
 
     m_runnign = false;
     return true;
+}
+
+bool Application::onWindowMaximized([[maybe_unused]] const WindowMaximizedEvent& event)
+{
+    GE_PROFILE_FUNC();
+
+    m_window_state = WindowState::MAXIMIZED;
+    return false;
+}
+
+bool Application::onWindowMinimized([[maybe_unused]] const WindowMinimizedEvent& event)
+{
+    GE_PROFILE_FUNC();
+
+    m_window_state = WindowState::MINIMIZED;
+    return false;
+}
+
+bool Application::onWindowRestored([[maybe_unused]] const WindowRestoredEvent& event)
+{
+    GE_PROFILE_FUNC();
+
+    m_window_state = WindowState::NONE;
+    return false;
 }
 
 } // namespace GE

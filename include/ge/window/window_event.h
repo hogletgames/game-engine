@@ -74,6 +74,30 @@ public:
     DECLARE_EVENT_TYPE(WINDOW_CLOSED)
 };
 
+class GE_API WindowMaximizedEvent: public Event
+{
+public:
+    std::string toString() const override { return "WindowMaximizedEvent"; }
+
+    DECLARE_EVENT_TYPE(WINDOW_MAXIMIZED)
+};
+
+class GE_API WindowMinimizedEvent: public Event
+{
+public:
+    std::string toString() const override { return "WindowMinimizedEvent"; }
+
+    DECLARE_EVENT_TYPE(WINDOW_MINIMIZED)
+};
+
+class GE_API WindowRestoredEvent: public Event
+{
+public:
+    std::string toString() const override { return "WindowRestoredEvent"; }
+
+    DECLARE_EVENT_TYPE(WINDOW_RESTORED)
+};
+
 } // namespace GE
 
 #endif // GE_WINDOW_WINDOW_EVENT_H_

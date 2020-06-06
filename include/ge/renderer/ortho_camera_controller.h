@@ -30,32 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_EXAMPLES_GUI_LAYER_H_
-#define GE_EXAMPLES_GUI_LAYER_H_
+#ifndef GE_RENDERER_ORTHO_CAMERA_CONTROLLER_H_
+#define GE_RENDERER_ORTHO_CAMERA_CONTROLLER_H_
 
-#include <ge/ge.h>
+#include <ge/core/core.h>
+#include <ge/core/timestamp.h>
+#include <ge/renderer/orthographic_camera.h>
 
-#include <imgui.h>
+#include <glm/glm.hpp>
 
-namespace GE::Examples {
+namespace GE {
 
-class GE_API GuiLayer: public EmptyLayer
+class Event;
+class MouseScrolledEvent;
+class WindowResizedEvent;
+
+class GE_API OrthoCameraController
 {
 public:
-    explicit GuiLayer(bool show_gui_demo, const char* name = "Gui Layer");
+    explicit OrthoCameraController(float aspect_ratio, bool rotation = false);
 
-    void onUpdate(Timestamp delta_time) override;
-    void onEvent(Event* event) override;
-    void onGuiRender() override;
+    void onUpdate(Timestamp delta_time);
+    void onEvent(Event* event);
 
-protected:
-    OrthoCameraController m_camera_controller;
+    const OrthographicCamera& getCamera() const { return m_camera; }
 
 private:
-    bool m_show_gui_demo{false};
+    bool onMouseScrolled(const MouseScrolledEvent& event);
+    bool onWindowResizedEvent(const WindowResizedEvent& event);
+
+    float m_aspect_ratio{};
+    float m_zoom{1.0f};
+    OrthographicCamera m_camera;
+
+    bool m_rotation_enable{false};
+    glm::vec3 m_camera_pos{0.0f, 0.0f, 0.0f};
+    float m_camera_rotation{0.0f};
+    float m_camera_translation_speed{1.0f};
 };
 
-} // namespace GE::Examples
+} // namespace GE
 
-#endif // GE_EXAMPLES_GUI_LAYER_H_
+#endif // GE_RENDERER_ORTHO_CAMERA_CONTROLLER_H_

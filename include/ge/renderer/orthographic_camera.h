@@ -30,32 +30,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_EXAMPLES_GUI_LAYER_H_
-#define GE_EXAMPLES_GUI_LAYER_H_
+#ifndef GE_RENDERER_ORTHOGRAPHIC_CAMERA_H_
+#define GE_RENDERER_ORTHOGRAPHIC_CAMERA_H_
 
-#include <ge/ge.h>
+#include <ge/core/core.h>
 
-#include <imgui.h>
+#include <glm/glm.hpp>
 
-namespace GE::Examples {
+namespace GE {
 
-class GE_API GuiLayer: public EmptyLayer
+class GE_API OrthographicCamera
 {
 public:
-    explicit GuiLayer(bool show_gui_demo, const char* name = "Gui Layer");
+    OrthographicCamera() = default;
+    OrthographicCamera(float left, float right, float bottom, float top);
 
-    void onUpdate(Timestamp delta_time) override;
-    void onEvent(Event* event) override;
-    void onGuiRender() override;
+    void setPosition(const glm::vec3& position);
+    void setRotation(float rotation);
+    void setProjection(float left, float right, float bottom, float top);
 
-protected:
-    OrthoCameraController m_camera_controller;
+    const glm::vec3& getPosition() const { return m_position; }
+    float getRotation() const { return m_rotation; }
+
+    const glm::mat4& getProjectionMatrix() const { return m_proj_mat; }
+    const glm::mat4& getViewMatrix() const { return m_view_mat; }
+    const glm::mat4& getVPMatrix() const { return m_vp_mat; }
 
 private:
-    bool m_show_gui_demo{false};
+    void recalculateVPMatrix();
+
+    glm::mat4 m_proj_mat{1.0f};
+    glm::mat4 m_view_mat{1.0f};
+    glm::mat4 m_vp_mat{1.0f};
+
+    glm::vec3 m_position{0.0f, 0.0f, 0.0f};
+    float m_rotation{0.0f};
 };
 
-} // namespace GE::Examples
+} // namespace GE
 
-#endif // GE_EXAMPLES_GUI_LAYER_H_
+#endif // GE_RENDERER_ORTHOGRAPHIC_CAMERA_H_

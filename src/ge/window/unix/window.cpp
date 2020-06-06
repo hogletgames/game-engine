@@ -238,12 +238,30 @@ void Window::onSDLWindowEvent(const SDL_Event& sdl_event)
         case SDL_WINDOWEVENT_RESIZED: {
             uint32_t width = sdl_event.window.data1;
             uint32_t height = sdl_event.window.data2;
+            m_prop.width = width;
+            m_prop.height = height;
             WindowResizedEvent event{width, height};
             m_event_callback(&event);
             break;
         }
         case SDL_WINDOWEVENT_CLOSE: {
             WindowClosedEvent event{};
+            m_event_callback(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_MAXIMIZED: {
+            WindowMaximizedEvent event{};
+            m_event_callback(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_MINIMIZED: {
+            WindowMinimizedEvent event{};
+            m_event_callback(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_SHOWN:
+        case SDL_WINDOWEVENT_RESTORED: {
+            WindowRestoredEvent event{};
             m_event_callback(&event);
             break;
         }
