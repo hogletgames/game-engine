@@ -90,7 +90,7 @@ bool ShaderProgram::link()
 
     detachShaders();
     clear();
-    return status == GL_FALSE;
+    return status != GL_FALSE;
 }
 
 void ShaderProgram::clear()
