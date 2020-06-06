@@ -39,11 +39,12 @@
 
 #include <iostream>
 
-#define EXAMPLE_OPT      "--example"
+#define EXAMPLE_OPT  "--example"
+#define SHOW_GUI_OPT "--show-demo"
+#define PROFILE_OPT  "--profiling"
+
 #define EXAMPLE_EMPTY    "empty"
 #define EXAMPLE_TRIANGLE "triangle"
-
-#define SHOW_GUI_OPT "--show-demo"
 
 namespace {
 
@@ -59,6 +60,7 @@ Usage:
 Options:
     -h --help                   Show this help.
     -s --show-demo              Show GUI demo [default: false].
+    -p --profiling              Enable profiling [default: false]
     -e --example <example>      Example [default: empty].
 )";
 
@@ -71,6 +73,7 @@ enum class LayerType : uint8_t
 struct ParseArgs {
     LayerType layer{LayerType::EMPTY};
     bool show_gui_demo{false};
+    bool enable_profile{false};
 };
 
 ParseArgs parseArgs(int argc, char** argv)
@@ -100,9 +103,8 @@ ParseArgs parseArgs(int argc, char** argv)
         exit(1);
     }
 
-    if (args[SHOW_GUI_OPT].asBool()) {
-        parsed_args.show_gui_demo = true;
-    }
+    parsed_args.show_gui_demo = args[SHOW_GUI_OPT].asBool();
+    parsed_args.enable_profile = args[PROFILE_OPT].asBool();
 
     return parsed_args;
 }
@@ -130,8 +132,11 @@ int main(int argc, char** argv) // NOLINT
 {
     ParseArgs args = parseArgs(argc, argv);
 
-    GE_PROFILE_ENABLE(true);
-    GE_PROFILE_BEGIN_SESSION("Sandbox Run", "profile.json");
+    if (args.enable_profile) {
+        GE_PROFILE_ENABLE(true);
+        GE_PROFILE_BEGIN_SESSION("Sandbox Run", "profile.json");
+    }
+
     GE_INITIALIZE(GE_OPEN_GL_API);
 
     GE::Application app{};
