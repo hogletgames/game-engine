@@ -35,7 +35,7 @@
 
 #include <ge/core/core.h>
 
-#define FMT_HEADER_ONLY
+#define SPDLOG_COMPILED_LIB 1
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 

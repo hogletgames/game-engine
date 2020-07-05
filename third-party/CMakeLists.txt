@@ -1,3 +1,6 @@
+# spdlog
+add_subdirectory(spdlog)
+
 # SDL2
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
