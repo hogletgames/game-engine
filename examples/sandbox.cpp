@@ -143,5 +143,7 @@ int main(int argc, char** argv) // NOLINT
     app.pushLayer(getLayer(args));
     app.run();
 
+    GE_SHUTDOWN();
+
     return 0;
 }

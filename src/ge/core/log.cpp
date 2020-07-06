@@ -36,34 +36,78 @@
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#define CORE_LOGGER   "CORE"
-#define CLIENT_LOGGER "APP"
+#include <iostream>
+
+#define CORE_LOGGER_NAME   "CORE"
+#define CLIENT_LOGGER_NAME "APP"
+#define LOG_FTM_PATTERN    "[%H:%M:%S.%e] [%l] %n: %v%$"
 
 namespace GE {
 
-Shared<spdlog::logger> Log::s_core_logger;
-Shared<spdlog::logger> Log::s_client_logger;
-
-void Log::initialize()
+Logger::~Logger()
 {
     GE_PROFILE_FUNC();
 
-    spdlog::set_pattern("[%-8l %H:%M:%S.%e] %n %v%$"); // NOLINT
-    spdlog::set_level(spdlog::level::trace);           // NOLINT
+    if (m_logger) {
+        shutdown();
+    }
+}
 
-    s_core_logger = spdlog::stdout_color_mt(CORE_LOGGER);
-    s_client_logger = spdlog::stdout_color_mt(CLIENT_LOGGER);
+bool Logger::initialize(const std::string& name)
+{
+    GE_PROFILE_FUNC();
+
+    try {
+        m_logger = spdlog::stdout_color_mt(name);
+    } catch (const spdlog::spdlog_ex& e) {
+        std::cerr << "Failed to create logger '" << name << "': " << e.what()
+                  << std::endl;
+        return false;
+    }
+
+    m_logger_name = name;
+    m_logger->set_pattern(LOG_FTM_PATTERN);
+    m_logger->set_level(spdlog::level::trace);
+
+    return true;
+}
+
+void Logger::shutdown()
+{
+    GE_PROFILE_FUNC();
+
+    spdlog::drop(m_logger_name);
+    m_logger.reset();
+    m_logger_name.clear();
+}
+
+bool Log::initialize()
+{
+    GE_PROFILE_FUNC();
+
+    if (!m_core_logger.initialize(CORE_LOGGER_NAME) ||
+        !m_client_logger.initialize(CLIENT_LOGGER_NAME)) {
+        shutdown();
+        return false;
+    }
+
+    GE_CORE_TRACE("Log system has been initialized");
+    return true;
 }
 
 void Log::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    spdlog::drop(CLIENT_LOGGER);
-    spdlog::drop(CORE_LOGGER);
+    GE_CORE_TRACE("Shutdown log system");
+    m_client_logger.shutdown();
+    m_core_logger.shutdown();
+}
 
-    s_client_logger.reset();
-    s_core_logger.reset();
+Log* Log::get()
+{
+    static Log log;
+    return &log;
 }
 
 } // namespace GE

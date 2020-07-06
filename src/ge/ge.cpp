@@ -44,7 +44,7 @@ void FWManager::initialize(RendererAPI::API api)
         return;
     }
 
-    Log::initialize();
+    Log::get()->initialize();
     Renderer::initialize(api);
     Window::initialize();
     Application::initialize();
@@ -68,7 +68,7 @@ void FWManager::shutdown()
     Application::shutdown();
     Window::shutdown();
     Renderer::shutdown();
-    Log::shutdown();
+    Log::get()->shutdown();
 
     m_initialized = false;
 }
