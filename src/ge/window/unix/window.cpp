@@ -70,11 +70,11 @@ Window::Window(properties_t prop)
         GE_PROFILE_SCOPE("UNIX::Window Create Window");
         m_window = SDL_CreateWindow(m_prop.title.c_str(), pos_x, pos_y, m_prop.width,
                                     m_prop.height, flags);
-        GE_CORE_ASSERT(m_window, SDL_GetError());
+        GE_CORE_ASSERT_MSG(m_window, SDL_GetError());
     }
 
     m_contex = GraphicsContext::create(m_window);
-    GE_CORE_ASSERT(m_contex != nullptr, "Failed to create graphics context");
+    GE_CORE_ASSERT_MSG(m_contex != nullptr, "Failed to create graphics context");
 
     SDLCall(SDL_GL_MakeCurrent(m_window, m_contex->getNativeContext()));
     m_contex->initialize();

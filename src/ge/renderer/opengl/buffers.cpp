@@ -49,7 +49,7 @@ GLenum toGLBufferType(BufferType type)
         default: break;
     }
 
-    GE_CORE_ASSERT(false, "Unknown OpenGL buffer type: {}", static_cast<int>(type));
+    GE_CORE_ASSERT_MSG(false, "Unknown OpenGL buffer type: {}", static_cast<int>(type));
     return 0;
 }
 
@@ -62,7 +62,7 @@ BufferBase::BufferBase(Type type, void* data, uint32_t size)
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_ASSERT(m_gl_type, "Unknown buffer type");
+    GE_CORE_ASSERT_MSG(m_gl_type, "Unknown buffer type");
     GLCall(glCreateBuffers(1, &m_id));
     GLCall(glBindBuffer(m_gl_type, m_id));
     GLCall(glBufferData(m_gl_type, size, data, GL_STATIC_DRAW));

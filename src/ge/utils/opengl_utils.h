@@ -39,11 +39,12 @@
 #include <glad/glad.h>
 
 #if defined(GE_DEBUG)
-    #define GLCall(gl_func)                                                           \
-        do {                                                                          \
-            ::GE::OpenGL::clearGlError();                                             \
-            (gl_func);                                                                \
-            GE_CORE_ASSERT(glGetError() == GL_NO_ERROR, "'{}' call error", #gl_func); \
+    #define GLCall(gl_func)                                                    \
+        do {                                                                   \
+            ::GE::OpenGL::clearGlError();                                      \
+            (gl_func);                                                         \
+            GE_CORE_ASSERT_MSG(glGetError() == GL_NO_ERROR, "'{}' call error", \
+                               #gl_func);                                      \
         } while (false)
 #else
     #define GLCall(gl_func) (gl_func)

@@ -122,7 +122,7 @@ GE::Shared<GE::Layer> getLayer(const ParseArgs& args)
         default: break;
     }
 
-    GE_ASSERT(false, "Unknown layer type: {}", static_cast<int>(args.layer));
+    GE_ASSERT_MSG(false, "Unknown layer type: {}", static_cast<int>(args.layer));
     return nullptr;
 }
 

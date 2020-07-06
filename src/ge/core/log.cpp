@@ -58,7 +58,7 @@ SpdlogLevel toSpdlogLvl(GE::Logger::Level level)
         default: break;
     }
 
-    GE_CORE_ASSERT(false, "Unknown log level: {}", static_cast<int>(level));
+    GE_CORE_ASSERT_MSG(false, "Unknown log level: {}", static_cast<int>(level));
     return SpdlogLevel::off;
 }
 

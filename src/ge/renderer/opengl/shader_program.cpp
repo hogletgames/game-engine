@@ -72,7 +72,7 @@ bool ShaderProgram::link()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_ASSERT(!m_shaders.empty(), "There are no shaders to link");
+    GE_CORE_ASSERT_MSG(!m_shaders.empty(), "There are no shaders to link");
     GLint status{GL_FALSE};
 
     attachShaders();
@@ -106,7 +106,7 @@ void ShaderProgram::setUniformInt(const std::string& name, int value)
 
     GLint location{-1};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniform1i(location, value));
 }
 
@@ -117,7 +117,7 @@ void ShaderProgram::setUniformIntArray(const std::string& name, const int* array
 
     GLint location{-1};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniform1iv(location, count, array));
 }
 
@@ -127,7 +127,7 @@ void ShaderProgram::setUniformFloat(const std::string& name, float value)
 
     GLint location{-1};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniform1f(location, value));
 }
 
@@ -137,7 +137,7 @@ void ShaderProgram::setUniformFloat2(const std::string& name, const glm::vec2& v
 
     GLint location{-1};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniform2f(location, vector.x, vector.y));
 }
 
@@ -147,7 +147,7 @@ void ShaderProgram::setUniformFloat3(const std::string& name, const glm::vec3& v
 
     GLint location{-1};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniform3f(location, vector.x, vector.y, vector.z));
 }
 
@@ -157,7 +157,7 @@ void ShaderProgram::setUniformFloat4(const std::string& name, const glm::vec4& v
 
     GLint location{0};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniform4f(location, vector.x, vector.y, vector.z, vector.w));
 }
 
@@ -167,7 +167,7 @@ void ShaderProgram::setUniformMat3(const std::string& name, const glm::mat3& mat
 
     GLint location{-1};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix)));
 }
 
@@ -177,7 +177,7 @@ void ShaderProgram::setUniformMat4(const std::string& name, const glm::mat4& mat
 
     GLint location{-1};
     GLCall(location = glGetUniformLocation(m_id, name.c_str()));
-    GE_CORE_ASSERT(location != -1, "Failed to find uniform '{}'", name);
+    GE_CORE_ASSERT_MSG(location != -1, "Failed to find uniform '{}'", name);
     GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix)));
 }
 

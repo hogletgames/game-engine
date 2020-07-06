@@ -45,23 +45,62 @@
 #endif
 
 #if !defined(GE_DISABLE_ASSERTS)
-    #define GE_CORE_ASSERT(expr, ...)                                              \
-        if (!(expr)) {                                                             \
-            GE_CORE_CRIT("assert failed: {}:{}: '{}'", __FILE__, __LINE__, #expr); \
-            GE_CORE_CRIT(__VA_ARGS__);                                             \
-            GE_DBGBREAK();                                                         \
-        }
+    #define GE_CORE_ASSERT_MSG(expr, ...) \
+        static_cast<bool>(expr)           \
+            ? static_cast<void>(expr)     \
+            : ::GE::Debug::core_assert(__FILE__, __LINE__, #expr, __VA_ARGS__)
 
-    #define GE_ASSERT(expr, ...)                                              \
-        if (!(expr)) {                                                        \
-            GE_CRIT("assert failed: {}:{}: '{}'", __FILE__, __LINE__, #expr); \
-            GE_CRIT(__VA_ARGS__);                                             \
-            GE_DBGBREAK();                                                    \
-        }
+    #define GE_CORE_ASSERT(expr)                          \
+        static_cast<bool>(expr) ? static_cast<void>(expr) \
+                                : ::GE::Debug::core_assert(__FILE__, __LINE__, #expr)
+    #define GE_ASSERT_MSG(expr, ...)  \
+        static_cast<bool>(expr)       \
+            ? static_cast<void>(expr) \
+            : ::GE::Debug::client_assert(__FILE__, __LINE__, #expr, __VA_ARGS__)
 
+    #define GE_ASSERT(expr)                               \
+        static_cast<bool>(expr) ? static_cast<void>(expr) \
+                                : ::GE::Debug::client_assert(__FILE__, __LINE__, #expr)
 #else
-    #define GE_CORE_ASSERT(expr, ...) static_cast<void>(expr)
-    #define GE_ASSERT(expr, ...)      static_cast<void>(expr)
+    #define GE_CORE_ASSERT_MSG(expr, ...) static_cast<void>(expr)
+    #define GE_CORE_ASSERT(expr)          static_cast<void>(expr)
+    #define GE_ASSERT_MSG(expr, ...)      static_cast<void>(expr)
+    #define GE_ASSERT(expr)               static_cast<void>(expr)
 #endif
+
+namespace GE::Debug {
+
+template<typename... Args>
+inline void core_assert(const char* file, int line, const char* expr)
+{
+    GE_CORE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_DBGBREAK();
+}
+
+template<typename... Args>
+inline void core_assert(const char* file, int line, const char* expr, const Args&... args)
+{
+    GE_CORE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_CORE_CRIT(args...);
+    GE_DBGBREAK();
+}
+
+template<typename... Args>
+inline void client_assert(const char* file, int line, const char* expr)
+{
+    GE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_DBGBREAK();
+}
+
+template<typename... Args>
+inline void client_assert(const char* file, int line, const char* expr,
+                          const Args&... args)
+{
+    GE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_CRIT(args...);
+    GE_DBGBREAK();
+}
+
+} // namespace GE::Debug
 
 #endif // GE_CORE_ASSERTS_H_

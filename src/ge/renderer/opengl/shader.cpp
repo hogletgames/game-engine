@@ -50,7 +50,7 @@ GLenum toGlType(::GE::Shader::Type type)
         default: break;
     }
 
-    GE_CORE_ASSERT(false, "Unknown shader type: {}", static_cast<int>(type));
+    GE_CORE_ASSERT_MSG(false, "Unknown shader type: {}", static_cast<int>(type));
     return 0;
 }
 

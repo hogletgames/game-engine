@@ -83,7 +83,7 @@ void TriangleLayer::onAttach()
     m_shader = ShaderProgram::create();
     m_shader->addShaders({vertex_shader, fragment_shader});
 
-    GE_ASSERT(m_shader->link(), "Failed to link shader");
+    GE_ASSERT_MSG(m_shader->link(), "Failed to link shader");
 }
 
 void TriangleLayer::onDetach()
