@@ -79,7 +79,7 @@ FWManager* FWManager::get()
     return &fw_manager;
 }
 
-FWManager::~FWManager() // NOLINT
+FWManager::~FWManager()
 {
     shutdown();
 }

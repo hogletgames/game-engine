@@ -81,7 +81,7 @@ OpenGLContext::OpenGLContext(void* window)
     GE_CORE_TRACE("OpenGL context has been created");
 }
 
-OpenGLContext::~OpenGLContext() // NOLINT
+OpenGLContext::~OpenGLContext()
 {
     GE_PROFILE_FUNC();
 

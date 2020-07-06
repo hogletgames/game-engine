@@ -82,7 +82,7 @@ Window::Window(properties_t prop)
     GE_CORE_TRACE("Window '{}' created", m_prop.title);
 }
 
-Window::~Window() // NOLINT
+Window::~Window()
 {
     GE_PROFILE_FUNC();
 
