@@ -58,6 +58,8 @@
 #define _GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
 #define GE_CONCAT(lhs, rhs)       _GE_CONCAT_IMPL(lhs, rhs)
 
+#define GE_UNUSED(var) static_cast<void>(var)
+
 namespace GE {
 
 template<typename Type>

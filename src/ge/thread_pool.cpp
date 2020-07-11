@@ -38,7 +38,9 @@ namespace GE {
 
 ThreadPool::ThreadPool(const char* name)
     : m_name{name}
-{}
+{
+    GE_UNUSED(m_name);
+}
 
 ThreadPool::~ThreadPool()
 {

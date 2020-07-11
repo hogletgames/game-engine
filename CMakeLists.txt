@@ -13,6 +13,8 @@ option(GE_DEBUG                 "Enable debug"              OFF)
 option(GE_PROFILING             "Enable profiling"          OFF)
 option(GE_EXPORT_COMPILE_CMD    "Export compile commands"   OFF)
 
+set(GE_LOG_LEVEL    "GE_COMPILED_LOGLVL_TRACE"  CACHE STRING "Compile-time log level")
+
 # Compile options
 set(GE_COMPILER_FLAGS "-Wall -Wextra -Werror -pedantic")
 
@@ -101,6 +103,11 @@ elseif(WIN32)
     add_definitions(-DGE_PLATFORM_WINDOWS)
 endif()
 
+if(GE_LOG_LEVEL)
+    message("Set log level to ${GE_LOG_LEVEL}")
+    add_definitions(-D_GE_ACTIVE_LOGLVL=${GE_LOG_LEVEL})
+endif()
+
 # Install
 install(DIRECTORY include/ge
     DESTINATION include
@@ -108,7 +115,7 @@ install(DIRECTORY include/ge
 
 # Include directories
 include_directories(include)
-include_directories(SYSTEM 
+include_directories(SYSTEM
     third-party/glm
     third-party/imgui
     third-party/spdlog/include

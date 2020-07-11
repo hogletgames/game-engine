@@ -46,14 +46,15 @@ namespace {
 #if defined(GE_DEBUG)
 void openglDbgCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type,
                        [[maybe_unused]] GLuint id, GLenum severity,
-                       [[maybe_unused]] GLsizei length, const GLchar* message,
+                       [[maybe_unused]] GLsizei length,
+                       [[maybe_unused]] const GLchar* message,
                        [[maybe_unused]] const void* userParam)
 {
     switch (severity) {
-        case GL_DEBUG_SEVERITY_HIGH: GE_CORE_CRIT(message); return;
-        case GL_DEBUG_SEVERITY_MEDIUM: GE_CORE_ERR(message); return;
-        case GL_DEBUG_SEVERITY_LOW: GE_CORE_WARN(message); return;
-        case GL_DEBUG_SEVERITY_NOTIFICATION:
+        case GL_DEBUG_SEVERITY_HIGH: GE_CORE_CRIT(message); return;        // NOLINT
+        case GL_DEBUG_SEVERITY_MEDIUM: GE_CORE_ERR(message); return;       // NOLINT
+        case GL_DEBUG_SEVERITY_LOW: GE_CORE_WARN(message); return;         // NOLINT
+        case GL_DEBUG_SEVERITY_NOTIFICATION: GE_CORE_DBG(message); return; // NOLINT
         case GL_DONT_CARE: GE_CORE_TRACE(message); return;
         default: GE_CORE_ASSERT(false, "Unknown severity level: {}", severity);
     }

@@ -42,6 +42,28 @@
 #define CLIENT_LOGGER_NAME "APP"
 #define LOG_FTM_PATTERN    "[%H:%M:%S.%e] [%l] %n: %v%$"
 
+using SpdlogLevel = spdlog::level::level_enum;
+
+namespace {
+
+SpdlogLevel toSpdlogLvl(GE::Logger::Level level)
+{
+    switch (level) {
+        case GE_LOGLVL_TRACE: return SpdlogLevel::trace;
+        case GE_LOGLVL_DBG: return SpdlogLevel::debug;
+        case GE_LOGLVL_INFO: return SpdlogLevel::info;
+        case GE_LOGLVL_WARN: return SpdlogLevel::warn;
+        case GE_LOGLVL_ERR: return SpdlogLevel::err;
+        case GE_LOGLVL_CRIT: return SpdlogLevel::critical;
+        default: break;
+    }
+
+    GE_CORE_ASSERT(false, "Unknown log level: {}", static_cast<int>(level));
+    return SpdlogLevel::off;
+}
+
+} // namespace
+
 namespace GE {
 
 Logger::~Logger()
@@ -67,7 +89,6 @@ bool Logger::initialize(const std::string& name)
 
     m_logger_name = name;
     m_logger->set_pattern(LOG_FTM_PATTERN);
-    m_logger->set_level(spdlog::level::trace);
 
     return true;
 }
@@ -81,6 +102,13 @@ void Logger::shutdown()
     m_logger_name.clear();
 }
 
+void Logger::setLevel(Level level)
+{
+    GE_PROFILE_FUNC();
+
+    m_logger->set_level(toSpdlogLvl(level));
+}
+
 bool Log::initialize()
 {
     GE_PROFILE_FUNC();
@@ -90,6 +118,9 @@ bool Log::initialize()
         shutdown();
         return false;
     }
+
+    m_core_logger.setLevel(GE_LOGLVL_TRACE);
+    m_client_logger.setLevel(GE_LOGLVL_TRACE);
 
     GE_CORE_TRACE("Log system has been initialized");
     return true;
