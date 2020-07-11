@@ -52,7 +52,7 @@ void FWManager::initialize(RendererAPI::API api)
 
     m_initialized = true;
 
-    GE_CORE_TRACE("FM initialized");
+    GE_CORE_DBG("FM initialized");
 }
 
 void FWManager::shutdown()
@@ -63,7 +63,7 @@ void FWManager::shutdown()
         return;
     }
 
-    GE_CORE_TRACE("FM shutdown");
+    GE_CORE_DBG("FM shutdown");
     Gui::shutdown();
     Application::shutdown();
     Window::shutdown();

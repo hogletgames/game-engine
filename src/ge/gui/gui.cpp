@@ -207,7 +207,7 @@ void Gui::initialize()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Initialize GUI");
+    GE_CORE_DBG("Initialize GUI");
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
@@ -233,7 +233,7 @@ void Gui::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Shutdown GUI");
+    GE_CORE_DBG("Shutdown GUI");
     PlatformGui::shutdown();
     ImGui::DestroyContext();
 }

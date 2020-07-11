@@ -65,7 +65,7 @@ void Application::initialize()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Initialize Application");
+    GE_CORE_DBG("Initialize Application");
     s_window = Window::create();
 }
 
@@ -73,7 +73,7 @@ void Application::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Shutdown Application");
+    GE_CORE_DBG("Shutdown Application");
     s_window.reset();
 }
 

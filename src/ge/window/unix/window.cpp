@@ -55,8 +55,8 @@ Window::Window(properties_t prop)
     : m_prop(std::move(prop))
 {
     GE_PROFILE_FUNC();
-    GE_CORE_TRACE("Create window '{}', ({}, {})", m_prop.title, m_prop.width,
-                  m_prop.height);
+    GE_CORE_DBG("Create window '{}', ({}, {})", m_prop.title, m_prop.width,
+                m_prop.height);
 
     int32_t pos_x = SDL_WINDOWPOS_CENTERED;
     int32_t pos_y = SDL_WINDOWPOS_CENTERED;
@@ -79,7 +79,7 @@ Window::Window(properties_t prop)
     SDLCall(SDL_GL_MakeCurrent(m_window, m_contex->getNativeContext()));
     m_contex->initialize();
 
-    GE_CORE_TRACE("Window '{}' created", m_prop.title);
+    GE_CORE_DBG("Window '{}' created", m_prop.title);
 }
 
 Window::~Window()
@@ -88,7 +88,7 @@ Window::~Window()
 
     if (m_window != nullptr) {
         SDL_DestroyWindow(m_window);
-        GE_CORE_TRACE("SDL window '{}' has been destroyed", m_prop.title);
+        GE_CORE_DBG("SDL window '{}' has been destroyed", m_prop.title);
     }
 
     if (m_contex != nullptr) {
@@ -100,7 +100,7 @@ void Window::initialize()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Initialize UNIX::Window");
+    GE_CORE_DBG("Initialize UNIX::Window");
     SDLCall(SDL_Init(SDL_INIT_VIDEO));
 }
 
@@ -108,7 +108,7 @@ void Window::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Shutdown UNIX::Window");
+    GE_CORE_DBG("Shutdown UNIX::Window");
     SDL_Quit();
 }
 

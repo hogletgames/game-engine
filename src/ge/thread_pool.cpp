@@ -63,7 +63,7 @@ void ThreadPool::start(uint32_t threads_num)
         m_workers.emplace_back(&ThreadPool::workerThread, this);
     }
 
-    GE_CORE_TRACE("Thread pool '{}' has been started", m_name);
+    GE_CORE_DBG("Thread pool '{}' has been started", m_name);
 }
 
 void ThreadPool::stop()
@@ -77,7 +77,7 @@ void ThreadPool::stop()
         }
     }
 
-    GE_CORE_TRACE("Thread pool '{}' has been stopped", m_name);
+    GE_CORE_DBG("Thread pool '{}' has been stopped", m_name);
 }
 
 void ThreadPool::workerThread()

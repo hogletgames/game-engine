@@ -40,13 +40,13 @@ Scoped<RendererAPI> RenderCommand::s_renderer_api{nullptr};
 
 void RenderCommand::initialize(RendererAPI::API api)
 {
-    GE_CORE_TRACE("Initialize Renderer Command");
+    GE_CORE_DBG("Initialize Renderer Command");
     s_renderer_api = RendererAPI::create(api);
 }
 
 void RenderCommand::shutdown()
 {
-    GE_CORE_TRACE("Shutdown Renderer Command");
+    GE_CORE_DBG("Shutdown Renderer Command");
     s_renderer_api.reset();
 }
 

@@ -79,7 +79,7 @@ namespace GE::UNIX {
 OpenGLContext::OpenGLContext(void* window)
     : m_window{reinterpret_cast<SDL_Window*>(window)}
 {
-    GE_CORE_TRACE("OpenGL context has been created");
+    GE_CORE_DBG("OpenGL context has been created");
 }
 
 OpenGLContext::~OpenGLContext()
@@ -142,7 +142,7 @@ void OpenGLContext::deleteContext()
         SDL_GL_DeleteContext(m_gl_context);
         m_gl_context = nullptr;
         m_window = nullptr;
-        GE_CORE_TRACE("OpenGL context has been deleted");
+        GE_CORE_DBG("OpenGL context has been deleted");
     }
 }
 

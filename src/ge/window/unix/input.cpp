@@ -45,7 +45,7 @@ void Input::initializeImpl()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Initialize UNIX::Input");
+    GE_CORE_DBG("Initialize UNIX::Input");
     mapKeyCodes();
     mapMouseButtons();
 }
@@ -53,7 +53,7 @@ void Input::initializeImpl()
 void Input::shutdownImpl()
 {
     GE_PROFILE_FUNC();
-    GE_CORE_TRACE("Shutdown UNIX::Input");
+    GE_CORE_DBG("Shutdown UNIX::Input");
 }
 
 int32_t Input::toNativeKeyCodeImpl(KeyCode key_code) const

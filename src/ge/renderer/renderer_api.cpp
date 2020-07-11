@@ -42,7 +42,7 @@ RendererAPI::API RendererAPI::s_api{GE_NONE_API};
 
 Scoped<RendererAPI> RendererAPI::create(API api)
 {
-    GE_CORE_TRACE("New Renderer API: {}", api);
+    GE_CORE_DBG("New Renderer API: {}", api);
     s_api = api;
 
     switch (api) {

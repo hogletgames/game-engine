@@ -122,7 +122,7 @@ bool Log::initialize()
     m_core_logger.setLevel(GE_LOGLVL_TRACE);
     m_client_logger.setLevel(GE_LOGLVL_TRACE);
 
-    GE_CORE_TRACE("Log system has been initialized");
+    GE_CORE_DBG("Log system has been initialized");
     return true;
 }
 
@@ -130,7 +130,7 @@ void Log::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Shutdown log system");
+    GE_CORE_DBG("Shutdown log system");
     m_client_logger.shutdown();
     m_core_logger.shutdown();
 }
