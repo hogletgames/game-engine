@@ -1,5 +1,4 @@
 language: cpp
-fast_finish: true
 os: linux
 dist: bionic
 addons:
@@ -18,25 +17,32 @@ addons:
 
 env:
   global:
-  - CC=gcc-10 CXX=g++-10
+  - CC=gcc-10
+  - CXX=g++-10
   - BUILD_TESTS=ON
   - BUILD_EXAMPLES=ON
-  matrix:
-  - MATRIX_EVAL="export DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF ENABLE_PROFILING=OFF"
+  - CLANG_FORMAT_BIN=clang-format-10
+  - RUN_CLANG_TIDY_BIN=run-clang-tidy-10
+  - RELEASE_ARGS="BUILD_TYPE=Release DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF
+      ENABLE_PROFILING=OFF"
+  - DEBUG_ARGS="BUILD_TYPE=Debug DISABLE_ASSERTS=OFF ENABLE_DEBUG=ON ENABLE_PROFILING=ON"
+  jobs:
+  - MATRIX_EVAL="export ${RELEASE_ARGS}"
+  - MATRIX_EVAL="export ${DEBUG_ARGS}"
   - MATRIX_EVAL="export VALGRIND=ON"
   - MATRIX_EVAL="export ENABLE_ASAN=ON"
   - MATRIX_EVAL="export ENABLE_USAN=ON"
   - MATRIX_EVAL="export ENABLE_TSAN=ON"
-
-jobs:
-  include:
-  - name: clang-tools
-    script:
-    - bash tools/clang_format.sh --clang-format-bin clang-format-10
-    - make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-10
 
 script:
 - eval "${MATRIX_EVAL}"
 - make -j$(nproc)
 - make test
 
+jobs:
+  fast_finish: true
+  include:
+  - name: clang-tools
+    script:
+    - bash tools/clang_format.sh --clang-format-bin ${CLANG_FORMAT_BIN}
+    - make clang-tidy ${RELEASE_ARGS}
