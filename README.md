@@ -85,5 +85,23 @@ clang-tidy:
 make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-9
 ```
 
+### Compile-time log levels
+In order to configure compile-time log level
+```bash
+make LOG_LEVEL=${DESIRED_LOG_LEVEL} -j$(nproc)
+```
+
+where `${DESIRED_LOG_LEVEL}` can be one of
+```
+GE_COMPILED_LOGLVL_CRITICAL
+GE_COMPILED_LOGLVL_ERROR
+GE_COMPILED_LOGLVL_WARNING
+GE_COMPILED_LOGLVL_INFO
+GE_COMPILED_LOGLVL_DEBUG
+GE_COMPILED_LOGLVL_TRACE
+```
+
+`GE_COMPILED_LOGLVL_TRACE` is configured by default
+
 ### License
 Game Engine is licensed under the [BSD 3-Clause license](LICENSE).

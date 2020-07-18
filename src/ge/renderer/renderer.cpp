@@ -49,7 +49,7 @@ void Renderer::initialize(RendererAPI::API api)
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Initialize Renderer");
+    GE_CORE_DBG("Initialize Renderer");
     RenderCommand::initialize(api);
     s_scene_data = makeScoped<Renderer::SceneData>();
 }
@@ -58,7 +58,7 @@ void Renderer::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Shutdown Renderer");
+    GE_CORE_DBG("Shutdown Renderer");
     s_scene_data.reset();
     RenderCommand::shutdown();
 }

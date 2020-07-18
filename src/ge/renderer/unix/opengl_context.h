@@ -44,7 +44,7 @@ class OpenGLContext: public GraphicsContext
 {
 public:
     explicit OpenGLContext(void* window);
-    ~OpenGLContext() override; // NOLINT
+    ~OpenGLContext() override;
 
     void initialize() override;
     void shutdown() override;

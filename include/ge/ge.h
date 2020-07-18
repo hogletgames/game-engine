@@ -82,7 +82,7 @@ public:
 
 private:
     FWManager() = default;
-    ~FWManager(); // NOLINT
+    ~FWManager();
 
     bool m_initialized{false};
 };

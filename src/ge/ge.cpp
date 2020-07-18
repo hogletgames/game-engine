@@ -44,7 +44,7 @@ void FWManager::initialize(RendererAPI::API api)
         return;
     }
 
-    Log::initialize();
+    Log::get()->initialize();
     Renderer::initialize(api);
     Window::initialize();
     Application::initialize();
@@ -52,7 +52,7 @@ void FWManager::initialize(RendererAPI::API api)
 
     m_initialized = true;
 
-    GE_CORE_TRACE("FM initialized");
+    GE_CORE_DBG("FM initialized");
 }
 
 void FWManager::shutdown()
@@ -63,12 +63,12 @@ void FWManager::shutdown()
         return;
     }
 
-    GE_CORE_TRACE("FM shutdown");
+    GE_CORE_DBG("FM shutdown");
     Gui::shutdown();
     Application::shutdown();
     Window::shutdown();
     Renderer::shutdown();
-    Log::shutdown();
+    Log::get()->shutdown();
 
     m_initialized = false;
 }
@@ -79,7 +79,7 @@ FWManager* FWManager::get()
     return &fw_manager;
 }
 
-FWManager::~FWManager() // NOLINT
+FWManager::~FWManager()
 {
     shutdown();
 }

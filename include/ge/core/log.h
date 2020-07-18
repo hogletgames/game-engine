@@ -35,61 +35,165 @@
 
 #include <ge/core/core.h>
 
-#define FMT_HEADER_ONLY
+#define SPDLOG_COMPILED_LIB 1
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
 
-#define _GE_LOG_IF_EXIST(logger, level, ...)   \
-    do {                                       \
-        if (logger) {                          \
-            (logger)->log(level, __VA_ARGS__); \
-        }                                      \
-    } while (false)
+#define GE_COMPILED_LOGLVL_CRITICAL 1
+#define GE_COMPILED_LOGLVL_ERROR    2
+#define GE_COMPILED_LOGLVL_WARNING  3
+#define GE_COMPILED_LOGLVL_INFO     4
+#define GE_COMPILED_LOGLVL_DEBUG    5
+#define GE_COMPILED_LOGLVL_TRACE    6
 
-#define GE_CORE_TRACE(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::trace, __VA_ARGS__)
-#define GE_CORE_DBG(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::debug, __VA_ARGS__)
-#define GE_CORE_INFO(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::info, __VA_ARGS__)
-#define GE_CORE_WARN(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::warn, __VA_ARGS__)
-#define GE_CORE_ERR(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::err, __VA_ARGS__)
-#define GE_CORE_CRIT(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getCoreLogger(), spdlog::level::critical, __VA_ARGS__)
+#if !defined(_GE_ACTIVE_LOGLVL)
+    #define _GE_ACTIVE_LOGLVL GE_COMPILED_LOGLVL_TRACE
+#endif
 
-#define GE_TRACE(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::trace, __VA_ARGS__)
-#define GE_DBG(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::debug, __VA_ARGS__)
-#define GE_INFO(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::info, __VA_ARGS__)
-#define GE_WARN(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::warn, __VA_ARGS__)
-#define GE_ERR(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::err, __VA_ARGS__)
-#define GE_CRIT(...) \
-    _GE_LOG_IF_EXIST(::GE::Log::getClientLogger(), spdlog::level::critical, __VA_ARGS__)
+#if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_CRITICAL
+    #define GE_CORE_CRIT(...) ::GE::Log::get()->core()->crit(__VA_ARGS__)
+    #define GE_CRIT(...)      ::GE::Log::get()->client()->crit(__VA_ARGS__)
+#else
+    #define GE_CORE_CRIT(...) static_cast<void>(0)
+    #define GE_CRIT(...)      static_cast<void>(0)
+#endif
+
+#if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_ERROR
+    #define GE_CORE_ERR(...) ::GE::Log::get()->core()->error(__VA_ARGS__)
+    #define GE_ERR(...)      ::GE::Log::get()->client()->error(__VA_ARGS__)
+#else
+    #define GE_CORE_ERR(...) static_cast<void>(0)
+    #define GE_ERR(...)      static_cast<void>(0)
+#endif
+
+#if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_WARNING
+    #define GE_CORE_WARN(...) ::GE::Log::get()->core()->warn(__VA_ARGS__)
+    #define GE_WARN(...)      ::GE::Log::get()->client()->warn(__VA_ARGS__)
+#else
+    #define GE_CORE_WARN(...) static_cast<void>(0)
+    #define GE_WARN(...)      static_cast<void>(0)
+#endif
+
+#if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_INFO
+    #define GE_CORE_INFO(...) ::GE::Log::get()->core()->info(__VA_ARGS__)
+    #define GE_INFO(...)      ::GE::Log::get()->client()->info(__VA_ARGS__)
+#else
+    #define GE_CORE_INFO(...) static_cast<void>(0)
+    #define GE_INFO(...)      static_cast<void>(0)
+#endif
+
+#if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_DEBUG
+    #define GE_CORE_DBG(...) ::GE::Log::get()->core()->debug(__VA_ARGS__)
+    #define GE_DBG(...)      ::GE::Log::get()->client()->debug(__VA_ARGS__)
+#else
+    #define GE_CORE_DBG(...) static_cast<void>(0)
+    #define GE_DBG(...)      static_cast<void>(0)
+#endif
+
+#if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_TRACE
+    #define GE_CORE_TRACE(...) ::GE::Log::get()->core()->trace(__VA_ARGS__)
+    #define GE_TRACE(...)      ::GE::Log::get()->client()->trace(__VA_ARGS__)
+#else
+    #define GE_CORE_TRACE(...) static_cast<void>(0)
+    #define GE_TRACE(...)      static_cast<void>(0)
+#endif
+
+#define GE_LOGLVL_TRACE ::GE::Logger::Level::TRACE
+#define GE_LOGLVL_DBG   ::GE::Logger::Level::DEBUG
+#define GE_LOGLVL_INFO  ::GE::Logger::Level::INFO
+#define GE_LOGLVL_WARN  ::GE::Logger::Level::WARNING
+#define GE_LOGLVL_ERR   ::GE::Logger::Level::ERROR
+#define GE_LOGLVL_CRIT  ::GE::Logger::Level::CRITICAL
 
 namespace GE {
+
+class GE_API Logger
+{
+public:
+    enum class Level : uint8_t
+    {
+        CRITICAL = GE_COMPILED_LOGLVL_CRITICAL,
+        ERROR = GE_COMPILED_LOGLVL_ERROR,
+        WARNING = GE_COMPILED_LOGLVL_WARNING,
+        INFO = GE_COMPILED_LOGLVL_INFO,
+        DEBUG = GE_COMPILED_LOGLVL_DEBUG,
+        TRACE = GE_COMPILED_LOGLVL_TRACE
+    };
+
+    ~Logger();
+
+    bool initialize(const std::string& name);
+    void shutdown();
+
+    void setLevel(Level level);
+
+    template<typename... Args>
+    void crit(const Args&... args)
+    {
+        log(spdlog::level::critical, args...);
+    }
+
+    template<typename... Args>
+    void error(const Args&... args)
+    {
+        log(spdlog::level::err, args...);
+    }
+
+    template<typename... Args>
+    void warn(const Args&... args)
+    {
+        log(spdlog::level::warn, args...);
+    }
+
+    template<typename... Args>
+    void info(const Args&... args)
+    {
+        log(spdlog::level::info, args...);
+    }
+
+    template<typename... Args>
+    void debug(const Args&... args)
+    {
+        log(spdlog::level::debug, args...);
+    }
+
+    template<typename... Args>
+    void trace(const Args&... args)
+    {
+        log(spdlog::level::trace, args...);
+    }
+
+private:
+    template<typename... Args>
+    void log(const Args&... args)
+    {
+        if (m_logger) {
+            m_logger->log(args...);
+        }
+    }
+
+    std::string m_logger_name;
+    std::shared_ptr<spdlog::logger> m_logger;
+};
 
 class GE_API Log
 {
 public:
-    Log() = delete;
+    bool initialize();
+    void shutdown();
 
-    static void initialize();
-    static void shutdown();
+    Logger* core() { return &m_core_logger; }
+    Logger* client() { return &m_client_logger; }
 
-    static Shared<spdlog::logger> getCoreLogger() { return s_core_logger; }
-    static Shared<spdlog::logger> getClientLogger() { return s_client_logger; }
+    static Log* get();
 
 private:
-    static Shared<spdlog::logger> s_core_logger;
-    static Shared<spdlog::logger> s_client_logger;
+    Log() = default;
+
+    Logger m_core_logger;
+    Logger m_client_logger;
 };
 
 } // namespace GE

@@ -52,7 +52,7 @@ namespace GE::UNIX {
 void Gui::initialize()
 {
     GE_PROFILE_FUNC();
-    GE_CORE_TRACE("Initialize Unix::PlatformImGui");
+    GE_CORE_DBG("Initialize Unix::PlatformImGui");
 
     void* window = Application::getNativeWindow();
     void* context = Application::getNativeContext();
@@ -65,7 +65,7 @@ void Gui::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_TRACE("Shutdown Unix::PlatformImGui");
+    GE_CORE_DBG("Shutdown Unix::PlatformImGui");
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
 }
