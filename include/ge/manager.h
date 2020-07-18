@@ -35,15 +35,12 @@
 
 #include <ge/renderer/renderer_api.h>
 
-#define GE_INITIALIZE(api) ::GE::Manager::initialize(api)
-#define GE_SHUTDOWN()      ::GE::Manager::shutdown()
-
 namespace GE {
 
 class GE_API Manager
 {
 public:
-    static void initialize(RendererAPI::API api);
+    static bool initialize(RendererAPI::API api);
     static void shutdown();
 
 private:

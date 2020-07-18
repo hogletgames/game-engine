@@ -47,23 +47,16 @@ Manager::~Manager()
     }
 }
 
-void Manager::initialize(RendererAPI::API api)
+bool Manager::initialize(RendererAPI::API api)
 {
-    GE_PROFILE_FUNC();
-
-    if (get()->m_initialized) {
-        return;
+    if (!Log::get()->initialize() || !Renderer::initialize(api) || !Window::initialize() ||
+        !Application::initialize() || !Gui::initialize()) {
+        return false;
     }
 
-    Log::get()->initialize();
-    Renderer::initialize(api);
-    Window::initialize();
-    Application::initialize();
-    Gui::initialize();
-
-    get()->m_initialized = true;
-
     GE_CORE_DBG("GameEngine: has been initialized");
+    get()->m_initialized = true;
+    return true;
 }
 
 void Manager::shutdown()
