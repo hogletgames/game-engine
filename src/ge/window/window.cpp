@@ -51,12 +51,16 @@ Scoped<Window> Window::create(properties_t prop)
     return makeScoped<PlatformWindow>(std::move(prop));
 }
 
-void Window::initialize()
+bool Window::initialize()
 {
     GE_PROFILE_FUNC();
 
-    Input::initialize();
-    PlatformWindow::initialize();
+    if (!Input::initialize() || !PlatformWindow::initialize()) {
+        GE_CORE_ERR("Failed to initialize Window system");
+        return false;
+    }
+
+    return true;
 }
 
 void Window::shutdown()

@@ -51,7 +51,7 @@ class GE_API Renderer
 public:
     Renderer() = delete;
 
-    static void initialize(RendererAPI::API api);
+    static bool initialize(RendererAPI::API api);
     static void shutdown();
 
     static bool onWindowResized(const WindowResizedEvent& event);

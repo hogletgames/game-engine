@@ -43,7 +43,7 @@ class Gui
 public:
     Gui() = delete;
 
-    static void initialize();
+    static bool initialize();
     static void shutdown();
 
     static void newFrame();

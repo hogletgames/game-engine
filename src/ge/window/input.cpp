@@ -46,12 +46,16 @@ namespace GE {
 
 Scoped<Input> Input::s_impl{nullptr};
 
-void Input::initialize()
+bool Input::initialize()
 {
     GE_PROFILE_FUNC();
 
-    s_impl = makeScoped<PlatformInput>();
-    s_impl->initializeImpl();
+    if (s_impl = makeScoped<PlatformInput>(); s_impl == nullptr) {
+        GE_CORE_ERR("Failed to create Platform::Input");
+        return false;
+    }
+
+    return s_impl->initializeImpl();
 }
 
 void Input::shutdown()

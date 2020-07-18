@@ -55,7 +55,7 @@ public:
     Application();
     ~Application() override;
 
-    static void initialize();
+    static bool initialize();
     static void shutdown();
 
     void run();

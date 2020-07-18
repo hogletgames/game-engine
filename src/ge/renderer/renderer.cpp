@@ -45,13 +45,22 @@ namespace GE {
 
 Scoped<Renderer::SceneData> Renderer::s_scene_data{nullptr};
 
-void Renderer::initialize(RendererAPI::API api)
+bool Renderer::initialize(RendererAPI::API api)
 {
     GE_PROFILE_FUNC();
-
     GE_CORE_DBG("Initialize Renderer");
-    RenderCommand::initialize(api);
-    s_scene_data = makeScoped<Renderer::SceneData>();
+
+    if (!RenderCommand::initialize(api)) {
+        GE_CORE_ERR("Failed to initialize Renderer");
+        return false;
+    }
+
+    if (s_scene_data = makeScoped<Renderer::SceneData>(); s_scene_data == nullptr) {
+        GE_CORE_ERR("Failed to allocate Renderer scene data");
+        return false;
+    }
+
+    return true;
 }
 
 void Renderer::shutdown()

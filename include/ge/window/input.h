@@ -46,7 +46,7 @@ namespace GE {
 class GE_API Input: public NonCopyable
 {
 public:
-    static void initialize();
+    static bool initialize();
     static void shutdown();
 
     static int32_t toNativeKeyCode(KeyCode key_code)
@@ -86,7 +86,7 @@ public:
 protected:
     Input() = default;
 
-    virtual void initializeImpl() = 0;
+    virtual bool initializeImpl() = 0;
     virtual void shutdownImpl() = 0;
 
     virtual int32_t toNativeKeyCodeImpl(KeyCode key_code) const = 0;

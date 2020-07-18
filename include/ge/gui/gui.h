@@ -44,7 +44,7 @@ class GE_API Gui
 public:
     Gui() = delete;
 
-    static void initialize();
+    static bool initialize();
     static void shutdown();
 
     static void begin();

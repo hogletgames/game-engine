@@ -48,7 +48,7 @@ public:
     explicit Window(properties_t prop);
     ~Window() override;
 
-    static void initialize();
+    static bool initialize();
     static void shutdown();
 
     void setVSync(bool enabled) override;

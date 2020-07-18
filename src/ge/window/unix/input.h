@@ -48,7 +48,7 @@ public:
     Input() = default;
 
 protected:
-    void initializeImpl() override;
+    bool initializeImpl() override;
     void shutdownImpl() override;
 
     int32_t toNativeKeyCodeImpl(KeyCode key_code) const override;
