@@ -33,22 +33,23 @@
 #ifndef GE_DEBUG_PROFILE_H_
 #define GE_DEBUG_PROFILE_H_
 
-#include <ge/core/asserts.h>
-#include <ge/core/timestamp.h>
-#include <ge/thread_pool.h>
+#ifdef GE_PROFILING
+    #include <ge/core/asserts.h>
+    #include <ge/core/timestamp.h>
+    #include <ge/thread_pool.h>
 
-#include <fstream>
-#include <iomanip>
-#include <sstream>
+    #include <fstream>
+    #include <iomanip>
+    #include <sstream>
 
-#if defined(GE_PROFILING)
-    #define _GE_PROFILER_THREAD_NAME "Profiler"
-    #define _GE_PROFILER_THREAD_NUM  1
+    #define _GE_PROFILER_THREAD_NAME  "Profiler"
+    #define _GE_PROFILER_THREAD_NUM   1
+    #define _GE_PROFILER_DEF_FILENAME "profile.json"
 
-    #define GE_PROFILE_ENABLE(enabled) ::GE::Debug::Profiler::get()->enable(enabled)
+    #define GE_PROFILE_ENABLE(enabled) ::GE::Debug::Profiler::enable(enabled)
     #define GE_PROFILE_BEGIN_SESSION(name, filepath) \
-        ::GE::Debug::Profiler::get()->begin(name, filepath)
-    #define GE_PROFILE_END_SESSION() ::GE::Debug::Profiler::get()->end()
+        ::GE::Debug::Profiler::begin(name, filepath)
+    #define GE_PROFILE_END_SESSION() ::GE::Debug::Profiler::end()
     #define GE_PROFILE_SCOPE(name)   ::GE::Debug::Timer GE_CONCAT(timer, __LINE__)(name)
     #define GE_PROFILE_FUNC()        GE_PROFILE_SCOPE(GE_FUNC_NAME)
 
@@ -68,47 +69,51 @@ public:
         std::thread::id thread_id;
     };
 
-    void enable(bool enabled) { m_enabled = enabled; }
+    static void enable(bool enabled) { get()->m_enabled = enabled; }
 
-    void begin(const std::string& name, const std::string& filepath = "profile.json")
+    static void begin(const std::string& name,
+                      const std::string& filepath = _GE_PROFILER_DEF_FILENAME)
     {
-        std::lock_guard lock{m_session_mtx};
-        GE_CORE_ASSERT_MSG(!m_session, "Begin profiling '{}' when '{}' already open",
-                           name, m_session->name);
+        auto& profile_log = get()->m_profile_log;
+        auto& session = get()->m_session;
 
-        m_profile_log.open(filepath);
+        std::lock_guard lock{get()->m_session_mtx};
+        GE_CORE_ASSERT_MSG(!session, "Begin profiling '{}' when '{}' already open", name,
+                           session->name);
 
-        if (!m_profile_log.is_open()) {
+        profile_log.open(filepath);
+
+        if (!profile_log) {
             GE_CORE_ERR("Unable to open profiling log '{}'", filepath);
             return;
         }
 
-        m_session = std::make_unique<session_t>();
-        m_session->name = name;
-        writeHeader();
-        m_thread_pool.start(_GE_PROFILER_THREAD_NUM);
+        session = std::make_unique<session_t>();
+        session->name = name;
+        get()->writeHeader();
+        get()->m_thread_pool.start(_GE_PROFILER_THREAD_NUM);
     }
 
-    void end() { endSession(); }
+    static void end() { get()->endSession(); }
 
-    void enqueueData(profile_result_t result)
+    static void enqueueData(profile_result_t result)
     {
-        if (!m_enabled) {
+        if (!get()->m_enabled) {
             return;
         }
 
-        m_thread_pool.enqueue(&Profiler::writeProfile, this, std::move(result));
+        get()->m_thread_pool.enqueue(&Profiler::writeProfile, get(), std::move(result));
     }
+
+private:
+    Profiler() = default;
+    ~Profiler() { endSession(); }
 
     static Profiler* get()
     {
         static Profiler instance;
         return &instance;
     }
-
-private:
-    Profiler() = default;
-    ~Profiler() { endSession(); }
 
     void writeProfile(const profile_result_t& result)
     {
@@ -162,14 +167,13 @@ public:
 
     void stop()
     {
-        Timestamp elapsed_time = Timestamp::now() - m_start_time;
-
         if (m_stopped) {
             return;
         }
 
-        Profiler::get()->enqueueData(
-            {m_name, m_start_time, elapsed_time, std::this_thread::get_id()});
+        Timestamp elapsed_time = Timestamp::now() - m_start_time;
+        auto thread_id = std::this_thread::get_id();
+        Profiler::enqueueData({m_name, m_start_time, elapsed_time, thread_id});
         m_stopped = true;
     }
 
@@ -190,6 +194,6 @@ private:
     #define GE_PROFILE_END_SESSION()
     #define GE_PROFILE_SCOPE(name) static_cast<void>(name)
     #define GE_PROFILE_FUNC()
-#endif
+#endif // GE_PROFILING
 
 #endif // GE_DEBUG_PROFILE_H_

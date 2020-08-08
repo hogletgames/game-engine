@@ -33,6 +33,7 @@
 #include "window.h"
 #include "input.h"
 
+#include "ge/core/log.h"
 #include "ge/core/utils.h"
 #include "ge/debug/profile.h"
 

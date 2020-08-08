@@ -33,6 +33,7 @@
 #include "manager.h"
 
 #include "ge/application.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
 #include "ge/gui/gui.h"
 #include "ge/renderer/renderer.h"

@@ -32,6 +32,7 @@
 
 #include "log.h"
 
+#include "ge/core/asserts.h"
 #include "ge/debug/profile.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
