@@ -98,12 +98,13 @@ Window::~Window()
     }
 }
 
-void Window::initialize()
+bool Window::initialize()
 {
     GE_PROFILE_FUNC();
 
     GE_CORE_DBG("Initialize UNIX::Window");
     SDLCall(SDL_Init(SDL_INIT_VIDEO));
+    return true;
 }
 
 void Window::shutdown()

@@ -38,10 +38,16 @@ namespace GE {
 
 Scoped<RendererAPI> RenderCommand::s_renderer_api{nullptr};
 
-void RenderCommand::initialize(RendererAPI::API api)
+bool RenderCommand::initialize(RendererAPI::API api)
 {
     GE_CORE_DBG("Initialize Renderer Command");
-    s_renderer_api = RendererAPI::create(api);
+
+    if (s_renderer_api = RendererAPI::create(api); s_renderer_api == nullptr) {
+        GE_CORE_ERR("Failed to create RenderAPI");
+        return false;
+    }
+
+    return true;
 }
 
 void RenderCommand::shutdown()

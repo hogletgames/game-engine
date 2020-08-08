@@ -49,7 +49,7 @@
 
 namespace GE::UNIX {
 
-void Gui::initialize()
+bool Gui::initialize()
 {
     GE_PROFILE_FUNC();
     GE_CORE_DBG("Initialize Unix::PlatformImGui");
@@ -57,8 +57,17 @@ void Gui::initialize()
     void* window = Application::getNativeWindow();
     void* context = Application::getNativeContext();
 
-    ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context);
-    ImGui_ImplOpenGL3_Init(GLSL_VERSION);
+    if (!ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context)) {
+        GE_CORE_ERR("Failed to initialize SDL2+OpenGL");
+        return false;
+    }
+
+    if (!ImGui_ImplOpenGL3_Init(GLSL_VERSION)) {
+        GE_CORE_ERR("Failed to initialize OpenGL3");
+        return false;
+    }
+
+    return true;
 }
 
 void Gui::shutdown()

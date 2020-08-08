@@ -32,6 +32,7 @@
 
 #include "log.h"
 
+#include "ge/core/asserts.h"
 #include "ge/debug/profile.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -68,8 +69,6 @@ namespace GE {
 
 Logger::~Logger()
 {
-    GE_PROFILE_FUNC();
-
     if (m_logger) {
         shutdown();
     }
@@ -113,14 +112,17 @@ bool Log::initialize()
 {
     GE_PROFILE_FUNC();
 
-    if (!m_core_logger.initialize(CORE_LOGGER_NAME) ||
-        !m_client_logger.initialize(CLIENT_LOGGER_NAME)) {
+    auto& core_logger = get()->m_core_logger;
+    auto& client_logger = get()->m_client_logger;
+
+    if (!core_logger.initialize(CORE_LOGGER_NAME) ||
+        !client_logger.initialize(CLIENT_LOGGER_NAME)) {
         shutdown();
         return false;
     }
 
-    m_core_logger.setLevel(GE_LOGLVL_TRACE);
-    m_client_logger.setLevel(GE_LOGLVL_TRACE);
+    core_logger.setLevel(GE_LOGLVL_TRACE);
+    client_logger.setLevel(GE_LOGLVL_TRACE);
 
     GE_CORE_DBG("Log system has been initialized");
     return true;
@@ -131,14 +133,8 @@ void Log::shutdown()
     GE_PROFILE_FUNC();
 
     GE_CORE_DBG("Shutdown log system");
-    m_client_logger.shutdown();
-    m_core_logger.shutdown();
-}
-
-Log* Log::get()
-{
-    static Log log;
-    return &log;
+    get()->m_client_logger.shutdown();
+    get()->m_core_logger.shutdown();
 }
 
 } // namespace GE

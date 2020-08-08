@@ -62,12 +62,17 @@ Application::~Application()
     s_instance = nullptr;
 }
 
-void Application::initialize()
+bool Application::initialize()
 {
     GE_PROFILE_FUNC();
-
     GE_CORE_DBG("Initialize Application");
-    s_window = Window::create();
+
+    if (s_window = Window::create(); s_window == nullptr) {
+        GE_CORE_ERR("Failed to create Window");
+        return false;
+    }
+
+    return true;
 }
 
 void Application::shutdown()

@@ -203,7 +203,7 @@ bool onWindowResized(const GE::WindowResizedEvent& event)
 
 namespace GE {
 
-void Gui::initialize()
+bool Gui::initialize()
 {
     GE_PROFILE_FUNC();
 
@@ -225,8 +225,13 @@ void Gui::initialize()
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    PlatformGui::initialize();
+    if (!PlatformGui::initialize()) {
+        GE_CORE_ERR("Failed to initialize Platform::GUI");
+        return false;
+    }
+
     mapKeys();
+    return true;
 }
 
 void Gui::shutdown()

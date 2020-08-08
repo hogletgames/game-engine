@@ -47,7 +47,7 @@ class GE_API RenderCommand
 public:
     RenderCommand() = delete;
 
-    static void initialize(RendererAPI::API api);
+    static bool initialize(RendererAPI::API api);
     static void shutdown();
 
     static void clear(const glm::vec4& color);

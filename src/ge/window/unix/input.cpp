@@ -41,13 +41,14 @@
 
 namespace GE::UNIX {
 
-void Input::initializeImpl()
+bool Input::initializeImpl()
 {
     GE_PROFILE_FUNC();
 
     GE_CORE_DBG("Initialize UNIX::Input");
     mapKeyCodes();
     mapMouseButtons();
+    return true;
 }
 
 void Input::shutdownImpl()

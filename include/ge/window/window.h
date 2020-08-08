@@ -67,7 +67,7 @@ public:
         {}
     };
 
-    static void initialize();
+    static bool initialize();
     static void shutdown();
 
     virtual void setVSync(bool enabled) = 0;

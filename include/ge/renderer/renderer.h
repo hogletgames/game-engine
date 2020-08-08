@@ -49,9 +49,7 @@ class WindowResizedEvent;
 class GE_API Renderer
 {
 public:
-    Renderer() = delete;
-
-    static void initialize(RendererAPI::API api);
+    static bool initialize(RendererAPI::API api);
     static void shutdown();
 
     static bool onWindowResized(const WindowResizedEvent& event);
@@ -66,11 +64,15 @@ public:
     static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 
 private:
-    struct SceneData {
-        glm::mat4 vp_matrix{1.0f};
-    };
+    Renderer() = default;
 
-    static Scoped<SceneData> s_scene_data;
+    static Renderer* get()
+    {
+        static Renderer instance;
+        return &instance;
+    }
+
+    glm::mat4 m_vp_matrix{1.0f};
 };
 
 } // namespace GE

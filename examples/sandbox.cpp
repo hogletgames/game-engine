@@ -137,13 +137,12 @@ int main(int argc, char** argv) // NOLINT
         GE_PROFILE_BEGIN_SESSION("Sandbox Run", "profile.json");
     }
 
-    GE_INITIALIZE(GE_OPEN_GL_API);
+    if (!GE::Manager::initialize(GE_OPEN_GL_API)) {
+        return 1;
+    }
 
     GE::Application app{};
     app.pushLayer(getLayer(args));
     app.run();
-
-    GE_SHUTDOWN();
-
     return 0;
 }

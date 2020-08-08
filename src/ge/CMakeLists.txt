@@ -4,8 +4,8 @@ include_directories(
 
 set(GE_SRC
     application.cpp
-    ge.cpp
     layer_stack.cpp
+    manager.cpp
     thread_pool.cpp
 )
 

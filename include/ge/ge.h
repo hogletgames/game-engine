@@ -34,6 +34,11 @@
 #define GE_GE_H_
 
 #include <ge/application.h>
+#include <ge/empty_layer.h>
+#include <ge/layer.h>
+#include <ge/layer_stack.h>
+#include <ge/manager.h>
+
 #include <ge/core/asserts.h>
 #include <ge/core/begin.h>
 #include <ge/core/interface.h>
@@ -41,9 +46,6 @@
 #include <ge/core/non_copyable.h>
 #include <ge/core/timestamp.h>
 #include <ge/core/utils.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
 
 #include <ge/gui/gui.h>
 
@@ -66,27 +68,5 @@
 #include <ge/window/mouse_event.h>
 #include <ge/window/window.h>
 #include <ge/window/window_event.h>
-
-#define GE_INITIALIZE(api) ::GE::FWManager::get()->initialize(api)
-#define GE_SHUTDOWN()      ::GE::FWManager::get()->shutdown()
-
-namespace GE {
-
-class GE_API FWManager
-{
-public:
-    void initialize(RendererAPI::API api);
-    void shutdown();
-
-    static FWManager* get();
-
-private:
-    FWManager() = default;
-    ~FWManager();
-
-    bool m_initialized{false};
-};
-
-} // namespace GE
 
 #endif // GE_GE_H_

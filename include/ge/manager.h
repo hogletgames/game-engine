@@ -30,68 +30,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_APPLICATION_H_
-#define GE_APPLICATION_H_
+#ifndef GE_MANAGER_H_
+#define GE_MANAGER_H_
 
-#include "ge/core/timestamp.h"
-#include <ge/core/non_copyable.h>
-#include <ge/layer_stack.h>
-#include <ge/window/window.h>
-
-#include <memory>
+#include <ge/renderer/renderer_api.h>
 
 namespace GE {
 
-class Event;
-class WindowResizedEvent;
-class WindowClosedEvent;
-class WindowMinimizedEvent;
-class WindowMaximizedEvent;
-class WindowRestoredEvent;
-
-class GE_API Application: public NonCopyable
+class GE_API Manager
 {
 public:
-    Application();
-    ~Application() override;
-
-    static bool initialize();
+    static bool initialize(RendererAPI::API api);
     static void shutdown();
 
-    void run();
-
-    void pushLayer(Shared<Layer> layer);
-    void pushOverlay(Shared<Layer> overlay);
-
-    static const Window& getWindow() { return *s_window; }
-    static void* getNativeWindow() { return s_window->getNativeWindow(); }
-    static void* getNativeContext() { return s_window->getNativeContext(); }
-
 private:
-    enum class WindowState : uint8_t
+    Manager() = default;
+    ~Manager();
+
+    static Manager* get()
     {
-        NONE = 0,
-        MAXIMIZED,
-        MINIMIZED
-    };
+        static Manager instance;
+        return &instance;
+    }
 
-    void updateLayers(Timestamp delta_time);
-
-    void onEvent(Event* event);
-    bool onWindowClosed(const WindowClosedEvent& event);
-    bool onWindowMaximized(const WindowMaximizedEvent& event);
-    bool onWindowMinimized(const WindowMinimizedEvent& event);
-    bool onWindowRestored(const WindowRestoredEvent& event);
-
-    static Application* s_instance;
-    static Scoped<Window> s_window;
-
-    LayerStack m_layer_stack;
-    bool m_runnign{true};
-    WindowState m_window_state{WindowState::NONE};
-    Timestamp m_prev_frame_time;
+    bool m_initialized{false};
 };
 
 } // namespace GE
 
-#endif // GE_APPLICATION_H_
+#endif // GE_MANAGER_H_
