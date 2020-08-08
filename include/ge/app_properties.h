@@ -30,44 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_APP_PROPERTIES_H_
+#define GE_APP_PROPERTIES_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
-
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
 #include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-
-#include <ge/gui/gui.h>
-
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
 #include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/vertex_array.h>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+namespace GE {
 
-#endif // GE_GE_H_
+class GE_API AppProperties
+{
+public:
+    struct properties_t {
+        RendererAPI::API api{GE_NONE_API};
+        Logger::Level core_log_lvl{GE_LOGLVL_CRIT};
+        Logger::Level client_log_lvl{GE_LOGLVL_CRIT};
+    };
+
+    static bool read(const std::string& filename, properties_t* props);
+    static bool write(const std::string& filename, const properties_t& props);
+};
+
+} // namespace GE
+
+#endif // GE_APP_PROPERTIES_H_
