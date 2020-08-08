@@ -34,6 +34,8 @@
 #include "input.h"
 #include "unix_utils.h"
 
+#include "ge/core/asserts.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
 #include "ge/renderer/graphics_context.h"
 #include "ge/renderer/renderer.h"

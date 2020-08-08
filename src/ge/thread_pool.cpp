@@ -33,6 +33,7 @@
 #include "thread_pool.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/log.h"
 
 namespace GE {
 

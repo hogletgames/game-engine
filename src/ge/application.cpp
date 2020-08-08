@@ -34,6 +34,7 @@
 
 #include "ge/core/asserts.h"
 #include "ge/core/begin.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
 #include "ge/gui/gui.h"
 #include "ge/layer.h"

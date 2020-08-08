@@ -38,6 +38,8 @@
 
 #include <glad/glad.h>
 
+#include <cstddef>
+
 #if defined(GE_DEBUG)
     #define GLCall(gl_func)                                                    \
         do {                                                                   \

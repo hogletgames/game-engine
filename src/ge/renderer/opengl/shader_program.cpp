@@ -33,6 +33,8 @@
 #include "shader_program.h"
 #include "opengl_utils.h"
 
+#include "ge/core/asserts.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
 
 #include <glad/glad.h>
