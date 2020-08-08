@@ -56,7 +56,7 @@ GLenum toGlBaseType(::GE::BufferElement::Type type)
         default: break;
     }
 
-    GE_CORE_ASSERT(false, "Unknown element type: {}", static_cast<int>(type));
+    GE_CORE_ASSERT_MSG(false, "Unknown element type: {}", static_cast<int>(type));
     return 0;
 }
 
@@ -97,7 +97,7 @@ void VertexArray::addVertexBuffer(Shared<VertexBuffer> vertex_buffer)
     GE_PROFILE_FUNC();
 
     const auto& layout = vertex_buffer->getLayout();
-    GE_CORE_ASSERT(!layout.getElements().empty(), "Vertex Buffer has no layout");
+    GE_CORE_ASSERT_MSG(!layout.getElements().empty(), "Vertex Buffer has no layout");
 
     GLCall(glBindVertexArray(m_id));
     vertex_buffer->bind();

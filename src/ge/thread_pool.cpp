@@ -33,6 +33,7 @@
 #include "thread_pool.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/log.h"
 
 namespace GE {
 
@@ -51,7 +52,7 @@ ThreadPool::~ThreadPool()
 
 void ThreadPool::start(uint32_t threads_num)
 {
-    GE_CORE_ASSERT(m_terminated, "Thread pool '{}' has already ran", m_name);
+    GE_CORE_ASSERT_MSG(m_terminated, "Thread pool '{}' has already ran", m_name);
 
     m_terminated = false;
     m_workers.clear();

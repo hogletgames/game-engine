@@ -34,6 +34,7 @@
 #include "opengl_utils.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
 
 #include <glad/glad.h>
@@ -50,7 +51,7 @@ GLenum toGlType(::GE::Shader::Type type)
         default: break;
     }
 
-    GE_CORE_ASSERT(false, "Unknown shader type: {}", static_cast<int>(type));
+    GE_CORE_ASSERT_MSG(false, "Unknown shader type: {}", static_cast<int>(type));
     return 0;
 }
 

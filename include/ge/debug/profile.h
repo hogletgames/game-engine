@@ -73,8 +73,8 @@ public:
     void begin(const std::string& name, const std::string& filepath = "profile.json")
     {
         std::lock_guard lock{m_session_mtx};
-        GE_CORE_ASSERT(!m_session, "Begin profiling '{}' when '{}' already open", name,
-                       m_session->name)
+        GE_CORE_ASSERT_MSG(!m_session, "Begin profiling '{}' when '{}' already open",
+                           name, m_session->name);
 
         m_profile_log.open(filepath);
 

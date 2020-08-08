@@ -43,11 +43,15 @@ TEST_F(GECoreTest, ClientLogger)
 TEST_F(GECoreTest, Asserts)
 {
 #if !defined(GE_DISABLE_ASSERTS)
-    EXPECT_DEATH(GE_CORE_ASSERT(2 * 2 == 5, "core assert"), "");
-    EXPECT_DEATH(GE_ASSERT(2 < 0, "client assert"), "");
+    EXPECT_DEATH(GE_CORE_ASSERT_MSG(0 == 1, "core assert: {}", 1), "");
+    EXPECT_DEATH(GE_CORE_ASSERT(0 == 2), "");
+    EXPECT_DEATH(GE_ASSERT_MSG(0 == 3, "client assert: {}", 2), "");
+    EXPECT_DEATH(GE_ASSERT(0 == 4), "");
 #endif
-    GE_CORE_ASSERT(true, "True =)");
-    GE_ASSERT(2 * 2 == 4, "Yes");
+    GE_CORE_ASSERT_MSG(1 == 1, "core assert: {}", 3);
+    GE_CORE_ASSERT(2 == 2);
+    GE_ASSERT_MSG(3 == 3, "client assert: {}", 4);
+    GE_ASSERT(4 == 4);
 }
 
 TEST_F(GECoreTest, Profiler)

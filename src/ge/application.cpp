@@ -34,6 +34,7 @@
 
 #include "ge/core/asserts.h"
 #include "ge/core/begin.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
 #include "ge/gui/gui.h"
 #include "ge/layer.h"
@@ -49,7 +50,7 @@ Application::Application()
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_ASSERT(!s_instance, "Application already exists");
+    GE_CORE_ASSERT_MSG(!s_instance, "Application already exists");
     s_instance = this;
     s_window->setEventCallback([this](Event* event) { onEvent(event); });
 }

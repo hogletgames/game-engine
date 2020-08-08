@@ -34,6 +34,7 @@
 #include "opengl/renderer_api.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/log.h"
 #include "ge/core/utils.h"
 
 namespace GE {
@@ -47,7 +48,7 @@ Scoped<RendererAPI> RendererAPI::create(API api)
 
     switch (api) {
         case GE_OPEN_GL_API: return makeScoped<OpenGL::RendererAPI>();
-        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", api);
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", api);
     }
 
     return nullptr;

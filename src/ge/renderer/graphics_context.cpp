@@ -49,7 +49,7 @@ Scoped<GraphicsContext> GraphicsContext::create(void* window)
 {
     switch (Renderer::getAPI()) {
         case GE_OPEN_GL_API: return makeScoped<OpenGLContext>(window);
-        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
     }
 
     return nullptr;

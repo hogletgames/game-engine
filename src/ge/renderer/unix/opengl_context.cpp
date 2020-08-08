@@ -33,6 +33,8 @@
 #include "opengl_context.h"
 #include "unix_utils.h"
 
+#include "ge/core/asserts.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
 
 #include <SDL.h>
@@ -56,7 +58,7 @@ void openglDbgCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum t
         case GL_DEBUG_SEVERITY_LOW: GE_CORE_WARN(message); return;         // NOLINT
         case GL_DEBUG_SEVERITY_NOTIFICATION: GE_CORE_DBG(message); return; // NOLINT
         case GL_DONT_CARE: GE_CORE_TRACE(message); return;
-        default: GE_CORE_ASSERT(false, "Unknown severity level: {}", severity);
+        default: GE_CORE_ASSERT_MSG(false, "Unknown severity level: {}", severity);
     }
 }
 
@@ -101,12 +103,12 @@ void OpenGLContext::initialize()
     {
         GE_PROFILE_SCOPE("UNIX::OpenGLContext Create Context");
         m_gl_context = SDL_GL_CreateContext(m_window);
-        GE_CORE_ASSERT(m_gl_context, "Failed to create graphics context");
+        GE_CORE_ASSERT_MSG(m_gl_context, "Failed to create graphics context");
     }
 
     auto glad_load_proc = static_cast<GLADloadproc>(SDL_GL_GetProcAddress);
     int is_glad_loaded = gladLoadGLLoader(glad_load_proc);
-    GE_CORE_ASSERT(is_glad_loaded, "Failed to initialize GLAD");
+    GE_CORE_ASSERT_MSG(is_glad_loaded, "Failed to initialize GLAD");
 
     GE_CORE_INFO("OpenGL Version: {}", glGetString(GL_VERSION));
     GE_CORE_INFO("OpenGL Shading Language Version: {}",

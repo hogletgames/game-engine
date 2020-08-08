@@ -58,7 +58,7 @@ uint32_t BufferElement::getTypeSize(Type type)
         default: break;
     }
 
-    GE_CORE_ASSERT(false, "Unknown element type: {}", static_cast<int>(type));
+    GE_CORE_ASSERT_MSG(false, "Unknown element type: {}", static_cast<int>(type));
     return 0;
 }
 
@@ -79,7 +79,7 @@ uint32_t BufferElement::getComponentCount() const
         default: break;
     }
 
-    GE_CORE_ASSERT(false, "Unknown element type: {}", static_cast<int>(m_type));
+    GE_CORE_ASSERT_MSG(false, "Unknown element type: {}", static_cast<int>(m_type));
     return 0;
 }
 

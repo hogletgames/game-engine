@@ -33,35 +33,65 @@
 #ifndef GE_CORE_ASSERTS_H_
 #define GE_CORE_ASSERTS_H_
 
-#include <ge/core/log.h>
+#ifndef GE_DISABLE_ASSERTS
+    #include <ge/core/log.h>
 
-#if defined(GE_PLATFORM_UNIX)
-    #include <csignal>
-    #define GE_DBGBREAK() raise(SIGTRAP)
-#elif defined(GE_PLATFORM_WIN32)
-    #define GE_DBGBREAK() __debugbreak()
+    #define GE_CORE_ASSERT_MSG(expr, ...) \
+        static_cast<bool>(expr)           \
+            ? static_cast<void>(expr)     \
+            : ::GE::Debug::core_assert(__FILE__, __LINE__, #expr, __VA_ARGS__)
+
+    #define GE_CORE_ASSERT(expr)                          \
+        static_cast<bool>(expr) ? static_cast<void>(expr) \
+                                : ::GE::Debug::core_assert(__FILE__, __LINE__, #expr)
+    #define GE_ASSERT_MSG(expr, ...)  \
+        static_cast<bool>(expr)       \
+            ? static_cast<void>(expr) \
+            : ::GE::Debug::client_assert(__FILE__, __LINE__, #expr, __VA_ARGS__)
+
+    #define GE_ASSERT(expr)                               \
+        static_cast<bool>(expr) ? static_cast<void>(expr) \
+                                : ::GE::Debug::client_assert(__FILE__, __LINE__, #expr)
+
+namespace GE::Debug {
+
+template<typename... Args>
+inline void core_assert(const char* file, int line, const char* expr)
+{
+    GE_CORE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_DBGBREAK();
+}
+
+template<typename... Args>
+inline void core_assert(const char* file, int line, const char* expr, const Args&... args)
+{
+    GE_CORE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_CORE_CRIT(args...);
+    GE_DBGBREAK();
+}
+
+template<typename... Args>
+inline void client_assert(const char* file, int line, const char* expr)
+{
+    GE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_DBGBREAK();
+}
+
+template<typename... Args>
+inline void client_assert(const char* file, int line, const char* expr,
+                          const Args&... args)
+{
+    GE_CRIT("assert failed: {}:{}: '{}'", file, line, expr);
+    GE_CRIT(args...);
+    GE_DBGBREAK();
+}
+
+} // namespace GE::Debug
 #else
-    #error "Platform is not defined!"
-#endif
-
-#if !defined(GE_DISABLE_ASSERTS)
-    #define GE_CORE_ASSERT(expr, ...)                                              \
-        if (!(expr)) {                                                             \
-            GE_CORE_CRIT("assert failed: {}:{}: '{}'", __FILE__, __LINE__, #expr); \
-            GE_CORE_CRIT(__VA_ARGS__);                                             \
-            GE_DBGBREAK();                                                         \
-        }
-
-    #define GE_ASSERT(expr, ...)                                              \
-        if (!(expr)) {                                                        \
-            GE_CRIT("assert failed: {}:{}: '{}'", __FILE__, __LINE__, #expr); \
-            GE_CRIT(__VA_ARGS__);                                             \
-            GE_DBGBREAK();                                                    \
-        }
-
-#else
-    #define GE_CORE_ASSERT(expr, ...) static_cast<void>(expr)
-    #define GE_ASSERT(expr, ...)      static_cast<void>(expr)
-#endif
+    #define GE_CORE_ASSERT_MSG(expr, ...) static_cast<void>(expr)
+    #define GE_CORE_ASSERT(expr)          static_cast<void>(expr)
+    #define GE_ASSERT_MSG(expr, ...)      static_cast<void>(expr)
+    #define GE_ASSERT(expr)               static_cast<void>(expr)
+#endif //  GE_DISABLE_ASSERTS
 
 #endif // GE_CORE_ASSERTS_H_

@@ -43,7 +43,7 @@ Scoped<VertexBuffer> VertexBuffer::create(float* vertices, uint32_t size)
 {
     switch (Renderer::getAPI()) {
         case GE_OPEN_GL_API: return makeScoped<OpenGL::VertexBuffer>(vertices, size);
-        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
     }
 
     return nullptr;
@@ -53,7 +53,7 @@ Scoped<IndexBuffer> IndexBuffer::create(uint32_t* indexes, uint32_t count)
 {
     switch (Renderer::getAPI()) {
         case GE_OPEN_GL_API: return makeScoped<OpenGL::IndexBuffer>(indexes, count);
-        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
     }
 
     return nullptr;

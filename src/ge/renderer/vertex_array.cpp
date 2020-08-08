@@ -42,7 +42,7 @@ Scoped<VertexArray> VertexArray::create()
 {
     switch (Renderer::getAPI()) {
         case GE_OPEN_GL_API: return makeScoped<OpenGL::VertexArray>();
-        default: GE_CORE_ASSERT(false, "Unsupported API: '{}'", Renderer::getAPI());
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
     }
 
     return nullptr;
