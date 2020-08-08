@@ -49,7 +49,7 @@ Manager::~Manager()
 
 bool Manager::initialize(RendererAPI::API api)
 {
-    if (!Log::get()->initialize() || !Renderer::initialize(api) || !Window::initialize() ||
+    if (!Log::initialize() || !Renderer::initialize(api) || !Window::initialize() ||
         !Application::initialize() || !Gui::initialize()) {
         return false;
     }
@@ -68,7 +68,7 @@ void Manager::shutdown()
     Application::shutdown();
     Window::shutdown();
     Renderer::shutdown();
-    Log::get()->shutdown();
+    Log::shutdown();
 
     get()->m_initialized = false;
 }

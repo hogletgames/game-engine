@@ -16,8 +16,8 @@ namespace {
 class GECoreTest: public ::testing::Test
 {
 protected:
-    void SetUp() override { ASSERT_TRUE(GE::Log::get()->initialize()); }
-    void TearDown() override { GE::Log::get()->shutdown(); }
+    void SetUp() override { ASSERT_TRUE(GE::Log::initialize()); }
+    void TearDown() override { GE::Log::shutdown(); }
 };
 
 TEST_F(GECoreTest, CoreLogger)

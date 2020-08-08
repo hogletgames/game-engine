@@ -53,48 +53,48 @@
 #endif
 
 #if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_CRITICAL
-    #define GE_CORE_CRIT(...) ::GE::Log::get()->core()->crit(__VA_ARGS__)
-    #define GE_CRIT(...)      ::GE::Log::get()->client()->crit(__VA_ARGS__)
+    #define GE_CORE_CRIT(...) ::GE::Log::core()->crit(__VA_ARGS__)
+    #define GE_CRIT(...)      ::GE::Log::client()->crit(__VA_ARGS__)
 #else
     #define GE_CORE_CRIT(...) static_cast<void>(0)
     #define GE_CRIT(...)      static_cast<void>(0)
 #endif
 
 #if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_ERROR
-    #define GE_CORE_ERR(...) ::GE::Log::get()->core()->error(__VA_ARGS__)
-    #define GE_ERR(...)      ::GE::Log::get()->client()->error(__VA_ARGS__)
+    #define GE_CORE_ERR(...) ::GE::Log::core()->error(__VA_ARGS__)
+    #define GE_ERR(...)      ::GE::Log::client()->error(__VA_ARGS__)
 #else
     #define GE_CORE_ERR(...) static_cast<void>(0)
     #define GE_ERR(...)      static_cast<void>(0)
 #endif
 
 #if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_WARNING
-    #define GE_CORE_WARN(...) ::GE::Log::get()->core()->warn(__VA_ARGS__)
-    #define GE_WARN(...)      ::GE::Log::get()->client()->warn(__VA_ARGS__)
+    #define GE_CORE_WARN(...) ::GE::Log::core()->warn(__VA_ARGS__)
+    #define GE_WARN(...)      ::GE::Log::client()->warn(__VA_ARGS__)
 #else
     #define GE_CORE_WARN(...) static_cast<void>(0)
     #define GE_WARN(...)      static_cast<void>(0)
 #endif
 
 #if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_INFO
-    #define GE_CORE_INFO(...) ::GE::Log::get()->core()->info(__VA_ARGS__)
-    #define GE_INFO(...)      ::GE::Log::get()->client()->info(__VA_ARGS__)
+    #define GE_CORE_INFO(...) ::GE::Log::core()->info(__VA_ARGS__)
+    #define GE_INFO(...)      ::GE::Log::client()->info(__VA_ARGS__)
 #else
     #define GE_CORE_INFO(...) static_cast<void>(0)
     #define GE_INFO(...)      static_cast<void>(0)
 #endif
 
 #if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_DEBUG
-    #define GE_CORE_DBG(...) ::GE::Log::get()->core()->debug(__VA_ARGS__)
-    #define GE_DBG(...)      ::GE::Log::get()->client()->debug(__VA_ARGS__)
+    #define GE_CORE_DBG(...) ::GE::Log::core()->debug(__VA_ARGS__)
+    #define GE_DBG(...)      ::GE::Log::client()->debug(__VA_ARGS__)
 #else
     #define GE_CORE_DBG(...) static_cast<void>(0)
     #define GE_DBG(...)      static_cast<void>(0)
 #endif
 
 #if _GE_ACTIVE_LOGLVL >= GE_COMPILED_LOGLVL_TRACE
-    #define GE_CORE_TRACE(...) ::GE::Log::get()->core()->trace(__VA_ARGS__)
-    #define GE_TRACE(...)      ::GE::Log::get()->client()->trace(__VA_ARGS__)
+    #define GE_CORE_TRACE(...) ::GE::Log::core()->trace(__VA_ARGS__)
+    #define GE_TRACE(...)      ::GE::Log::client()->trace(__VA_ARGS__)
 #else
     #define GE_CORE_TRACE(...) static_cast<void>(0)
     #define GE_TRACE(...)      static_cast<void>(0)
@@ -181,16 +181,20 @@ private:
 class GE_API Log
 {
 public:
-    bool initialize();
-    void shutdown();
+    static bool initialize();
+    static void shutdown();
 
-    Logger* core() { return &m_core_logger; }
-    Logger* client() { return &m_client_logger; }
-
-    static Log* get();
+    static Logger* core() { return &get()->m_core_logger; }
+    static Logger* client() { return &get()->m_client_logger; }
 
 private:
     Log() = default;
+
+    static Log* get()
+    {
+        static Log instance;
+        return &instance;
+    }
 
     Logger m_core_logger;
     Logger m_client_logger;
