@@ -35,6 +35,15 @@
 
 #include <memory>
 
+// Macros
+#define GE_BIND_EVENT_FN(fn) [this](const auto& event) { return fn(event); }
+
+#define _GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
+#define GE_CONCAT(lhs, rhs)       _GE_CONCAT_IMPL(lhs, rhs)
+
+#define GE_UNUSED(var) static_cast<void>(var)
+
+// Export/Import attributes
 #if defined(GE_PLATFORM_WINDOWS)
     #if !defined(GE_STATIC)
         #define GE_API __declspec(dllexport)
@@ -45,6 +54,7 @@
     #define GE_API
 #endif
 
+// Pretty function name
 #if defined(__GNUC__)
     #define GE_FUNC_NAME __PRETTY_FUNCTION__
 #elif defined(__FUNCSIG__)
@@ -53,13 +63,17 @@
     #define GE_FUNC_NAME __func__
 #endif
 
-#define GE_BIND_EVENT_FN(fn) [this](const auto& event) { return fn(event); }
+// Breakpoint
+#if defined(GE_PLATFORM_UNIX)
+    #include <csignal>
+    #define GE_DBGBREAK() raise(SIGTRAP)
+#elif defined(GE_PLATFORM_WIN32)
+    #define GE_DBGBREAK() __debugbreak()
+#else
+    #error "Platform is not defined!"
+#endif
 
-#define _GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
-#define GE_CONCAT(lhs, rhs)       _GE_CONCAT_IMPL(lhs, rhs)
-
-#define GE_UNUSED(var) static_cast<void>(var)
-
+// Type aliases
 namespace GE {
 
 template<typename Type>
