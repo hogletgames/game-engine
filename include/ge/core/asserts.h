@@ -33,18 +33,9 @@
 #ifndef GE_CORE_ASSERTS_H_
 #define GE_CORE_ASSERTS_H_
 
-#include <ge/core/log.h>
+#ifndef GE_DISABLE_ASSERTS
+    #include <ge/core/log.h>
 
-#if defined(GE_PLATFORM_UNIX)
-    #include <csignal>
-    #define GE_DBGBREAK() raise(SIGTRAP)
-#elif defined(GE_PLATFORM_WIN32)
-    #define GE_DBGBREAK() __debugbreak()
-#else
-    #error "Platform is not defined!"
-#endif
-
-#if !defined(GE_DISABLE_ASSERTS)
     #define GE_CORE_ASSERT_MSG(expr, ...) \
         static_cast<bool>(expr)           \
             ? static_cast<void>(expr)     \
@@ -61,12 +52,6 @@
     #define GE_ASSERT(expr)                               \
         static_cast<bool>(expr) ? static_cast<void>(expr) \
                                 : ::GE::Debug::client_assert(__FILE__, __LINE__, #expr)
-#else
-    #define GE_CORE_ASSERT_MSG(expr, ...) static_cast<void>(expr)
-    #define GE_CORE_ASSERT(expr)          static_cast<void>(expr)
-    #define GE_ASSERT_MSG(expr, ...)      static_cast<void>(expr)
-    #define GE_ASSERT(expr)               static_cast<void>(expr)
-#endif
 
 namespace GE::Debug {
 
@@ -102,5 +87,11 @@ inline void client_assert(const char* file, int line, const char* expr,
 }
 
 } // namespace GE::Debug
+#else
+    #define GE_CORE_ASSERT_MSG(expr, ...) static_cast<void>(expr)
+    #define GE_CORE_ASSERT(expr)          static_cast<void>(expr)
+    #define GE_ASSERT_MSG(expr, ...)      static_cast<void>(expr)
+    #define GE_ASSERT(expr)               static_cast<void>(expr)
+#endif //  GE_DISABLE_ASSERTS
 
 #endif // GE_CORE_ASSERTS_H_
