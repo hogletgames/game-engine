@@ -65,15 +65,14 @@ private:
     static API s_api;
 };
 
+std::string toString(RendererAPI::API api);
+RendererAPI::API toRendAPI(const std::string& api);
+
 } // namespace GE
 
 inline std::ostream& operator<<(std::ostream& os, ::GE::RendererAPI::API api)
 {
-    switch (api) {
-        case GE_NONE_API: return os << "None";
-        case GE_OPEN_GL_API: return os << "OpenGL";
-        default: return os << "Unknown API: " << static_cast<int>(api);
-    }
+    return os << ::GE::toString(api);
 }
 
 #endif // GE_RENDERER_RENDERER_API_H_

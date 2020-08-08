@@ -106,6 +106,7 @@
 #define GE_LOGLVL_WARN  ::GE::Logger::Level::WARNING
 #define GE_LOGLVL_ERR   ::GE::Logger::Level::ERROR
 #define GE_LOGLVL_CRIT  ::GE::Logger::Level::CRITICAL
+#define GE_LOGLVL_NONE  ::GE::Logger::Level::NONE
 
 namespace GE {
 
@@ -119,7 +120,8 @@ public:
         WARNING = GE_COMPILED_LOGLVL_WARNING,
         INFO = GE_COMPILED_LOGLVL_INFO,
         DEBUG = GE_COMPILED_LOGLVL_DEBUG,
-        TRACE = GE_COMPILED_LOGLVL_TRACE
+        TRACE = GE_COMPILED_LOGLVL_TRACE,
+        NONE
     };
 
     ~Logger();
@@ -199,6 +201,9 @@ private:
     Logger m_core_logger;
     Logger m_client_logger;
 };
+
+std::string toString(Logger::Level level);
+Logger::Level toLogLvl(const std::string& level);
 
 } // namespace GE
 

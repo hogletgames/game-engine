@@ -37,6 +37,9 @@
 #include "ge/core/log.h"
 #include "ge/core/utils.h"
 
+#define API_NONE_STR    "None"
+#define API_OPEN_GL_STR "OpenGL"
+
 namespace GE {
 
 RendererAPI::API RendererAPI::s_api{GE_NONE_API};
@@ -52,6 +55,22 @@ Scoped<RendererAPI> RendererAPI::create(API api)
     }
 
     return nullptr;
+}
+
+std::string toString(RendererAPI::API api)
+{
+    std::unordered_map<RendererAPI::API, std::string> api_to_str{
+        {GE_NONE_API, API_NONE_STR}, {GE_OPEN_GL_API, API_OPEN_GL_STR}};
+
+    return toType(api_to_str, api, {});
+}
+
+RendererAPI::API toRendAPI(const std::string& api)
+{
+    std::unordered_map<std::string, RendererAPI::API> str_to_api{
+        {API_NONE_STR, GE_NONE_API}, {API_OPEN_GL_STR, GE_OPEN_GL_API}};
+
+    return toType(str_to_api, api, GE_NONE_API);
 }
 
 } // namespace GE
