@@ -43,8 +43,6 @@
 
 namespace GE {
 
-Scoped<Renderer::SceneData> Renderer::s_scene_data{nullptr};
-
 bool Renderer::initialize(RendererAPI::API api)
 {
     GE_PROFILE_FUNC();
@@ -52,11 +50,6 @@ bool Renderer::initialize(RendererAPI::API api)
 
     if (!RenderCommand::initialize(api)) {
         GE_CORE_ERR("Failed to initialize Renderer");
-        return false;
-    }
-
-    if (s_scene_data = makeScoped<Renderer::SceneData>(); s_scene_data == nullptr) {
-        GE_CORE_ERR("Failed to allocate Renderer scene data");
         return false;
     }
 
@@ -68,7 +61,6 @@ void Renderer::shutdown()
     GE_PROFILE_FUNC();
 
     GE_CORE_DBG("Shutdown Renderer");
-    s_scene_data.reset();
     RenderCommand::shutdown();
 }
 
@@ -84,7 +76,7 @@ void Renderer::begin(const OrthographicCamera& camera)
 {
     GE_PROFILE_FUNC();
 
-    s_scene_data->vp_matrix = camera.getVPMatrix();
+    get()->m_vp_matrix = camera.getVPMatrix();
 }
 
 void Renderer::end() {}
@@ -95,7 +87,7 @@ void Renderer::submit(const Shared<ShaderProgram>& shader,
     GE_PROFILE_FUNC();
 
     shader->bind();
-    shader->setUniformMat4(GE_UNIFORM_VP_MATRIX, s_scene_data->vp_matrix);
+    shader->setUniformMat4(GE_UNIFORM_VP_MATRIX, get()->m_vp_matrix);
     shader->setUniformMat4(GE_UNIFORM_TRANSFORM, transform);
 
     vertex_array->bind();
