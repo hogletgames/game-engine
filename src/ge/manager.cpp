@@ -30,43 +30,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#include "manager.h"
 
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
+#include "ge/application.h"
+#include "ge/debug/profile.h"
+#include "ge/gui/gui.h"
+#include "ge/renderer/renderer.h"
+#include "ge/window/window.h"
 
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
+namespace GE {
 
-#include <ge/gui/gui.h>
+Manager::~Manager()
+{
+    if (m_initialized) {
+        shutdown();
+    }
+}
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/vertex_array.h>
+void Manager::initialize(RendererAPI::API api)
+{
+    GE_PROFILE_FUNC();
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+    if (get()->m_initialized) {
+        return;
+    }
 
-#endif // GE_GE_H_
+    Log::get()->initialize();
+    Renderer::initialize(api);
+    Window::initialize();
+    Application::initialize();
+    Gui::initialize();
+
+    get()->m_initialized = true;
+
+    GE_CORE_DBG("GameEngine: has been initialized");
+}
+
+void Manager::shutdown()
+{
+    GE_PROFILE_FUNC();
+
+    GE_CORE_DBG("GameEngine: scheduling shutdown");
+    Gui::shutdown();
+    Application::shutdown();
+    Window::shutdown();
+    Renderer::shutdown();
+    Log::get()->shutdown();
+
+    get()->m_initialized = false;
+}
+
+} // namespace GE

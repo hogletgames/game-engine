@@ -68,8 +68,6 @@ namespace GE {
 
 Logger::~Logger()
 {
-    GE_PROFILE_FUNC();
-
     if (m_logger) {
         shutdown();
     }
