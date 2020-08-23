@@ -106,10 +106,11 @@ bool AppProperties::write(const std::string& filename, const properties_t& props
     GE_ASSERT(!filename.empty());
 
     try {
-        boost::property_tree::ini_parser::write_ini(filename, ptree);
         ptree.put<std::string>(PROP_RENDER_API, toString(props.api));
         ptree.put<std::string>(PROP_CORE_LOGLVL, toString(props.core_log_lvl));
         ptree.put<std::string>(PROP_CLIENT_LOGLVL, toString(props.client_log_lvl));
+
+        boost::property_tree::ini_parser::write_ini(filename, ptree);
     } catch (const std::exception& e) {
         GE_CORE_ERR("Failed to write properties to '{}", filename);
         return false;
