@@ -35,6 +35,7 @@
 
 #ifdef GE_PROFILING
     #include <ge/core/asserts.h>
+    #include <ge/core/log.h>
     #include <ge/core/timestamp.h>
     #include <ge/thread_pool.h>
 
