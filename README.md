@@ -2,7 +2,7 @@
 
 ## Game Engine
 
-### Dependencies
+### Acknowledgements
 - [spdlog](https://github.com/gabime/spdlog)
 - [Google Test](https://github.com/google/googletest)
 - [SDL](https://www.libsdl.org/)
@@ -10,6 +10,9 @@
 - [Dear ImGui](https://github.com/ocornut/imgui)
 - [glm](https://github.com/g-truc/glm)
 - [docopt.cpp](https://github.com/docopt/docopt.cpp)
+
+### Dependencies
+- [Boost v1.65](https://www.boost.org/doc/libs/1_65_0/)
 
 ### How to build library
 Build shared library:
@@ -77,12 +80,12 @@ $BUILD_DIR/examples/sandbox -h
 ### Clang tools
 clang-format:
 ```bash
-bash tools/clang_format.sh --clang-format-bin clang-format-9 --fix
+bash tools/clang_format.sh --clang-format-bin clang-format-10 --fix
 ```
 
 clang-tidy:
 ``` bash
-make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-9
+make clang-tidy RUN_CLANG_TIDY_BIN=run-clang-tidy-10
 ```
 
 ### Compile-time log levels
