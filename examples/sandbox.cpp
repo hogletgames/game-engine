@@ -38,6 +38,7 @@
 #include <docopt.h>
 
 #include <iostream>
+#include <unordered_map>
 
 #define EXAMPLE_OPT  "--example"
 #define SHOW_GUI_OPT "--show-demo"
@@ -45,6 +46,10 @@
 
 #define EXAMPLE_EMPTY    "empty"
 #define EXAMPLE_TRIANGLE "triangle"
+
+#define PROFILE_SESSION_NAME "Sandbox Profiling"
+#define PROFILE_FILE         "profile.json"
+#define CONF_FILE            "config.ini"
 
 namespace {
 
@@ -66,7 +71,8 @@ Options:
 
 enum class LayerType : uint8_t
 {
-    EMPTY = 0,
+    NONE = 0,
+    EMPTY,
     TRIANGLE
 };
 
@@ -75,6 +81,14 @@ struct ParseArgs {
     bool show_gui_demo{false};
     bool enable_profile{false};
 };
+
+LayerType toLayerType(const std::string& example)
+{
+    static std::unordered_map<std::string, LayerType> example_to_layer{
+        {EXAMPLE_EMPTY, LayerType::EMPTY}, {EXAMPLE_TRIANGLE, LayerType::TRIANGLE}};
+
+    return GE::toType(example_to_layer, example, LayerType::NONE);
+}
 
 ParseArgs parseArgs(int argc, char** argv)
 {
@@ -91,20 +105,24 @@ ParseArgs parseArgs(int argc, char** argv)
     }
 
     ParseArgs parsed_args{};
-    std::string example = args[EXAMPLE_OPT].asString();
+    std::string example;
 
-    if (example == EXAMPLE_EMPTY) {
-        parsed_args.layer = LayerType::EMPTY;
-    } else if (example == EXAMPLE_TRIANGLE) {
-        parsed_args.layer = LayerType::TRIANGLE;
-    } else {
+    try {
+        example = args[EXAMPLE_OPT].asString();
+        parsed_args.show_gui_demo = args[SHOW_GUI_OPT].asBool();
+        parsed_args.enable_profile = args[PROFILE_OPT].asBool();
+    } catch (const std::exception& e) {
+        std::cout << "Failed to parse arguments: " << e.what() << std::endl;
+        exit(1);
+    }
+
+    parsed_args.layer = toLayerType(example);
+
+    if (parsed_args.layer == LayerType::NONE) {
         std::cout << "Unknown example: " << example << "\n\n";
         std::cout << usage << std::endl;
         exit(1);
     }
-
-    parsed_args.show_gui_demo = args[SHOW_GUI_OPT].asBool();
-    parsed_args.enable_profile = args[PROFILE_OPT].asBool();
 
     return parsed_args;
 }
@@ -128,16 +146,16 @@ GE::Shared<GE::Layer> getLayer(const ParseArgs& args)
 
 } // namespace
 
-int main(int argc, char** argv) // NOLINT
+int main(int argc, char** argv)
 {
     ParseArgs args = parseArgs(argc, argv);
 
     if (args.enable_profile) {
         GE_PROFILE_ENABLE(true);
-        GE_PROFILE_BEGIN_SESSION("Sandbox Run", "profile.json");
+        GE_PROFILE_BEGIN_SESSION(PROFILE_SESSION_NAME, PROFILE_FILE);
     }
 
-    if (!GE::Manager::initialize("config.ini")) {
+    if (!GE::Manager::initialize(CONF_FILE)) {
         return 1;
     }
 
