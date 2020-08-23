@@ -31,6 +31,7 @@
  */
 
 #include "manager.h"
+#include "app_properties.h"
 
 #include "ge/application.h"
 #include "ge/core/log.h"
@@ -48,14 +49,26 @@ Manager::~Manager()
     }
 }
 
-bool Manager::initialize(RendererAPI::API api)
+bool Manager::initialize(std::string props_file)
 {
-    if (!Log::initialize() || !Renderer::initialize(api) || !Window::initialize() ||
-        !Application::initialize() || !Gui::initialize()) {
+    GE_PROFILE_FUNC();
+
+    AppProperties::properties_t props;
+
+    if (!Log::initialize()) {
         return false;
     }
 
+    if (!AppProperties::read(props_file, &props) || !Renderer::initialize(props.api) ||
+        !Window::initialize() || !Application::initialize() || !Gui::initialize()) {
+        return false;
+    }
+
+    Log::core()->setLevel(props.core_log_lvl);
+    Log::client()->setLevel(props.client_log_lvl);
+
     GE_CORE_DBG("GameEngine: has been initialized");
+    get()->m_props_file = std::move(props_file);
     get()->m_initialized = true;
     return true;
 }
@@ -65,13 +78,29 @@ void Manager::shutdown()
     GE_PROFILE_FUNC();
 
     GE_CORE_DBG("GameEngine: scheduling shutdown");
+    get()->saveProperties();
+
     Gui::shutdown();
     Application::shutdown();
     Window::shutdown();
     Renderer::shutdown();
     Log::shutdown();
 
+    get()->m_props_file.clear();
     get()->m_initialized = false;
+}
+
+void Manager::saveProperties() const
+{
+    GE_PROFILE_FUNC();
+
+    AppProperties::properties_t props;
+
+    props.api = Renderer::getAPI();
+    props.core_log_lvl = Log::core()->getLvel();
+    props.client_log_lvl = Log::client()->getLvel();
+
+    AppProperties::write(m_props_file, props);
 }
 
 } // namespace GE

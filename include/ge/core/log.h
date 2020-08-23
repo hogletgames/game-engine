@@ -130,6 +130,7 @@ public:
     void shutdown();
 
     void setLevel(Level level);
+    Level getLvel() const { return m_level; }
 
     template<typename... Args>
     void crit(const Args&... args)
@@ -177,6 +178,7 @@ private:
     }
 
     std::string m_logger_name;
+    Level m_level{GE_LOGLVL_INFO};
     std::shared_ptr<spdlog::logger> m_logger;
 };
 

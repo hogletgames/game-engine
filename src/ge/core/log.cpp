@@ -115,6 +115,7 @@ void Logger::setLevel(Level level)
 {
     GE_PROFILE_FUNC();
 
+    m_level = level;
     m_logger->set_level(toSpdlogLvl(level));
     m_level = level;
 }

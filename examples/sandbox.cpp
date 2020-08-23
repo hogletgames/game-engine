@@ -137,7 +137,7 @@ int main(int argc, char** argv) // NOLINT
         GE_PROFILE_BEGIN_SESSION("Sandbox Run", "profile.json");
     }
 
-    if (!GE::Manager::initialize(GE_OPEN_GL_API)) {
+    if (!GE::Manager::initialize("config.ini")) {
         return 1;
     }
 
