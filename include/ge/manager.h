@@ -33,14 +33,16 @@
 #ifndef GE_MANAGER_H_
 #define GE_MANAGER_H_
 
-#include <ge/renderer/renderer_api.h>
+#include <ge/core/core.h>
+
+#include <string>
 
 namespace GE {
 
 class GE_API Manager
 {
 public:
-    static bool initialize(RendererAPI::API api);
+    static bool initialize(std::string props_file);
     static void shutdown();
 
 private:
@@ -53,7 +55,10 @@ private:
         return &instance;
     }
 
+    void saveProperties() const;
+
     bool m_initialized{false};
+    std::string m_props_file;
 };
 
 } // namespace GE

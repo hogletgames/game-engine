@@ -33,6 +33,7 @@
 #include "log.h"
 
 #include "ge/core/asserts.h"
+#include "ge/core/utils.h"
 #include "ge/debug/profile.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -42,6 +43,14 @@
 #define CORE_LOGGER_NAME   "CORE"
 #define CLIENT_LOGGER_NAME "APP"
 #define LOG_FTM_PATTERN    "[%H:%M:%S.%e] [%l] %n: %v%$"
+
+#define LOGLVL_TRACE_STR "Trace"
+#define LOGLVL_DBG_STR   "Debug"
+#define LOGLVL_INFO_STR  "Info"
+#define LOGLVL_WARN_STR  "Warning"
+#define LOGLVL_ERR_STR   "Error"
+#define LOGLVL_CRIT_STR  "Critical"
+#define LOGLVL_NONE_STR  "None"
 
 using SpdlogLevel = spdlog::level::level_enum;
 
@@ -55,12 +64,13 @@ SpdlogLevel toSpdlogLvl(GE::Logger::Level level)
         case GE_LOGLVL_INFO: return SpdlogLevel::info;
         case GE_LOGLVL_WARN: return SpdlogLevel::warn;
         case GE_LOGLVL_ERR: return SpdlogLevel::err;
-        case GE_LOGLVL_CRIT: return SpdlogLevel::critical;
+        case GE_LOGLVL_CRIT:
+        case GE_LOGLVL_NONE: return SpdlogLevel::critical;
         default: break;
     }
 
     GE_CORE_ASSERT_MSG(false, "Unknown log level: {}", static_cast<int>(level));
-    return SpdlogLevel::off;
+    return SpdlogLevel::critical;
 }
 
 } // namespace
@@ -105,7 +115,9 @@ void Logger::setLevel(Level level)
 {
     GE_PROFILE_FUNC();
 
+    m_level = level;
     m_logger->set_level(toSpdlogLvl(level));
+    m_level = level;
 }
 
 bool Log::initialize()
@@ -135,6 +147,27 @@ void Log::shutdown()
     GE_CORE_DBG("Shutdown log system");
     get()->m_client_logger.shutdown();
     get()->m_core_logger.shutdown();
+}
+
+std::string toString(Logger::Level level)
+{
+    std::unordered_map<Logger::Level, std::string> lvl_to_str{
+        {GE_LOGLVL_TRACE, LOGLVL_TRACE_STR}, {GE_LOGLVL_DBG, LOGLVL_DBG_STR},
+        {GE_LOGLVL_INFO, LOGLVL_INFO_STR},   {GE_LOGLVL_WARN, LOGLVL_WARN_STR},
+        {GE_LOGLVL_ERR, LOGLVL_ERR_STR},     {GE_LOGLVL_CRIT, LOGLVL_CRIT_STR},
+        {GE_LOGLVL_NONE, LOGLVL_NONE_STR}};
+
+    return toType(lvl_to_str, level, {});
+}
+
+Logger::Level toLogLvl(const std::string& level)
+{
+    std::unordered_map<std::string, Logger::Level> str_to_lvl{
+        {LOGLVL_TRACE_STR, GE_LOGLVL_TRACE}, {LOGLVL_DBG_STR, GE_LOGLVL_DBG},
+        {LOGLVL_INFO_STR, GE_LOGLVL_INFO},   {LOGLVL_WARN_STR, GE_LOGLVL_WARN},
+        {LOGLVL_ERR_STR, GE_LOGLVL_ERR},     {LOGLVL_CRIT_STR, GE_LOGLVL_CRIT}};
+
+    return toType(str_to_lvl, level, GE_LOGLVL_NONE);
 }
 
 } // namespace GE

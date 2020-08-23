@@ -33,6 +33,7 @@
 #ifndef GE_GE_H_
 #define GE_GE_H_
 
+#include <ge/app_properties.h>
 #include <ge/application.h>
 #include <ge/empty_layer.h>
 #include <ge/layer.h>

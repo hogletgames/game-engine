@@ -30,49 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_RENDERER_RENDERER_API_H_
-#define GE_RENDERER_RENDERER_API_H_
+#ifndef GE_APP_PROPERTIES_H_
+#define GE_APP_PROPERTIES_H_
 
-#include <ge/renderer/vertex_array.h>
-
-#include <glm/glm.hpp>
-
-#include <iostream>
-#include <memory>
-
-#define GE_NONE_API    ::GE::RendererAPI::API::NONE
-#define GE_OPEN_GL_API ::GE::RendererAPI::API::OPEN_GL
+#include <ge/core/log.h>
+#include <ge/renderer/renderer_api.h>
 
 namespace GE {
 
-class GE_API RendererAPI: public NonCopyable
+class GE_API AppProperties
 {
 public:
-    enum class API : uint8_t
-    {
-        NONE = 0,
-        OPEN_GL
+    struct properties_t {
+        RendererAPI::API api{GE_NONE_API};
+        Logger::Level core_log_lvl{GE_LOGLVL_CRIT};
+        Logger::Level client_log_lvl{GE_LOGLVL_CRIT};
     };
 
-    virtual void clear(const glm::vec4& color) = 0;
-    virtual void draw(const Shared<VertexArray>& vertex_array) = 0;
-    virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
-
-    static API getAPI() { return s_api; }
-    static Scoped<RendererAPI> create(API api);
-
-private:
-    static API s_api;
+    static bool read(const std::string& filename, properties_t* props);
+    static bool write(const std::string& filename, const properties_t& props);
 };
-
-std::string toString(RendererAPI::API api);
-RendererAPI::API toRendAPI(const std::string& api);
 
 } // namespace GE
 
-inline std::ostream& operator<<(std::ostream& os, ::GE::RendererAPI::API api)
-{
-    return os << ::GE::toString(api);
-}
-
-#endif // GE_RENDERER_RENDERER_API_H_
+#endif // GE_APP_PROPERTIES_H_

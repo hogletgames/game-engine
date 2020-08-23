@@ -38,19 +38,19 @@
 
     #define GE_CORE_ASSERT_MSG(expr, ...) \
         static_cast<bool>(expr)           \
-            ? static_cast<void>(expr)     \
+            ? static_cast<void>(0)        \
             : ::GE::Debug::core_assert(__FILE__, __LINE__, #expr, __VA_ARGS__)
 
-    #define GE_CORE_ASSERT(expr)                          \
-        static_cast<bool>(expr) ? static_cast<void>(expr) \
+    #define GE_CORE_ASSERT(expr)                       \
+        static_cast<bool>(expr) ? static_cast<void>(0) \
                                 : ::GE::Debug::core_assert(__FILE__, __LINE__, #expr)
-    #define GE_ASSERT_MSG(expr, ...)  \
-        static_cast<bool>(expr)       \
-            ? static_cast<void>(expr) \
+    #define GE_ASSERT_MSG(expr, ...) \
+        static_cast<bool>(expr)      \
+            ? static_cast<void>(0)   \
             : ::GE::Debug::client_assert(__FILE__, __LINE__, #expr, __VA_ARGS__)
 
-    #define GE_ASSERT(expr)                               \
-        static_cast<bool>(expr) ? static_cast<void>(expr) \
+    #define GE_ASSERT(expr)                            \
+        static_cast<bool>(expr) ? static_cast<void>(0) \
                                 : ::GE::Debug::client_assert(__FILE__, __LINE__, #expr)
 
 namespace GE::Debug {

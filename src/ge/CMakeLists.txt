@@ -1,8 +1,11 @@
+find_package(Boost 1.65 REQUIRED)
+
 include_directories(
     utils
 )
 
 set(GE_SRC
+    app_properties.cpp
     application.cpp
     layer_stack.cpp
     manager.cpp
@@ -18,6 +21,9 @@ target_link_libraries(ge PUBLIC
 )
 target_include_directories(ge PRIVATE
     ${CMAKE_SOURCE_DIR}/include/ge
+)
+target_include_directories(ge SYSTEM PRIVATE
+    ${Boost_INCLUDE_DIR}
 )
 
 install(TARGETS ge

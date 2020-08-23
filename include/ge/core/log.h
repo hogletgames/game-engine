@@ -106,6 +106,7 @@
 #define GE_LOGLVL_WARN  ::GE::Logger::Level::WARNING
 #define GE_LOGLVL_ERR   ::GE::Logger::Level::ERROR
 #define GE_LOGLVL_CRIT  ::GE::Logger::Level::CRITICAL
+#define GE_LOGLVL_NONE  ::GE::Logger::Level::NONE
 
 namespace GE {
 
@@ -119,7 +120,8 @@ public:
         WARNING = GE_COMPILED_LOGLVL_WARNING,
         INFO = GE_COMPILED_LOGLVL_INFO,
         DEBUG = GE_COMPILED_LOGLVL_DEBUG,
-        TRACE = GE_COMPILED_LOGLVL_TRACE
+        TRACE = GE_COMPILED_LOGLVL_TRACE,
+        NONE
     };
 
     ~Logger();
@@ -128,6 +130,7 @@ public:
     void shutdown();
 
     void setLevel(Level level);
+    Level getLvel() const { return m_level; }
 
     template<typename... Args>
     void crit(const Args&... args)
@@ -175,6 +178,7 @@ private:
     }
 
     std::string m_logger_name;
+    Level m_level{GE_LOGLVL_INFO};
     std::shared_ptr<spdlog::logger> m_logger;
 };
 
@@ -199,6 +203,9 @@ private:
     Logger m_core_logger;
     Logger m_client_logger;
 };
+
+std::string toString(Logger::Level level);
+Logger::Level toLogLvl(const std::string& level);
 
 } // namespace GE
 

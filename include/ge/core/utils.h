@@ -35,6 +35,7 @@
 
 #include <memory>
 #include <thread>
+#include <unordered_map>
 
 #include <ge/core/core.h>
 #include <ge/core/timestamp.h>
@@ -56,6 +57,17 @@ inline Shared<Type> makeShared(Args&&... args)
 inline void sleep(Timestamp duration)
 {
     std::this_thread::sleep_for(Timestamp::DurationSec{duration});
+}
+
+template<typename FromType, typename ToType>
+inline ToType toType(const std::unordered_map<FromType, ToType>& cont,
+                     const FromType& from_value, ToType&& def_ret)
+{
+    if (auto it = cont.find(from_value); it != cont.end()) {
+        return it->second;
+    }
+
+    return std::forward<ToType>(def_ret);
 }
 
 } // namespace GE
