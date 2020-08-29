@@ -34,8 +34,9 @@
 
 #include "ge/debug/profile.h"
 
-#define VER_COUNT       3
-#define VERT_DATA_COUNT 7
+#define VERT_COUNT      3
+#define VERT_ELEM_COUNT 7
+#define IND_COUNT       3
 
 #define VERT_PATH   "examples/shaders/pass_through.vert"
 #define FRAG_PATH   "examples/shaders/pass_through.frag"
@@ -54,12 +55,13 @@ void TriangleLayer::onAttach()
 {
     GE_PROFILE_FUNC();
 
-    // NOLINTNEXTLINE
-    std::array<float, VER_COUNT* VERT_DATA_COUNT> vertices = {
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // NOLINT
-        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // NOLINT
-        0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f  // NOLINT
+    // clang-format off
+    std::array<float, VERT_COUNT* VERT_ELEM_COUNT> vertices = {
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f
     };
+    // clang-format on
 
     uint32_t vert_data_size = vertices.size() * sizeof(float);
     auto vertex_buffer = VertexBuffer::create(vertices.data(), vert_data_size);
@@ -68,7 +70,7 @@ void TriangleLayer::onAttach()
                         {GE_ELEMENT_FLOAT4, ATTR_COLOR}};
     vertex_buffer->setLayout(layout);
 
-    std::array<uint32_t, VER_COUNT> indices = {0, 1, 2};
+    std::array<uint32_t, IND_COUNT> indices = {0, 1, 2};
     auto index_buffer = IndexBuffer::create(indices.data(), indices.size());
 
     m_vao = VertexArray::create();
