@@ -43,13 +43,13 @@
 #define EXAMPLE_OPT  "--example"
 #define SHOW_GUI_OPT "--show-demo"
 #define PROFILE_OPT  "--profiling"
+#define CONFIG_OPT   "--config"
 
 #define EXAMPLE_EMPTY    "empty"
 #define EXAMPLE_TRIANGLE "triangle"
 
 #define PROFILE_SESSION_NAME "Sandbox Profiling"
 #define PROFILE_FILE         "profile.json"
-#define CONF_FILE            "config.ini"
 
 namespace {
 
@@ -67,6 +67,7 @@ Options:
     -s --show-demo              Show GUI demo [default: false].
     -p --profiling              Enable profiling [default: false]
     -e --example <example>      Example [default: empty].
+    -c --config <file>          Path to config.ini [default: examples/assets/config.ini]
 )";
 
 enum class LayerType : uint8_t
@@ -80,6 +81,7 @@ struct ParseArgs {
     LayerType layer{LayerType::EMPTY};
     bool show_gui_demo{false};
     bool enable_profile{false};
+    std::string config;
 };
 
 LayerType toLayerType(const std::string& example)
@@ -111,6 +113,7 @@ ParseArgs parseArgs(int argc, char** argv)
         example = args[EXAMPLE_OPT].asString();
         parsed_args.show_gui_demo = args[SHOW_GUI_OPT].asBool();
         parsed_args.enable_profile = args[PROFILE_OPT].asBool();
+        parsed_args.config = args[CONFIG_OPT].asString();
     } catch (const std::exception& e) {
         std::cout << "Failed to parse arguments: " << e.what() << std::endl;
         exit(1);
@@ -155,7 +158,7 @@ int main(int argc, char** argv)
         GE_PROFILE_BEGIN_SESSION(PROFILE_SESSION_NAME, PROFILE_FILE);
     }
 
-    if (!GE::Manager::initialize(CONF_FILE)) {
+    if (!GE::Manager::initialize(args.config)) {
         return 1;
     }
 

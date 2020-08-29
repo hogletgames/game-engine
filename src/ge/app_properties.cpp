@@ -73,6 +73,7 @@ namespace GE {
 bool AppProperties::read(const std::string& filename, properties_t* props)
 {
     GE_PROFILE_FUNC();
+    GE_INFO("Config file: '{}'", filename);
 
     if (!createFileIfNotExist(filename)) {
         GE_CORE_ERR("Failed to open properties file: '{}'", filename);
