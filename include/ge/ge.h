@@ -57,9 +57,11 @@
 #include <ge/renderer/orthographic_camera.h>
 #include <ge/renderer/render_command.h>
 #include <ge/renderer/renderer.h>
+#include <ge/renderer/renderer_2d.h>
 #include <ge/renderer/renderer_api.h>
 #include <ge/renderer/shader.h>
 #include <ge/renderer/shader_program.h>
+#include <ge/renderer/texture.h>
 #include <ge/renderer/vertex_array.h>
 
 #include <ge/window/input.h>

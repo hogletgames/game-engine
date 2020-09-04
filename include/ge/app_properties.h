@@ -45,6 +45,7 @@ public:
         RendererAPI::API api{GE_NONE_API};
         Logger::Level core_log_lvl{GE_LOGLVL_CRIT};
         Logger::Level client_log_lvl{GE_LOGLVL_CRIT};
+        std::string assets_dir;
     };
 
     static bool read(const std::string& filename, properties_t* props);

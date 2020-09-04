@@ -49,6 +49,11 @@ Scoped<VertexBuffer> VertexBuffer::create(float* vertices, uint32_t size)
     return nullptr;
 }
 
+Scoped<VertexBuffer> VertexBuffer::create(uint32_t size)
+{
+    return VertexBuffer::create(nullptr, size);
+}
+
 Scoped<IndexBuffer> IndexBuffer::create(uint32_t* indexes, uint32_t count)
 {
     switch (Renderer::getAPI()) {

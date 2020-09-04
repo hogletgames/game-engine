@@ -31,29 +31,33 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_EXAMPLES_TRIANGLE_LAYER_H_
-#define GE_EXAMPLES_TRIANGLE_LAYER_H_
+#ifndef GE_EXAMPLES_RENDERER_2D_LAYER_H_
+#define GE_EXAMPLES_RENDERER_2D_LAYER_H_
 
 #include "gui_layer.h"
 
 namespace GE::Examples {
 
-class GE_API TriangleLayer: public GuiLayer
+class GE_API Renderer2DLayer: public GuiLayer
 {
 public:
-    explicit TriangleLayer(bool show_gui_demo);
+    explicit Renderer2DLayer(bool show_gui_demo);
 
     void onAttach() override;
     void onDetach() override;
     void onUpdate(Timestamp delta_time) override;
-    void onEvent(Event* event) override;
 
 private:
-    ShaderLibrary m_shader_library;
-    OrthographicCamera m_camera;
-    Shared<VertexArray> m_vao;
+    Shared<Texture2D> m_tex_quad{};
+    GE::Renderer2D::quad_params_t m_tex_quad_params{};
+
+    glm::vec4 m_blue_quad{};
+    GE::Renderer2D::quad_params_t m_blue_quad_params{};
+
+    glm::vec4 m_red_quad{};
+    GE::Renderer2D::quad_params_t m_red_quad_params{};
 };
 
 } // namespace GE::Examples
 
-#endif // GE_EXAMPLES_TRIANGLE_LAYER_H_
+#endif // GE_EXAMPLES_RENDERER_2D_LAYER_H_

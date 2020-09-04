@@ -30,30 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
-#ifndef GE_EXAMPLES_TRIANGLE_LAYER_H_
-#define GE_EXAMPLES_TRIANGLE_LAYER_H_
+#include "texture.h"
+#include "opengl/texture.h"
+#include "renderer.h"
 
-#include "gui_layer.h"
+#include "ge/core/asserts.h"
+#include "ge/core/utils.h"
 
-namespace GE::Examples {
+namespace GE {
 
-class GE_API TriangleLayer: public GuiLayer
+Scoped<Texture2D> Texture2D::create(std::string path)
 {
-public:
-    explicit TriangleLayer(bool show_gui_demo);
+    switch (Renderer::getAPI()) {
+        case GE_OPEN_GL_API: return makeScoped<OpenGL::Texture2D>(std::move(path));
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
+    }
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(Timestamp delta_time) override;
-    void onEvent(Event* event) override;
+    return nullptr;
+}
 
-private:
-    ShaderLibrary m_shader_library;
-    OrthographicCamera m_camera;
-    Shared<VertexArray> m_vao;
-};
+Scoped<Texture2D> Texture2D::create(uint32_t width, uint32_t height, uint32_t bpp)
+{
+    switch (Renderer::getAPI()) {
+        case GE_OPEN_GL_API: return makeScoped<OpenGL::Texture2D>(width, height, bpp);
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
+    }
 
-} // namespace GE::Examples
+    return nullptr;
+}
 
-#endif // GE_EXAMPLES_TRIANGLE_LAYER_H_
+} // namespace GE

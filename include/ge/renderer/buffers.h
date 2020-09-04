@@ -50,6 +50,7 @@ public:
     virtual const BufferLayout& getLayout() const = 0;
 
     static Scoped<VertexBuffer> create(float* vertices, uint32_t size);
+    static Scoped<VertexBuffer> create(uint32_t size);
 };
 
 class GE_API IndexBuffer: public NonCopyable

@@ -1,6 +1,8 @@
 set(GE_SANDBOX_SRC
     gui_layer.cpp
+    renderer_2d.cpp
     sandbox.cpp
+    square_layer.cpp
     triangle_layer.cpp
 )
 

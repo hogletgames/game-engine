@@ -11,6 +11,7 @@ Checks:             '*,
                     -fuchsia-default-arguments-declarations,
                     -fuchsia-overloaded-operator,
                     -fuchsia-statically-constructed-objects,
+                    -google-default-arguments,
                     -google-readability-todo,
                     -hicpp-no-array-decay,
                     -hicpp-signed-bitwise,
@@ -24,3 +25,7 @@ Checks:             '*,
 WarningsAsErrors:   '*'
 HeaderFilterRegex:  '.*'
 FormatStyle:        'file'
+CheckOptions:
+  - {key: cppcoreguidelines-avoid-magic-numbers.IgnoreAllFloatingPointValues, value: '1' }
+  - {key: readability-magic-numbers.IgnoreAllFloatingPointValues,             value: '1' }
+...

@@ -31,29 +31,41 @@
  */
 
 // NOLINTNEXTLINE
-#ifndef GE_EXAMPLES_TRIANGLE_LAYER_H_
-#define GE_EXAMPLES_TRIANGLE_LAYER_H_
+#ifndef GE_EXAMPLES_SQUARE_LAYER_H_
+#define GE_EXAMPLES_SQUARE_LAYER_H_
 
 #include "gui_layer.h"
 
 namespace GE::Examples {
 
-class GE_API TriangleLayer: public GuiLayer
+class GE_API SquareLayer: public GuiLayer
 {
 public:
-    explicit TriangleLayer(bool show_gui_demo);
+    explicit SquareLayer(bool show_gui_demo);
 
     void onAttach() override;
     void onDetach() override;
     void onUpdate(Timestamp delta_time) override;
     void onEvent(Event* event) override;
+    void onGuiRender() override;
 
 private:
+    enum SquareType : uint8_t
+    {
+        COLORED = 0,
+        TEXTURED
+    };
+
+    Shared<ShaderProgram> bindCurrentShader();
+
     ShaderLibrary m_shader_library;
-    OrthographicCamera m_camera;
     Shared<VertexArray> m_vao;
+    Shared<Texture2D> m_texture;
+
+    int m_square_type{};
+    glm::vec4 m_square_color{};
 };
 
 } // namespace GE::Examples
 
-#endif // GE_EXAMPLES_TRIANGLE_LAYER_H_
+#endif // GAME_ENGINE_SQUARE_LAYER_H_

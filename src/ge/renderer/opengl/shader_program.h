@@ -43,7 +43,7 @@ namespace GE::OpenGL {
 class ShaderProgram: public ::GE::ShaderProgram
 {
 public:
-    ShaderProgram();
+    explicit ShaderProgram(std::string name);
     ~ShaderProgram() override;
 
     void addShader(Shared<Shader> shader) override;
@@ -64,11 +64,14 @@ public:
     void bind() const override;
     void unbind() const override;
 
+    const std::string& getName() const override { return m_name; }
+
 private:
     void attachShaders();
     void detachShaders();
 
     uint32_t m_id{0};
+    std::string m_name;
     std::vector<Shared<Shader>> m_shaders;
 };
 

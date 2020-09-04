@@ -30,6 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "renderer_2d.h"
+#include "square_layer.h"
 #include "triangle_layer.h"
 
 #include <ge/debug/profile.h>
@@ -43,19 +45,23 @@
 #define EXAMPLE_OPT  "--example"
 #define SHOW_GUI_OPT "--show-demo"
 #define PROFILE_OPT  "--profiling"
+#define CONFIG_OPT   "--config"
 
-#define EXAMPLE_EMPTY    "empty"
-#define EXAMPLE_TRIANGLE "triangle"
+#define EXAMPLE_EMPTY       "empty"
+#define EXAMPLE_RENDERER_2D "renderer2d"
+#define EXAMPLE_SQUARE      "square"
+#define EXAMPLE_TRIANGLE    "triangle"
 
 #define PROFILE_SESSION_NAME "Sandbox Profiling"
 #define PROFILE_FILE         "profile.json"
-#define CONF_FILE            "config.ini"
 
 namespace {
 
 const char* usage = R"(Sanbox.
 Run one of the existing examples:
     - empty
+    - renderer2d
+    - square
     - triangle
 
 Usage:
@@ -67,12 +73,15 @@ Options:
     -s --show-demo              Show GUI demo [default: false].
     -p --profiling              Enable profiling [default: false]
     -e --example <example>      Example [default: empty].
+    -c --config <file>          Path to config.ini [default: examples/assets/config.ini]
 )";
 
 enum class LayerType : uint8_t
 {
     NONE = 0,
     EMPTY,
+    RENDERER_2D,
+    SQUARE,
     TRIANGLE
 };
 
@@ -80,12 +89,16 @@ struct ParseArgs {
     LayerType layer{LayerType::EMPTY};
     bool show_gui_demo{false};
     bool enable_profile{false};
+    std::string config;
 };
 
 LayerType toLayerType(const std::string& example)
 {
     static std::unordered_map<std::string, LayerType> example_to_layer{
-        {EXAMPLE_EMPTY, LayerType::EMPTY}, {EXAMPLE_TRIANGLE, LayerType::TRIANGLE}};
+        {EXAMPLE_EMPTY, LayerType::EMPTY},
+        {EXAMPLE_RENDERER_2D, LayerType::RENDERER_2D},
+        {EXAMPLE_SQUARE, LayerType::SQUARE},
+        {EXAMPLE_TRIANGLE, LayerType::TRIANGLE}};
 
     return GE::toType(example_to_layer, example, LayerType::NONE);
 }
@@ -111,6 +124,7 @@ ParseArgs parseArgs(int argc, char** argv)
         example = args[EXAMPLE_OPT].asString();
         parsed_args.show_gui_demo = args[SHOW_GUI_OPT].asBool();
         parsed_args.enable_profile = args[PROFILE_OPT].asBool();
+        parsed_args.config = args[CONFIG_OPT].asString();
     } catch (const std::exception& e) {
         std::cout << "Failed to parse arguments: " << e.what() << std::endl;
         exit(1);
@@ -130,12 +144,16 @@ ParseArgs parseArgs(int argc, char** argv)
 GE::Shared<GE::Layer> getLayer(const ParseArgs& args)
 {
     using GE::Examples::GuiLayer;
+    using GE::Examples::Renderer2DLayer;
+    using GE::Examples::SquareLayer;
     using GE::Examples::TriangleLayer;
 
     bool show_gui{args.show_gui_demo};
 
     switch (args.layer) {
         case LayerType::EMPTY: return GE::makeShared<GuiLayer>(show_gui);
+        case LayerType::RENDERER_2D: return GE::makeShared<Renderer2DLayer>(show_gui);
+        case LayerType::SQUARE: return GE::makeShared<SquareLayer>(show_gui);
         case LayerType::TRIANGLE: return GE::makeShared<TriangleLayer>(show_gui);
         default: break;
     }
@@ -155,7 +173,7 @@ int main(int argc, char** argv)
         GE_PROFILE_BEGIN_SESSION(PROFILE_SESSION_NAME, PROFILE_FILE);
     }
 
-    if (!GE::Manager::initialize(CONF_FILE)) {
+    if (!GE::Manager::initialize(args.config)) {
         return 1;
     }
 

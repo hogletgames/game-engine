@@ -5,10 +5,12 @@ set(GE_RENDERER_SRC
     ortho_camera_controller.cpp
     orthographic_camera.cpp
     render_command.cpp
-    renderer_api.cpp
     renderer.cpp
+    renderer_2d.cpp
+    renderer_api.cpp
     shader_program.cpp
     shader.cpp
+    texture.cpp
     vertex_array.cpp
 )
 

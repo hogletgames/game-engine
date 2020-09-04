@@ -34,11 +34,13 @@
 
 #include "ge/debug/profile.h"
 
-#define VER_COUNT       3
-#define VERT_DATA_COUNT 7
+#define VERT_COUNT      3
+#define VERT_ELEM_COUNT 7
+#define IND_COUNT       3
 
-#define VERT_PATH "examples/shaders/pass_through.vert"
-#define FRAG_PATH "examples/shaders/pass_through.frag"
+#define VERT_PATH   "examples/assets/shaders/pass_through.vert"
+#define FRAG_PATH   "examples/assets/shaders/pass_through.frag"
+#define SHADER_NAME "PassThrough"
 
 #define ATTR_POSITION "a_Position"
 #define ATTR_COLOR    "a_Color"
@@ -53,12 +55,13 @@ void TriangleLayer::onAttach()
 {
     GE_PROFILE_FUNC();
 
-    // NOLINTNEXTLINE
-    std::array<float, VER_COUNT* VERT_DATA_COUNT> vertices = {
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // NOLINT
-        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // NOLINT
-        0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f  // NOLINT
+    // clang-format off
+    std::array<float, VERT_COUNT* VERT_ELEM_COUNT> vertices = {
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f
     };
+    // clang-format on
 
     uint32_t vert_data_size = vertices.size() * sizeof(float);
     auto vertex_buffer = VertexBuffer::create(vertices.data(), vert_data_size);
@@ -67,23 +70,15 @@ void TriangleLayer::onAttach()
                         {GE_ELEMENT_FLOAT4, ATTR_COLOR}};
     vertex_buffer->setLayout(layout);
 
-    std::array<uint32_t, VER_COUNT> indices = {0, 1, 2};
+    std::array<uint32_t, IND_COUNT> indices = {0, 1, 2};
     auto index_buffer = IndexBuffer::create(indices.data(), indices.size());
 
     m_vao = VertexArray::create();
     m_vao->addVertexBuffer(std::move(vertex_buffer));
     m_vao->setIndexBuffer(std::move(index_buffer));
 
-    Shared<Shader> vertex_shader = Shader::create(GE_VERTEX_SHADER);
-    vertex_shader->compileFromFile(VERT_PATH);
-
-    Shared<Shader> fragment_shader = Shader::create(GE_FRAGMENT_SHADER);
-    fragment_shader->compileFromFile(FRAG_PATH);
-
-    m_shader = ShaderProgram::create();
-    m_shader->addShaders({vertex_shader, fragment_shader});
-
-    GE_ASSERT_MSG(m_shader->link(), "Failed to link shader");
+    auto shader = m_shader_library.load(VERT_PATH, FRAG_PATH, SHADER_NAME);
+    GE_ASSERT_MSG(shader, "Failed to load '{}' shader", SHADER_NAME);
 }
 
 void TriangleLayer::onDetach()
@@ -91,7 +86,7 @@ void TriangleLayer::onDetach()
     GE_PROFILE_FUNC();
 
     m_vao.reset();
-    m_shader.reset();
+    m_shader_library.clear();
 }
 
 void TriangleLayer::onUpdate(Timestamp delta_time)
@@ -107,7 +102,7 @@ void TriangleLayer::onUpdate(Timestamp delta_time)
     {
         GE_PROFILE_SCOPE("TriangleLayer Draw");
         Begin<Renderer> begin{m_camera_controller.getCamera()};
-        Renderer::submit(m_shader, m_vao);
+        Renderer::submit(m_shader_library.get(SHADER_NAME), m_vao);
     }
 }
 

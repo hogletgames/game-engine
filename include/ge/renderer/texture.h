@@ -30,58 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ge.h"
+#ifndef GE_RENDERER_TEXTURE_H_
+#define GE_RENDERER_TEXTURE_H_
 
-#include "ge/debug/profile.h"
+#include <ge/core/interface.h>
+
+#include <string>
 
 namespace GE {
 
-void FWManager::initialize(RendererAPI::API api)
+class GE_API Texture: public Interface
 {
-    GE_PROFILE_FUNC();
+public:
+    virtual uint32_t getWidth() const = 0;
+    virtual uint32_t getHeight() const = 0;
 
-    if (m_initialized) {
-        return;
-    }
+    virtual void setData(const void* data, uint32_t size) = 0;
 
-    Log::get()->initialize();
-    Renderer::initialize(api);
-    Window::initialize();
-    Application::initialize();
-    Gui::initialize();
+    virtual uint32_t getNativeID() const = 0;
 
-    m_initialized = true;
+    virtual void bind(uint32_t slot = 0) const = 0;
+};
 
-    GE_CORE_DBG("FM initialized");
-}
-
-void FWManager::shutdown()
+class GE_API Texture2D: public Texture
 {
-    GE_PROFILE_FUNC();
-
-    if (!m_initialized) {
-        return;
-    }
-
-    GE_CORE_DBG("FM shutdown");
-    Gui::shutdown();
-    Application::shutdown();
-    Window::shutdown();
-    Renderer::shutdown();
-    Log::get()->shutdown();
-
-    m_initialized = false;
-}
-
-FWManager* FWManager::get()
-{
-    static FWManager fw_manager;
-    return &fw_manager;
-}
-
-FWManager::~FWManager()
-{
-    shutdown();
-}
+public:
+    static Scoped<Texture2D> create(std::string path);
+    static Scoped<Texture2D> create(uint32_t width, uint32_t height, uint32_t bpp);
+};
 
 } // namespace GE
+
+#endif // GE_RENDERER_TEXTURE_H_

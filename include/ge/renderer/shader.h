@@ -41,6 +41,9 @@
 #define GE_VERTEX_SHADER   ::GE::Shader::VERTEX
 #define GE_FRAGMENT_SHADER ::GE::Shader::FRAGMENT
 
+#define GE_VERT_EXT ".vert"
+#define GE_FRAG_EXT ".frag"
+
 namespace GE {
 
 class GE_API Shader: public NonCopyable

@@ -39,6 +39,9 @@
 #include <glm/glm.hpp>
 
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace GE {
 
@@ -63,7 +66,29 @@ public:
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
 
-    static Scoped<ShaderProgram> create();
+    virtual const std::string& getName() const = 0;
+
+    static Scoped<ShaderProgram> create(std::string name);
+};
+
+class GE_API ShaderLibrary
+{
+public:
+    bool add(Shared<ShaderProgram> shader_program);
+    bool add(Shared<ShaderProgram> shader_program, std::string name);
+
+    Shared<ShaderProgram> load(const std::string& vertex_path,
+                               const std::string& fragment_path);
+    Shared<ShaderProgram> load(const std::string& vertex_path,
+                               const std::string& fragment_path, const std::string& name);
+
+    void clear();
+
+    Shared<ShaderProgram> get(const std::string& name);
+    bool exists(const std::string& name) const;
+
+private:
+    std::unordered_map<std::string, Shared<ShaderProgram>> m_shaders;
 };
 
 } // namespace GE
