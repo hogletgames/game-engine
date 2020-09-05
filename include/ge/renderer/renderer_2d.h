@@ -38,11 +38,14 @@
 
 #include <glm/glm.hpp>
 
+#include <map>
+
 namespace GE {
 
 class OrthographicCamera;
 class Texture2D;
 class VertexArray;
+class VertexBuffer;
 
 class GE_API Renderer2D
 {
@@ -75,21 +78,45 @@ public:
     static void end();
 
     static void draw(const quad_t& quad);
+    static void flush();
 
 private:
+    struct quad_vertex_t {
+        glm::vec3 pos{};
+        glm::vec4 color{};
+        glm::vec2 tex_coord{};
+        float tex_index{};
+        float tiling_factor{};
+    };
+
     static Renderer2D* get()
     {
         static Renderer2D instance;
         return &instance;
     }
 
+    using QuadVertexArray = std::vector<quad_vertex_t>;
+    using QVAIterator = QuadVertexArray::iterator;
+
+    Renderer2D();
+    void initializeTextures();
+
     Shared<ShaderProgram> loadShader(const std::string& name,
                                      const std::string& shader_dir);
 
+    uint32_t getTexSlot(const Shared<Texture2D>& texture);
+    void resetBatch();
+
     std::string m_assets_dir;
     Shared<VertexArray> m_quad_vao;
+    Shared<VertexBuffer> m_quad_vbo;
     ShaderLibrary m_shader_library;
-    Shared<Texture2D> m_white_texture;
+
+    uint32_t m_index_count{};
+    QuadVertexArray m_quad_vert_array;
+    QVAIterator m_curr_vert_element;
+    std::map<uint32_t, Shared<Texture2D>> m_textures;
+    uint32_t m_curr_free_tex_slot{};
 };
 
 } // namespace GE

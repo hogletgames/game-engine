@@ -44,16 +44,18 @@ namespace Uniforms {
 
 constexpr auto VP_MATRIX = "u_ViewProjection";
 constexpr auto TRANSFORM = "u_Transform";
-constexpr auto TILING_FACTOR = "u_TilingFactor";
 constexpr auto COLOR = "u_Color";
-constexpr auto TEXTURE = "u_Texture";
+constexpr auto TEXTURES = "u_Textures";
 
 } // namespace Uniforms
 
 namespace Attributes {
 
 constexpr auto POS = "a_Position";
+constexpr auto COLOR = "a_Color";
 constexpr auto TEX_COORD = "a_TexCoord";
+constexpr auto TEX_INDEX = "a_TexIndex";
+constexpr auto TILING_FACTOR = "a_TilingFactor";
 
 } // namespace Attributes
 

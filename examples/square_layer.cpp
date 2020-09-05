@@ -39,9 +39,9 @@
 
 #include <array>
 
-#define VERT_COUNT      4
+#define VERT_PER_QUAD   4
 #define VERT_ELEM_COUNT 5
-#define IND_COUNT       6
+#define IND_PER_QUAD    6
 
 #define FLAT_COLOR_VERT   "examples/assets/shaders/flat_color.vert"
 #define FLAT_COLOR_FRAG   "examples/assets/shaders/flat_color.frag"
@@ -77,7 +77,7 @@ void SquareLayer::onAttach()
     GE_PROFILE_FUNC();
 
     // clang-format off
-    std::array<float, VERT_COUNT * VERT_ELEM_COUNT> vertices{
+    std::array<float, VERT_PER_QUAD * VERT_ELEM_COUNT> vertices{
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
         0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,
         0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
@@ -91,7 +91,7 @@ void SquareLayer::onAttach()
                         {GE_ELEMENT_FLOAT2, ATTR_TEXTURE}};
     vbo->setLayout(layout);
 
-    std::array<uint32_t, IND_COUNT> indexes = {0, 1, 2, 2, 3, 0};
+    std::array<uint32_t, IND_PER_QUAD> indexes = {0, 1, 2, 2, 3, 0};
     Shared<IndexBuffer> ibo = IndexBuffer::create(indexes.data(), indexes.size());
 
     m_vao = VertexArray::create();
