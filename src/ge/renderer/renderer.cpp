@@ -94,4 +94,9 @@ void Renderer::submit(const Shared<ShaderProgram>& shader,
     RenderCommand::draw(vertex_array);
 }
 
+const RendererAPI::capabilities_t& Renderer::getCapabilities()
+{
+    return RenderCommand::getCapabilities();
+}
+
 } // namespace GE

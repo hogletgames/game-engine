@@ -76,4 +76,9 @@ void RenderCommand::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t
     s_renderer_api->setViewport(x, y, width, height);
 }
 
+const RendererAPI::capabilities_t& RenderCommand::getCapabilities()
+{
+    return s_renderer_api->getCapabilities();
+}
+
 } // namespace GE

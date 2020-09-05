@@ -72,6 +72,7 @@ public:
                        const glm::mat4& transform = glm::mat4{1.0});
 
     static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
+    static const RendererAPI::capabilities_t& getCapabilities();
 
 private:
     Renderer() = default;

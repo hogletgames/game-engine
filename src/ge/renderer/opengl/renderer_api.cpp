@@ -33,9 +33,35 @@
 #include "renderer_api.h"
 #include "opengl_utils.h"
 
+#include "ge/core/log.h"
+#include "ge/core/utils.h"
 #include "ge/debug/profile.h"
 
 #include <glad/glad.h>
+
+namespace {
+
+void dumpCapabilities([[maybe_unused]] const GE::RendererAPI::capabilities_t& caps)
+{
+    GE_CORE_INFO("Renderer ({}) capabilities:", GE_OPEN_GL_API);
+    GE_CORE_INFO("Texture slots max: {}", caps.max_texture_slots);
+}
+
+GE::RendererAPI::capabilities_t loadCapabilities()
+{
+    GLint max_textures{};
+
+    GLCall(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_textures));
+
+    GE::RendererAPI::capabilities_t caps;
+    caps.max_texture_slots = max_textures;
+
+    dumpCapabilities(caps);
+
+    return caps;
+}
+
+} // namespace
 
 namespace GE::OpenGL {
 
@@ -67,6 +93,15 @@ void RendererAPI::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t h
     GE_PROFILE_FUNC();
 
     GLCall(glViewport(x, y, width, height));
+}
+
+const RendererAPI::capabilities_t& RendererAPI::getCapabilities()
+{
+    if (m_capabilities == nullptr) {
+        m_capabilities = makeScoped<capabilities_t>(loadCapabilities());
+    }
+
+    return *m_capabilities;
 }
 
 } // namespace GE::OpenGL
