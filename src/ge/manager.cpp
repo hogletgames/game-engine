@@ -60,14 +60,19 @@ bool Manager::initialize(std::string props_file)
         return false;
     }
 
-    if (!AppProperties::read(props_file, &props) || !Renderer::initialize(props.api) ||
-        !Window::initialize() || !Application::initialize() ||
-        !Renderer2D::initialize(props.assets_dir) || !Gui::initialize()) {
+    if (!AppProperties::read(props_file, &props)) {
+        GE_CORE_ERR("Failed to load application conf");
         return false;
     }
 
     Log::core()->setLevel(props.core_log_lvl);
     Log::client()->setLevel(props.client_log_lvl);
+
+    if (!Renderer::initialize(props.api) || !Window::initialize() ||
+        !Application::initialize() || !Renderer2D::initialize(props.assets_dir) ||
+        !Gui::initialize()) {
+        return false;
+    }
 
     GE_CORE_DBG("GameEngine: has been initialized");
     get()->m_props_file = std::move(props_file);
