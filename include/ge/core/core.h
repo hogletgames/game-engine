@@ -82,6 +82,14 @@ using Scoped = std::unique_ptr<Type>;
 template<typename Type>
 using Shared = std::shared_ptr<Type>;
 
+template<typename T>
+struct CmpShared {
+    bool operator()(const Shared<T>& lhs, const Shared<T>& rhs) const
+    {
+        return *lhs < *rhs;
+    }
+};
+
 } // namespace GE
 
 #endif // GE_CORE_CORE_H_
