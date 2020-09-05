@@ -66,6 +66,11 @@ void RenderCommand::draw(const Shared<VertexArray>& vertex_array)
     s_renderer_api->draw(vertex_array);
 }
 
+void RenderCommand::draw(uint32_t index_count)
+{
+    s_renderer_api->draw(index_count);
+}
+
 void RenderCommand::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
     s_renderer_api->setViewport(x, y, width, height);

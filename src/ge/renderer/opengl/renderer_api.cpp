@@ -51,8 +51,15 @@ void RendererAPI::draw(const Shared<VertexArray>& vertex_array)
 {
     GE_PROFILE_FUNC();
 
-    GLsizei count = vertex_array->getIndexBuffer()->getCount();
-    GLCall(glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr));
+    GLsizei index_count = vertex_array->getIndexBuffer()->getCount();
+    draw(index_count);
+}
+
+void RendererAPI::draw(uint32_t index_count)
+{
+    GE_PROFILE_FUNC();
+
+    GLCall(glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr));
 }
 
 void RendererAPI::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
