@@ -61,6 +61,8 @@ public:
     void bindBuffer() const;
     void unbindBuffer() const;
 
+    void setBufferData(const void* data, uint32_t size) const;
+
 private:
     uint32_t m_gl_type{0};
     uint32_t m_id{0};
@@ -78,6 +80,8 @@ public:
 
     void setLayout(const BufferLayout& layout) override { m_layout = layout; }
     const BufferLayout& getLayout() const override { return m_layout; }
+
+    void setData(const void* data, uint32_t size) override { setBufferData(data, size); }
 
 private:
     BufferLayout m_layout;

@@ -103,4 +103,12 @@ void BufferBase::unbindBuffer() const
     GLCall(glBindBuffer(m_gl_type, 0));
 }
 
+void BufferBase::setBufferData(const void* data, uint32_t size) const
+{
+    GE_PROFILE_FUNC();
+
+    GLCall(glBindBuffer(m_gl_type, m_id));
+    GLCall(glBufferSubData(m_gl_type, 0, size, data));
+}
+
 } // namespace GE::OpenGL
