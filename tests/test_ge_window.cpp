@@ -4,6 +4,20 @@
 
 #include "gtest/gtest.h"
 
+namespace GE {
+
+void PrintTo(GE::KeyCode key_code, std::ostream* os)
+{
+    *os << key_code;
+}
+
+void PrintTo(GE::MouseButton button, std::ostream* os)
+{
+    *os << button;
+}
+
+} // namespace GE
+
 namespace {
 
 TEST(EventTest, Key)
