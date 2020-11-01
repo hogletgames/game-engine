@@ -68,20 +68,21 @@ std::pair<std::string, std::string> getShadersPath(const std::string& assets_dir
     return {shader_path + GE_VERT_EXT, shader_path + GE_FRAG_EXT};
 }
 
-glm::mat4 getTransformMat(const GE::Renderer2D::quad_params_t& params)
+glm::mat4 getTransformMat(const GE::Renderer2D::quad_t& quad)
 {
+    using Quad = GE::Renderer2D::quad_t;
     glm::mat4 transform{1.0};
 
-    if (params.pos != GE_QUAD_POS_DEF || params.depth != GE_QUAD_DEPTH_DEF) {
-        transform = glm::translate(glm::mat4{1.0f}, {params.pos, params.depth});
+    if (quad.pos != Quad::POS_DEFAULT || quad.depth != Quad::DEPTH_DEFAULT) {
+        transform = glm::translate(glm::mat4{1.0f}, {quad.pos, quad.depth});
     }
 
-    if (params.rotation != GE_QUAD_ROT_DEF) {
-        transform = glm::rotate(transform, params.rotation, {0.0f, 0.0f, 1.0f});
+    if (quad.rotation != Quad::ROTATION_DEFAULT) {
+        transform = glm::rotate(transform, quad.rotation, {0.0f, 0.0f, 1.0f});
     }
 
-    if (params.size != GE_QUAD_SIZE_DEF) {
-        transform = glm::scale(transform, {params.size, 1.0});
+    if (quad.size != Quad::SIZE_DEFAULT) {
+        transform = glm::scale(transform, {quad.size, 1.0});
     }
 
     return transform;
@@ -171,32 +172,17 @@ void Renderer2D::begin(const OrthographicCamera& camera)
 
 void Renderer2D::end() {}
 
-void Renderer2D::drawQuad(const glm::vec4& color, const quad_params_t& params)
+void Renderer2D::draw(const quad_t& quad)
 {
     GE_PROFILE_FUNC();
 
-    drawQuad(get()->m_white_texture, color, params);
-}
-
-void Renderer2D::drawQuad(const Shared<Texture2D>& texture, const quad_params_t& params)
-{
-    GE_PROFILE_FUNC();
-
-    drawQuad(texture, glm::vec4{1.0f}, params);
-}
-
-void Renderer2D::drawQuad(const Shared<Texture2D>& texture, const glm::vec4& color,
-                          const quad_params_t& params)
-{
-    GE_PROFILE_FUNC();
-
+    glm::mat4 transform = getTransformMat(quad);
     auto tex_shader = get()->m_shader_library.get(TEXTURE_SHADER);
-    tex_shader->setUniformFloat4(GE_UNIFORM_COLOR, color);
-    tex_shader->setUniformFloat(GE_UNIFORM_TILING_FACTOR, TILING_FACTOR_DEF);
+    const auto& texture = quad.texture ? quad.texture : get()->m_white_texture;
 
-    glm::mat4 transform = getTransformMat(params);
+    tex_shader->setUniformFloat4(GE_UNIFORM_COLOR, quad.color);
     tex_shader->setUniformMat4(GE_UNIFORM_TRANSFORM, transform);
-    tex_shader->setUniformFloat(GE_UNIFORM_TILING_FACTOR, params.tiling_factor);
+    tex_shader->setUniformFloat(GE_UNIFORM_TILING_FACTOR, quad.tiling_factor);
 
     texture->bind();
     get()->m_quad_vao->bind();

@@ -38,12 +38,6 @@
 
 #include <glm/glm.hpp>
 
-#define GE_QUAD_POS_DEF       glm::vec2(0.0f, 0.0f)
-#define GE_QUAD_SIZE_DEF      glm::vec2(1.0f, 1.0f)
-#define GE_QUAD_DEPTH_DEF     0.0f
-#define GE_QUAD_TILE_FACT_DEF 1.0f
-#define GE_QUAD_ROT_DEF       0.0f
-
 namespace GE {
 
 class OrthographicCamera;
@@ -53,25 +47,21 @@ class VertexArray;
 class GE_API Renderer2D
 {
 public:
-    struct quad_params_t {
-        glm::vec2 pos{};
-        glm::vec2 size{};
-        float depth{};
-        float tiling_factor{};
-        float rotation{};
+    struct quad_t {
+        glm::vec2 pos{POS_DEFAULT};
+        glm::vec2 size{SIZE_DEFAULT};
+        glm::vec4 color{COLOR_DEFAULT};
+        Shared<Texture2D> texture;
+        float depth{DEPTH_DEFAULT};
+        float tiling_factor{TILING_FACT_DEFAULT};
+        float rotation{ROTATION_DEFAULT};
 
-        // NOLINTNEXTLINE
-        quad_params_t(const glm::vec2& pos = GE_QUAD_POS_DEF,
-                      const glm::vec2& size = GE_QUAD_SIZE_DEF,
-                      float depth = GE_QUAD_DEPTH_DEF,
-                      float tiling_factor = GE_QUAD_TILE_FACT_DEF,
-                      float rotation = GE_QUAD_ROT_DEF)
-            : pos{pos}
-            , size{size}
-            , depth{depth}
-            , tiling_factor{tiling_factor}
-            , rotation{rotation}
-        {}
+        static constexpr glm::vec2 POS_DEFAULT{0.0f, 0.0f};
+        static constexpr glm::vec2 SIZE_DEFAULT{1.0f, 1.0f};
+        static constexpr glm::vec4 COLOR_DEFAULT{1.0f};
+        static constexpr float DEPTH_DEFAULT{0.0f};
+        static constexpr float TILING_FACT_DEFAULT{1.0f};
+        static constexpr float ROTATION_DEFAULT{0.0f};
     };
 
     ~Renderer2D();
@@ -84,12 +74,7 @@ public:
     static void begin(const OrthographicCamera& camera);
     static void end();
 
-    static void drawQuad(const glm::vec4& color,
-                         const quad_params_t& params = quad_params_t{});
-    static void drawQuad(const Shared<Texture2D>& texture,
-                         const quad_params_t& params = quad_params_t{});
-    static void drawQuad(const Shared<Texture2D>& texture, const glm::vec4& color,
-                         const quad_params_t& params = quad_params_t{});
+    static void draw(const quad_t& quad);
 
 private:
     static Renderer2D* get()

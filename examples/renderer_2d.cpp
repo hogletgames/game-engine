@@ -34,12 +34,15 @@
 
 #include "ge/debug/profile.h"
 
-#define TEXTURE_SQUARE_ARROW "examples/assets/textures/square_arrow.png"
+namespace {
 
-#define ZOOM_X10   10.0f
-#define ZOOM_X0_75 0.75f
+constexpr auto TEXTURE_SQUARE_ARROW = "examples/assets/textures/square_arrow.png";
 
-#define DEGREE_45 45.0f
+constexpr float ZOOM_X10{10.0f};
+constexpr float ZOOM_X0_75{0.75f};
+constexpr float DEGREE_45{45.0f};
+
+} // namespace
 
 namespace GE::Examples {
 
@@ -53,22 +56,22 @@ void Renderer2DLayer::onAttach()
 {
     GE_PROFILE_FUNC();
 
-    m_blue_quad = {0.2f, 0.3f, 0.8f, 1.0f};
-    m_blue_quad_params.pos = {-1.5f, 0.0f};
+    m_blue_quad.color = {0.2f, 0.3f, 0.8f, 1.0f};
+    m_blue_quad.pos = {-1.5f, 0.0f};
 
-    m_red_quad = {0.8f, 0.3f, 0.3f, 1.0f};
-    m_red_quad_params.size = GE_QUAD_SIZE_DEF * ZOOM_X0_75;
+    m_red_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
+    m_red_quad.size *= ZOOM_X0_75;
 
-    m_tex_quad = Texture2D::create(TEXTURE_SQUARE_ARROW);
-    m_tex_quad_params.size = GE_QUAD_SIZE_DEF * ZOOM_X10;
-    m_tex_quad_params.tiling_factor = GE_QUAD_TILE_FACT_DEF * ZOOM_X10;
-    m_tex_quad_params.rotation = glm::radians(DEGREE_45);
+    m_textured_quad.texture = Texture2D::create(TEXTURE_SQUARE_ARROW);
+    m_textured_quad.size *= ZOOM_X10;
+    m_textured_quad.tiling_factor *= ZOOM_X10;
+    m_textured_quad.rotation = glm::radians(DEGREE_45);
 }
 void Renderer2DLayer::onDetach()
 {
     GE_PROFILE_FUNC();
 
-    m_tex_quad.reset();
+    m_textured_quad.texture.reset();
 }
 
 void Renderer2DLayer::onUpdate(Timestamp delta_time)
@@ -85,9 +88,9 @@ void Renderer2DLayer::onUpdate(Timestamp delta_time)
         GE_PROFILE_SCOPE("Renderer2DLayer Draw");
 
         Begin<Renderer2D> begin{m_camera_controller.getCamera()};
-        Renderer2D::drawQuad(m_blue_quad, m_blue_quad_params);
-        Renderer2D::drawQuad(m_red_quad, m_red_quad_params);
-        Renderer2D::drawQuad(m_tex_quad, m_tex_quad_params);
+        Renderer2D::draw(m_blue_quad);
+        Renderer2D::draw(m_red_quad);
+        Renderer2D::draw(m_textured_quad);
     }
 }
 
