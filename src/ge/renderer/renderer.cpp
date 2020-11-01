@@ -87,8 +87,8 @@ void Renderer::submit(const Shared<ShaderProgram>& shader,
     GE_PROFILE_FUNC();
 
     shader->bind();
-    shader->setUniformMat4(GE_UNIFORM_VP_MATRIX, get()->m_vp_matrix);
-    shader->setUniformMat4(GE_UNIFORM_TRANSFORM, transform);
+    shader->setUniformMat4(Uniforms::VP_MATRIX, get()->m_vp_matrix);
+    shader->setUniformMat4(Uniforms::TRANSFORM, transform);
 
     vertex_array->bind();
     RenderCommand::draw(vertex_array);

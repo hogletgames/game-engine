@@ -48,15 +48,13 @@
 #include <array>
 #include <filesystem>
 
-#define VERT_COUNT      4
-#define VERT_ELEM_COUNT 5
-#define IND_COUNT       6
-
-#define TEXTURE_SHADER "TextureShader"
-
-#define TILING_FACTOR_DEF 1.0f
-
 namespace {
+
+constexpr size_t VERT_COUNT{4};
+constexpr size_t VERT_ELEM_COUNT{5};
+constexpr size_t IND_COUNT{6};
+
+constexpr auto TEXTURE_SHADER = "TextureShader";
 
 std::pair<std::string, std::string> getShadersPath(const std::string& assets_dir,
                                                    const std::string& shader_dir)
@@ -98,10 +96,9 @@ bool Renderer2D::initialize(const std::string& assets_dir)
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_DBG("Initialize Renderer 2D");
-
     get()->m_assets_dir = assets_dir;
 
+    GE_CORE_DBG("Initialize Renderer 2D");
     GE_CORE_INFO("Renderer 2D: Assets dir: '{}'", get()->m_assets_dir);
 
     // clang-format off
@@ -115,8 +112,8 @@ bool Renderer2D::initialize(const std::string& assets_dir)
 
     Shared<VertexBuffer> vbo =
         VertexBuffer::create(vertices.data(), vertices.size() * sizeof(float));
-    BufferLayout layout{{GE_ELEMENT_FLOAT3, GE_ATTR_POSITION},
-                        {GE_ELEMENT_FLOAT2, GE_ATTR_TEX_COORD}};
+    BufferLayout layout{{GE_ELEMENT_FLOAT3, Attributes::POS},
+                        {GE_ELEMENT_FLOAT2, Attributes::TEX_COORD}};
     vbo->setLayout(layout);
 
     std::array<uint32_t, IND_COUNT> indexes = {0, 1, 2, 2, 3, 0};
@@ -132,15 +129,15 @@ bool Renderer2D::initialize(const std::string& assets_dir)
     white_texture = Texture2D::create(1, 1, 4);
     white_texture->setData(&white_tex_data, sizeof(white_tex_data));
 
-    auto tex_shader = get()->loadShader(TEXTURE_SHADER, GE_TEXTURE_SHADER_PATH);
+    auto tex_shader = get()->loadShader(TEXTURE_SHADER, Paths::TEXTURE_SHADER);
 
     if (tex_shader == nullptr) {
-        GE_CORE_ERR("Failed to load '{}'", GE_COLOR_SHADER_PATH);
+        GE_CORE_ERR("Failed to load '{}'", Paths::COLOR_SHADER);
         return false;
     }
 
     tex_shader->bind();
-    tex_shader->setUniformInt(GE_UNIFORM_TEXTURE, 0);
+    tex_shader->setUniformInt(Uniforms::TEXTURE, 0);
 
     return true;
 }
@@ -167,7 +164,7 @@ void Renderer2D::begin(const OrthographicCamera& camera)
 
     auto tex_shader = get()->m_shader_library.get(TEXTURE_SHADER);
     tex_shader->bind();
-    tex_shader->setUniformMat4(GE_UNIFORM_VP_MATRIX, camera.getVPMatrix());
+    tex_shader->setUniformMat4(Uniforms::VP_MATRIX, camera.getVPMatrix());
 }
 
 void Renderer2D::end() {}
@@ -180,9 +177,9 @@ void Renderer2D::draw(const quad_t& quad)
     auto tex_shader = get()->m_shader_library.get(TEXTURE_SHADER);
     const auto& texture = quad.texture ? quad.texture : get()->m_white_texture;
 
-    tex_shader->setUniformFloat4(GE_UNIFORM_COLOR, quad.color);
-    tex_shader->setUniformMat4(GE_UNIFORM_TRANSFORM, transform);
-    tex_shader->setUniformFloat(GE_UNIFORM_TILING_FACTOR, quad.tiling_factor);
+    tex_shader->setUniformFloat4(Uniforms::COLOR, quad.color);
+    tex_shader->setUniformMat4(Uniforms::TRANSFORM, transform);
+    tex_shader->setUniformFloat(Uniforms::TILING_FACTOR, quad.tiling_factor);
 
     texture->bind();
     get()->m_quad_vao->bind();

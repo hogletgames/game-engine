@@ -104,7 +104,7 @@ bool AppProperties::read(const std::string& filename, properties_t* props)
     props->api = toRendAPI(render_api_str);
     props->core_log_lvl = toLogLvl(core_log_lvl);
     props->client_log_lvl = toLogLvl(client_log_lvl);
-    props->assets_dir = ptree.get<std::string>(PROP_ASSETS_DIR, GE_ASSETS_DIR);
+    props->assets_dir = ptree.get<std::string>(PROP_ASSETS_DIR, Paths::ASSETS_DIR);
 
     GE_CORE_INFO("Reading app properties: Succeed", filename);
     dumpProperties(*props);
