@@ -37,9 +37,12 @@
 namespace {
 
 constexpr auto TEXTURE_SQUARE_ARROW = "examples/assets/textures/square_arrow.png";
+constexpr auto TEXTURE_BLUE_SQRS = "examples/assets/textures/blue_squares.png";
 
 constexpr float ZOOM_X10{10.0f};
 constexpr float ZOOM_X0_75{0.75f};
+
+constexpr float ROTATION_90D_PER_1S{90.0f};
 
 } // namespace
 
@@ -61,17 +64,20 @@ void Renderer2DLayer::onAttach()
     m_red_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
     m_red_quad.size *= ZOOM_X0_75;
 
-    m_textured_quad.texture = Texture2D::create(TEXTURE_SQUARE_ARROW);
-    m_textured_quad.size *= ZOOM_X10;
-    m_textured_quad.tiling_factor *= ZOOM_X10;
-    m_textured_quad.rotation = 45.0f;
+    m_tex_blue_sqrs_quad.texture = Texture2D::create(TEXTURE_BLUE_SQRS);
+    m_tex_blue_sqrs_quad.pos = {1.5f, 1.5f};
 
+    m_tex_arrow_quad.texture = Texture2D::create(TEXTURE_SQUARE_ARROW);
+    m_tex_arrow_quad.size *= ZOOM_X10;
+    m_tex_arrow_quad.tiling_factor *= ZOOM_X10;
+    m_tex_arrow_quad.rotation = 45.0f;
 }
 void Renderer2DLayer::onDetach()
 {
     GE_PROFILE_FUNC();
 
-    m_textured_quad.texture.reset();
+    m_tex_blue_sqrs_quad.texture.reset();
+    m_tex_arrow_quad.texture.reset();
 }
 
 void Renderer2DLayer::onUpdate(Timestamp delta_time)
@@ -82,6 +88,9 @@ void Renderer2DLayer::onUpdate(Timestamp delta_time)
         GE_PROFILE_SCOPE("Renderer2DLayer Prepare");
         m_camera_controller.onUpdate(delta_time);
         RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+
+        m_tex_blue_sqrs_quad.rotation +=
+            static_cast<float>(delta_time.sec()) * ROTATION_90D_PER_1S;
     }
 
     {
@@ -90,7 +99,8 @@ void Renderer2DLayer::onUpdate(Timestamp delta_time)
         Begin<Renderer2D> begin{m_camera_controller.getCamera()};
         Renderer2D::draw(m_blue_quad);
         Renderer2D::draw(m_red_quad);
-        Renderer2D::draw(m_textured_quad);
+        Renderer2D::draw(m_tex_blue_sqrs_quad);
+        Renderer2D::draw(m_tex_arrow_quad);
     }
 }
 
