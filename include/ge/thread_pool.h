@@ -47,7 +47,7 @@ public:
     explicit ThreadPool(const char* name);
     ~ThreadPool();
 
-    void start(uint32_t threads_num);
+    void start(uint32_t threads_num, bool wait_for_query_end);
     void stop();
 
     template<typename Func, typename... Args>
@@ -58,7 +58,6 @@ public:
         }
 
         std::unique_lock lock{m_queue_mtx};
-        // NOLINTNEXTLINE
         m_queue.emplace(std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
         lock.unlock();
         m_condition.notify_one();
@@ -70,6 +69,7 @@ private:
     void workerThread();
 
     std::atomic_bool m_terminated{true};
+    bool m_wait_for_query_end{false};
     std::condition_variable m_condition;
     std::vector<std::thread> m_workers;
     const char* m_name{nullptr};

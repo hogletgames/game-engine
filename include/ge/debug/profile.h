@@ -92,7 +92,7 @@ public:
         session = std::make_unique<session_t>();
         session->name = name;
         get()->writeHeader();
-        get()->m_thread_pool.start(_GE_PROFILER_THREAD_NUM);
+        get()->m_thread_pool.start(_GE_PROFILER_THREAD_NUM, true);
     }
 
     static void end() { get()->endSession(); }

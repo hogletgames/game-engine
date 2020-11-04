@@ -19,6 +19,7 @@ Checks:             '*,
                     -hicpp-uppercase-literal-suffix,
                     -hicpp-use-auto,
                     -misc-non-private-member-variables-in-classes,
+                    -modernize-avoid-bind,
                     -modernize-use-nodiscard,
                     -modernize-use-trailing-return-type,
                     -readability-uppercase-literal-suffix'
