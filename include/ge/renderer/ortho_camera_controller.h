@@ -55,6 +55,9 @@ public:
 
     const OrthographicCamera& getCamera() const { return m_camera; }
 
+    void setZoom(float zoom) { m_zoom = zoom; }
+    float getZoom() const { return m_zoom; }
+
 private:
     bool onMouseScrolled(const MouseScrolledEvent& event);
     bool onWindowResizedEvent(const WindowResizedEvent& event);
