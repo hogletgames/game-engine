@@ -46,11 +46,12 @@ public:
     void onAttach() override;
     void onDetach() override;
     void onUpdate(Timestamp delta_time) override;
+    void onGuiRender() override;
 
 private:
     GE::Renderer2D::quad_t m_tex_arrow_quad{};
     GE::Renderer2D::quad_t m_tex_blue_sqrs_quad{};
-    GE::Renderer2D::quad_t m_blue_quad{};
+    GE::Renderer2D::quad_t m_editable_quad{};
     GE::Renderer2D::quad_t m_red_quad{};
 };
 

@@ -34,6 +34,9 @@
 
 #include "ge/debug/profile.h"
 
+#include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
+
 namespace {
 
 constexpr auto TEXTURE_SQUARE_ARROW = "examples/assets/textures/square_arrow.png";
@@ -58,8 +61,8 @@ void Renderer2DLayer::onAttach()
 {
     GE_PROFILE_FUNC();
 
-    m_blue_quad.color = {0.2f, 0.3f, 0.8f, 1.0f};
-    m_blue_quad.pos = {-1.5f, 0.0f};
+    m_editable_quad.color = {0.2f, 0.3f, 0.8f, 1.0f};
+    m_editable_quad.pos = {-1.5f, 0.0f};
 
     m_red_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
     m_red_quad.size *= ZOOM_X0_75;
@@ -97,11 +100,20 @@ void Renderer2DLayer::onUpdate(Timestamp delta_time)
         GE_PROFILE_SCOPE("Renderer2DLayer Draw");
 
         Begin<Renderer2D> begin{m_camera_controller.getCamera()};
-        Renderer2D::draw(m_blue_quad);
+        Renderer2D::draw(m_editable_quad);
         Renderer2D::draw(m_red_quad);
         Renderer2D::draw(m_tex_blue_sqrs_quad);
         Renderer2D::draw(m_tex_arrow_quad);
     }
+}
+
+void Renderer2DLayer::onGuiRender()
+{
+    GE_PROFILE_FUNC();
+
+    ImGui::Begin("Settings");
+    ImGui::ColorEdit4("Quad Color", glm::value_ptr(m_editable_quad.color));
+    ImGui::End();
 }
 
 } // namespace GE::Examples
