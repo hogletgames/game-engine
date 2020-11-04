@@ -3,9 +3,9 @@
 CLANG_FORMAT_BIN=clang-format
 EXIT_CODE=0
 PATHS_TO_SRC="./examples ./include/ge ./src/ge ./tests"
-SRC_FILES=$(find $PATHS_TO_SRC -name "*.h" -o -name "*.cpp")
+SRC_FILES=$(find ${PATHS_TO_SRC} -name "*.h" -o -name "*.cpp")
 
-while [ ! -z $1 ]; do
+while [[ -n $1 ]]; do
     case $1 in
     -f|--fix)
         FIX=true
@@ -21,31 +21,18 @@ while [ ! -z $1 ]; do
     shift
 done
 
-function clang_format_fix() {
-    for FILE in $SRC_FILES; do
-        echo "clang-format fix: $FILE"
-        $CLANG_FORMAT_BIN --style=file -i $FILE
-    done
-}
+for FILE in ${SRC_FILES}; do
+    echo "Checking: ${FILE}"
+    ${CLANG_FORMAT_BIN} --dry-run --Werror "${FILE}"
 
-function clang_format_check() {
-    for FILE in $SRC_FILES; do
-        echo "clang-format check: $FILE"
-
-        $CLANG_FORMAT_BIN --style=file --output-replacements-xml $FILE | \
-        grep "<replacement " > /dev/null
-
-        if [ $? -eq "0" ]; then
-            echo "replacement: $FILE"
+    if [[ $? -ne 0 ]]; then
+        if [[ -n ${FIX} ]]; then
+            echo "Fixing: ${FILE}"
+            ${CLANG_FORMAT_BIN} --style=file -i "${FILE}"
+        else
             EXIT_CODE=1
         fi
-    done
-}
+    fi
+done
 
-if [ $FIX ]; then
-    clang_format_fix
-else
-    clang_format_check
-fi
-
-exit $EXIT_CODE
+exit ${EXIT_CODE}
