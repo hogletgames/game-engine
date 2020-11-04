@@ -212,6 +212,7 @@ void Renderer2D::draw(const quad_t& quad)
     }
 
     get()->m_index_count += IND_PER_QUAD;
+    get()->m_stats.quad_count++;
 }
 
 void Renderer2D::flush()
@@ -235,7 +236,23 @@ void Renderer2D::flush()
     get()->m_quad_vao->bind();
     RenderCommand::draw(get()->m_index_count);
 
+    get()->m_stats.draw_calls_count++;
     get()->resetBatch();
+}
+
+const Renderer2D::statistics_t& Renderer2D::getStats()
+{
+    auto& stats = get()->m_stats;
+    stats.vertex_count = stats.quad_count * VERT_PER_QUAD;
+    stats.index_count = stats.quad_count * IND_PER_QUAD;
+    return stats;
+}
+
+void Renderer2D::resetStats()
+{
+    GE_PROFILE_FUNC();
+
+    get()->m_stats = {};
 }
 
 Renderer2D::Renderer2D()

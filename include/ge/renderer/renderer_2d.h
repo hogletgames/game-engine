@@ -67,6 +67,13 @@ public:
         static constexpr float ROTATION_DEFAULT{0.0f};
     };
 
+    struct statistics_t {
+        uint32_t draw_calls_count{};
+        uint32_t quad_count{};
+        uint32_t vertex_count{};
+        uint32_t index_count{};
+    };
+
     ~Renderer2D();
 
     static bool initialize(const std::string& assets_dir);
@@ -79,6 +86,9 @@ public:
 
     static void draw(const quad_t& quad);
     static void flush();
+
+    static const statistics_t& getStats();
+    static void resetStats();
 
 private:
     struct quad_vertex_t {
@@ -117,6 +127,8 @@ private:
     QVAIterator m_curr_vert_element;
     std::map<uint32_t, Shared<Texture2D>> m_textures;
     uint32_t m_curr_free_tex_slot{};
+
+    statistics_t m_stats{};
 };
 
 } // namespace GE
