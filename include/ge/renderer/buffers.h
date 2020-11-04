@@ -51,7 +51,7 @@ public:
 
     virtual void setData(const void* data, uint32_t size) = 0;
 
-    static Scoped<VertexBuffer> create(float* vertices, uint32_t size);
+    static Scoped<VertexBuffer> create(const float* vertices, uint32_t size);
     static Scoped<VertexBuffer> create(uint32_t size);
 };
 
@@ -63,7 +63,7 @@ public:
 
     virtual uint32_t getCount() const = 0;
 
-    static Scoped<IndexBuffer> create(uint32_t* indexes, uint32_t count);
+    static Scoped<IndexBuffer> create(const uint32_t* indexes, uint32_t count);
 };
 
 } // namespace GE

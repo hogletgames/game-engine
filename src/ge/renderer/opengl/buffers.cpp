@@ -71,7 +71,7 @@ GLenum toGLUsage(BufferUsage usage)
 
 namespace GE::OpenGL {
 
-BufferBase::BufferBase(Type type, void* data, uint32_t size, Usage usage)
+BufferBase::BufferBase(Type type, const void* data, uint32_t size, Usage usage)
     : m_gl_type{toGLBufferType(type)}
 {
     GE_PROFILE_FUNC();

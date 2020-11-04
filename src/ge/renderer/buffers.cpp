@@ -39,7 +39,7 @@
 
 namespace GE {
 
-Scoped<VertexBuffer> VertexBuffer::create(float* vertices, uint32_t size)
+Scoped<VertexBuffer> VertexBuffer::create(const float* vertices, uint32_t size)
 {
     switch (Renderer::getAPI()) {
         case GE_OPEN_GL_API: return makeScoped<OpenGL::VertexBuffer>(vertices, size);
@@ -62,7 +62,7 @@ Scoped<VertexBuffer> VertexBuffer::create(uint32_t size)
     return nullptr;
 }
 
-Scoped<IndexBuffer> IndexBuffer::create(uint32_t* indexes, uint32_t count)
+Scoped<IndexBuffer> IndexBuffer::create(const uint32_t* indexes, uint32_t count)
 {
     switch (Renderer::getAPI()) {
         case GE_OPEN_GL_API: return makeScoped<OpenGL::IndexBuffer>(indexes, count);

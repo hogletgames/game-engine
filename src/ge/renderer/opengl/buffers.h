@@ -55,7 +55,7 @@ public:
         DYNAMIC
     };
 
-    BufferBase(Type type, void* data, uint32_t size, Usage usage);
+    BufferBase(Type type, const void* data, uint32_t size, Usage usage);
     ~BufferBase() override;
 
     void bindBuffer() const;
@@ -71,7 +71,7 @@ private:
 class VertexBuffer: public ::GE::VertexBuffer, public BufferBase
 {
 public:
-    VertexBuffer(float* vertices, uint32_t size, Usage usage = Usage::STATIC)
+    VertexBuffer(const float* vertices, uint32_t size, Usage usage = Usage::STATIC)
         : BufferBase{Type::VERTEX, vertices, size, usage}
     {}
 
@@ -90,7 +90,7 @@ private:
 class IndexBuffer: public ::GE::IndexBuffer, public BufferBase
 {
 public:
-    IndexBuffer(uint32_t* indexes, uint32_t count)
+    IndexBuffer(const uint32_t* indexes, uint32_t count)
         : BufferBase(Type::INDEX, indexes, sizeof(*indexes) * count, Usage::STATIC)
         , m_count{count}
     {}
