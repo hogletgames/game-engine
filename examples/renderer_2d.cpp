@@ -94,6 +94,7 @@ void Renderer2DLayer::onUpdate(Timestamp delta_time)
 
         m_tex_blue_sqrs_quad.rotation +=
             static_cast<float>(delta_time.sec()) * ROTATION_90D_PER_1S;
+        Renderer2D::resetStats();
     }
 
     {
@@ -111,8 +112,17 @@ void Renderer2DLayer::onGuiRender()
 {
     GE_PROFILE_FUNC();
 
+    GuiLayer::onGuiRender();
+    auto stats = Renderer2D::getStats();
+
     ImGui::Begin("Settings");
     ImGui::ColorEdit4("Quad Color", glm::value_ptr(m_editable_quad.color));
+    ImGui::Separator();
+    ImGui::Text("Renderer2D stats:");
+    ImGui::Text("Draw calls: %u", stats.draw_calls_count);
+    ImGui::Text("Quads: %u", stats.quad_count);
+    ImGui::Text("Vertices: %u", stats.vertex_count);
+    ImGui::Text("Indices: %u", stats.index_count);
     ImGui::End();
 }
 
