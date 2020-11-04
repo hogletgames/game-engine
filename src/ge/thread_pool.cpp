@@ -50,11 +50,12 @@ ThreadPool::~ThreadPool()
     }
 }
 
-void ThreadPool::start(uint32_t threads_num)
+void ThreadPool::start(uint32_t threads_num, bool wait_for_query_end = false)
 {
     GE_CORE_ASSERT_MSG(m_terminated, "Thread pool '{}' has already ran", m_name);
 
     m_terminated = false;
+    m_wait_for_query_end = wait_for_query_end;
     m_workers.clear();
 
     std::lock_guard lock{m_queue_mtx};
@@ -84,12 +85,16 @@ void ThreadPool::stop()
 void ThreadPool::workerThread()
 {
     auto wake_up_cond = [this] { return m_terminated || !m_queue.empty(); };
+    auto is_terminated = [this] {
+        bool can_be_stopped = m_wait_for_query_end ? m_queue.empty() : true;
+        return m_terminated && can_be_stopped;
+    };
 
     while (true) {
         std::unique_lock lock{m_queue_mtx};
         m_condition.wait(lock, wake_up_cond);
 
-        if (m_terminated) {
+        if (is_terminated()) {
             break;
         }
 
