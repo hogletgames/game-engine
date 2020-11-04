@@ -48,9 +48,10 @@ namespace GE {
 
 OrthoCameraController::OrthoCameraController(float aspect_ratio, bool rotation)
     : m_aspect_ratio{aspect_ratio}
-    , m_camera{-m_aspect_ratio * m_zoom, m_aspect_ratio * m_zoom, -m_zoom, m_zoom}
     , m_rotation_enable(rotation)
-{}
+{
+    setCameraProjection();
+}
 
 void OrthoCameraController::onUpdate(Timestamp delta_time)
 {
@@ -111,14 +112,21 @@ void OrthoCameraController::onEvent(Event *event)
     dispatcher.dispatch<WindowResizedEvent>(GE_BIND_EVENT_FN(onWindowResizedEvent));
 }
 
+void OrthoCameraController::setZoom(float zoom)
+{
+    GE_PROFILE_FUNC();
+
+    m_zoom = std::max(zoom, ZOOM_MIN);
+    setCameraProjection();
+}
+
 bool OrthoCameraController::onMouseScrolled(const MouseScrolledEvent &event)
 {
     GE_PROFILE_FUNC();
 
     m_zoom -= event.getOffsetY() * ZOOM_OFFSET_SCALE;
     m_zoom = std::max(m_zoom, ZOOM_MIN);
-    m_camera.setProjection(-m_aspect_ratio * m_zoom, m_aspect_ratio * m_zoom, -m_zoom,
-                           m_zoom);
+    setCameraProjection();
     return false;
 }
 
@@ -127,9 +135,16 @@ bool OrthoCameraController::onWindowResizedEvent(const WindowResizedEvent &event
     GE_PROFILE_FUNC();
 
     m_aspect_ratio = static_cast<float>(event.getWidth()) / event.getHeight();
+    setCameraProjection();
+    return false;
+}
+
+void OrthoCameraController::setCameraProjection()
+{
+    GE_PROFILE_FUNC();
+
     m_camera.setProjection(-m_aspect_ratio * m_zoom, m_aspect_ratio * m_zoom, -m_zoom,
                            m_zoom);
-    return false;
 }
 
 } // namespace GE
