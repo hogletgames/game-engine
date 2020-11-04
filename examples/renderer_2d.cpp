@@ -40,7 +40,6 @@ constexpr auto TEXTURE_SQUARE_ARROW = "examples/assets/textures/square_arrow.png
 
 constexpr float ZOOM_X10{10.0f};
 constexpr float ZOOM_X0_75{0.75f};
-constexpr float DEGREE_45{45.0f};
 
 } // namespace
 
@@ -65,7 +64,8 @@ void Renderer2DLayer::onAttach()
     m_textured_quad.texture = Texture2D::create(TEXTURE_SQUARE_ARROW);
     m_textured_quad.size *= ZOOM_X10;
     m_textured_quad.tiling_factor *= ZOOM_X10;
-    m_textured_quad.rotation = glm::radians(DEGREE_45);
+    m_textured_quad.rotation = 45.0f;
+
 }
 void Renderer2DLayer::onDetach()
 {

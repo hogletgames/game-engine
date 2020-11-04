@@ -83,7 +83,8 @@ glm::mat4 getTransformMat(const GE::Renderer2D::quad_t& quad)
     }
 
     if (quad.rotation != Quad::ROTATION_DEFAULT) {
-        transform = glm::rotate(transform, quad.rotation, {0.0f, 0.0f, 1.0f});
+        transform =
+            glm::rotate(transform, glm::radians(quad.rotation), {0.0f, 0.0f, 1.0f});
     }
 
     if (quad.size != Quad::SIZE_DEFAULT) {
