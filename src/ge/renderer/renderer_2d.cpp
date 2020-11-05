@@ -215,6 +215,11 @@ void Renderer2D::draw(const quad_t& quad)
     get()->m_stats.quad_count++;
 }
 
+void Renderer2D::draw(const Renderer2D::quad_t& quad, const Shared<Texture2D>& texture) {}
+
+void Renderer2D::draw(const Renderer2D::quad_t& quad, const Shared<SubTexture>& texture)
+{}
+
 void Renderer2D::flush()
 {
     GE_PROFILE_FUNC();

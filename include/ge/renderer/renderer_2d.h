@@ -44,6 +44,7 @@ namespace GE {
 
 class OrthographicCamera;
 class Texture2D;
+class SubTexture;
 class VertexArray;
 class VertexBuffer;
 
@@ -85,6 +86,8 @@ public:
     static void end();
 
     static void draw(const quad_t& quad);
+    static void draw(const quad_t& quad, const Shared<Texture2D>& texture);
+    static void draw(const quad_t& quad, const Shared<SubTexture>& texture);
     static void flush();
 
     static const statistics_t& getStats();
