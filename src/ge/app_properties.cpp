@@ -52,6 +52,7 @@ constexpr auto PROP_GENERAL_ASSETS_DIR = "general.assets_dir";
 constexpr auto PROP_WINDOW_TITLE = "window.title";
 constexpr auto PROP_WINDOW_WIDTH = "window.width";
 constexpr auto PROP_WINDOW_HEIGHT = "window.height";
+constexpr auto PROP_WINDOW_VSYNC = "window.vsync";
 
 bool createFileIfNotExist(const std::string& filename)
 {
@@ -81,6 +82,7 @@ void dumpProperties([[maybe_unused]] const GE::AppProperties::properties_t& prop
     GE_CORE_INFO("\tTitle: {}", props.window.title);
     GE_CORE_INFO("\tWidth: {}", props.window.width);
     GE_CORE_INFO("\tHeight: {}", props.window.height);
+    GE_CORE_INFO("\tVSync: {}", props.window.vsync);
 }
 
 } // namespace
@@ -128,6 +130,7 @@ bool AppProperties::read(const std::string& filename, properties_t* props)
         ptree.get<uint32_t>(PROP_WINDOW_WIDTH, WindowProps::WIDTH_DEFAULT);
     props->window.height =
         ptree.get<uint32_t>(PROP_WINDOW_HEIGHT, WindowProps::HEIGHT_DEFAULT);
+    props->window.vsync = ptree.get<bool>(PROP_WINDOW_VSYNC, WindowProps::VSYNC_DEFAULT);
 
     GE_CORE_INFO("Reading app properties: Succeed", filename);
     dumpProperties(*props);
@@ -156,6 +159,7 @@ bool AppProperties::write(const std::string& filename, const properties_t& props
         ptree.put<std::string>(PROP_WINDOW_TITLE, props.window.title);
         ptree.put<uint32_t>(PROP_WINDOW_WIDTH, props.window.width);
         ptree.put<uint32_t>(PROP_WINDOW_HEIGHT, props.window.height);
+        ptree.put<bool>(PROP_WINDOW_VSYNC, props.window.vsync);
 
         boost::property_tree::ini_parser::write_ini(filename, ptree);
     } catch (const std::exception& e) {

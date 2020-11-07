@@ -108,10 +108,7 @@ void Manager::saveProperties() const
     props.core_log_lvl = Log::core()->getLvel();
     props.client_log_lvl = Log::client()->getLvel();
     props.assets_dir = Renderer2D::getAssetsDir();
-
-    props.window.title = Application::getWindow().getTitle();
-    props.window.width = Application::getWindow().getWidth();
-    props.window.height = Application::getWindow().getHeight();
+    props.window = Application::getWindow().getProps();
 
     AppProperties::write(m_props_file, props);
 }
