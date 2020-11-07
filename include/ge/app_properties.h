@@ -35,6 +35,7 @@
 
 #include <ge/core/log.h>
 #include <ge/renderer/renderer_api.h>
+#include <ge/window/window.h>
 
 namespace GE {
 
@@ -46,6 +47,7 @@ public:
         Logger::Level core_log_lvl{GE_LOGLVL_CRIT};
         Logger::Level client_log_lvl{GE_LOGLVL_CRIT};
         std::string assets_dir;
+        Window::properties_t window{};
     };
 
     static bool read(const std::string& filename, properties_t* props);

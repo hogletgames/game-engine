@@ -56,6 +56,7 @@ public:
 
     void* getNativeWindow() const override { return m_window; };
     void* getNativeContext() const override { return m_context->getNativeContext(); }
+    const std::string& getTitle() const override { return m_prop.title; }
     uint32_t getWidth() const override { return m_prop.width; }
     uint32_t getHeight() const override { return m_prop.height; }
 

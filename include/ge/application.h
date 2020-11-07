@@ -52,7 +52,7 @@ class WindowRestoredEvent;
 class GE_API Application
 {
 public:
-    static bool initialize();
+    static bool initialize(const Window::properties_t& window_props);
     static void shutdown();
 
     static void run();

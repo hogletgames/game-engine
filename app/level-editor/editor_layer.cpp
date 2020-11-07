@@ -38,10 +38,12 @@
 
 #include <imgui.h>
 
+using WindowProps = GE::Window::properties_t;
+
 namespace {
 
-constexpr float ASPECT_RATION_DEFAULT{static_cast<float>(WINDOW_WIDTH_DEF) /
-                                      WINDOW_HEIGHT_DEF};
+constexpr float ASPECT_RATION_DEFAULT{static_cast<float>(WindowProps::WIDTH_DEFAULT) /
+                                      WindowProps::HEIGHT_DEFAULT};
 
 } // namespace
 

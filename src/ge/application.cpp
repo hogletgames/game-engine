@@ -44,14 +44,14 @@
 
 namespace GE {
 
-bool Application::initialize()
+bool Application::initialize(const Window::properties_t& window_props)
 {
     GE_PROFILE_FUNC();
     GE_CORE_DBG("Initialize Application");
 
     auto& window = get()->m_window;
 
-    if (window = Window::create(); window == nullptr) {
+    if (window = Window::create(window_props); window == nullptr) {
         GE_CORE_ERR("Failed to create Window");
         return false;
     }

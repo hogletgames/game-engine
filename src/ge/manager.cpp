@@ -54,7 +54,7 @@ bool Manager::initialize(std::string props_file)
 {
     GE_PROFILE_FUNC();
 
-    AppProperties::properties_t props;
+    AppProperties::properties_t props{};
 
     if (!Log::initialize()) {
         return false;
@@ -69,8 +69,8 @@ bool Manager::initialize(std::string props_file)
     Log::client()->setLevel(props.client_log_lvl);
 
     if (!Renderer::initialize(props.api) || !Window::initialize() ||
-        !Application::initialize() || !Renderer2D::initialize(props.assets_dir) ||
-        !Gui::initialize()) {
+        !Application::initialize(props.window) ||
+        !Renderer2D::initialize(props.assets_dir) || !Gui::initialize()) {
         return false;
     }
 
@@ -102,12 +102,16 @@ void Manager::saveProperties() const
 {
     GE_PROFILE_FUNC();
 
-    AppProperties::properties_t props;
+    AppProperties::properties_t props{};
 
     props.api = Renderer::getAPI();
     props.core_log_lvl = Log::core()->getLvel();
     props.client_log_lvl = Log::client()->getLvel();
     props.assets_dir = Renderer2D::getAssetsDir();
+
+    props.window.title = Application::getWindow().getTitle();
+    props.window.width = Application::getWindow().getWidth();
+    props.window.height = Application::getWindow().getHeight();
 
     AppProperties::write(m_props_file, props);
 }

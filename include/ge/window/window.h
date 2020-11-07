@@ -40,10 +40,6 @@
 #include <memory>
 #include <string>
 
-#define WINDOW_TITLE_DEF  "Game Engine"
-#define WINDOW_WIDTH_DEF  1280
-#define WINDOW_HEIGHT_DEF 720
-
 namespace GE {
 
 class Event;
@@ -54,17 +50,13 @@ public:
     using WinEventCallback = std::function<void(Event*)>;
 
     struct properties_t {
-        std::string title{};
-        uint32_t width{};
-        uint32_t height{};
+        std::string title{TITLE_DEFAULT};
+        uint32_t width{WIDTH_DEFAULT};
+        uint32_t height{HEIGHT_DEFAULT};
 
-        explicit properties_t(std::string title = WINDOW_TITLE_DEF,
-                              uint32_t width = WINDOW_WIDTH_DEF,
-                              uint32_t height = WINDOW_HEIGHT_DEF)
-            : title{std::move(title)}
-            , width{width}
-            , height{height}
-        {}
+        static constexpr auto TITLE_DEFAULT = "Game Engine";
+        static constexpr uint32_t WIDTH_DEFAULT{1280};
+        static constexpr uint32_t HEIGHT_DEFAULT{720};
     };
 
     static bool initialize();
@@ -75,13 +67,14 @@ public:
 
     virtual void* getNativeWindow() const = 0;
     virtual void* getNativeContext() const = 0;
+    virtual const std::string& getTitle() const = 0;
     virtual uint32_t getWidth() const = 0;
     virtual uint32_t getHeight() const = 0;
 
     virtual void onUpdate() = 0;
     virtual void setEventCallback(WinEventCallback callback) = 0;
 
-    static Scoped<Window> create(properties_t properties = properties_t{});
+    static Scoped<Window> create(properties_t properties);
 };
 
 } // namespace GE

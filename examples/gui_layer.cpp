@@ -35,13 +35,20 @@
 #include "ge/debug/profile.h"
 #include "ge/ge.h"
 
-#define CAMERA_ROTATION_SPEED 180.0f
+using WindowProp = GE::Window::properties_t;
+
+namespace {
+
+constexpr float ASPECT_RATIO_DEFAULT{static_cast<float>(WindowProp::WIDTH_DEFAULT) /
+                                     WindowProp::HEIGHT_DEFAULT};
+
+} // namespace
 
 namespace GE::Examples {
 
 GuiLayer::GuiLayer(bool show_gui_demo, const char* name)
     : EmptyLayer{name}
-    , m_camera_controller{static_cast<float>(WINDOW_WIDTH_DEF) / WINDOW_HEIGHT_DEF, true}
+    , m_camera_controller{ASPECT_RATIO_DEFAULT, true}
     , m_show_gui_demo{show_gui_demo}
 {}
 
