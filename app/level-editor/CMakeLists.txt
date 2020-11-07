@@ -6,6 +6,8 @@ list(APPEND LE_LEVEL_EDITOR_SRC
     panels/panel_base.h
     panels/statistic_panel.cpp
     panels/statistic_panel.h
+    panels/viewport_panel.cpp
+    panels/viewport_panel.h
 )
 
 add_executable(level_editor ${LE_LEVEL_EDITOR_SRC})

@@ -29,46 +29,46 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "viewport_panel.h"
+#include "editor_state.h"
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#include "ge/debug/profile.h"
+#include "ge/gui/gui.h"
+#include "ge/renderer/framebuffer.h"
 
-#include <ge/empty_layer.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
-
-#include <glm/glm.hpp>
+#include <imgui.h>
 
 namespace LE {
 
-class EditorState;
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+ViewportPanel::ViewportPanel(GE::Shared<EditorState> editor_state)
+    : m_editor_state{std::move(editor_state)}
 {
-public:
-    EditorLayer();
+    GE_PROFILE_FUNC();
+}
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
-    void onGuiRender() override;
+void ViewportPanel::onGuiRender()
+{
+    GE_PROFILE_FUNC();
 
-private:
-    void showMenuBar();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
 
-    void updateViewport();
+    if (ImGui::Begin("Viewport")) {
+        bool is_vp_focused = ImGui::IsWindowFocused();
+        bool is_vp_inactive = !is_vp_focused || !ImGui::IsWindowHovered();
+        GE::Gui::blockEvents(is_vp_inactive);
 
-    GE::Shared<EditorState> m_editor_state;
-    std::vector<GE::Shared<PanelBase>> m_panels;
+        ImVec2 vp_panel_size = ImGui::GetContentRegionAvail();
+        auto framebuffer_tex = m_editor_state->framebuffer()->getColorAttachmentID();
+        auto* fb_texture = reinterpret_cast<ImTextureID>(framebuffer_tex);
 
-    GE::OrthoCameraController m_vp_camera;
-    GE::Renderer2D::quad_t m_editable_quad{};
-};
+        ImGui::Image(fb_texture, vp_panel_size, {0, 1}, {1, 0});
+
+        m_editor_state->setViewport({vp_panel_size.x, vp_panel_size.y});
+        m_editor_state->setIsVPFocused(is_vp_focused);
+    }
+
+    ImGui::End();
+    ImGui::PopStyleVar();
+}
 
 } // namespace LE
-
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
