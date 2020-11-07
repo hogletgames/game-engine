@@ -16,17 +16,19 @@ add_Library(imgui STATIC
     imgui/imgui.cpp
     imgui/imgui_draw.cpp
     imgui/imgui_demo.cpp
+    imgui/imgui_tables.cpp
     imgui/imgui_widgets.cpp
 )
 target_compile_options(imgui PRIVATE
     -Wno-error=unused-variable
     -Wno-error=unused-but-set-variable
+    -Wno-error=unused-parameter
 )
 
 # Dear ImGui examples
 add_library(imgui-examples STATIC
-    imgui/examples/imgui_impl_opengl3.cpp
-    imgui/examples/imgui_impl_sdl.cpp
+    imgui/backends/imgui_impl_opengl3.cpp
+    imgui/backends/imgui_impl_sdl.cpp
 )
 target_include_directories(imgui-examples SYSTEM PRIVATE
     imgui
