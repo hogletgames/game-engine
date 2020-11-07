@@ -30,47 +30,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GE_RENDERER_OPENGL_FRAMEBUFFER_H_
+#define GE_RENDERER_OPENGL_FRAMEBUFFER_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
-
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-
-#include <ge/gui/gui.h>
-
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
 #include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+namespace GE::OpenGL {
 
-#endif // GE_GE_H_
+class Framebuffer: public ::GE::Framebuffer
+{
+public:
+    explicit Framebuffer(const properties_t& props);
+    ~Framebuffer() override;
+
+    void bind() override;
+    void unbind() override;
+
+    void resize(const glm::vec2& size) override;
+
+    uint32_t getColorAttachmentID() const override { return m_color_attachment_id; }
+    const properties_t& getProps() const override { return m_props; }
+
+private:
+    void create();
+    void release();
+
+    uint32_t m_id{};
+    uint32_t m_color_attachment_id{};
+    uint32_t m_depth_attachment_id{};
+    properties_t m_props{};
+};
+
+} // namespace GE::OpenGL
+
+#endif // GE_RENDERER_OPENGL_FRAMEBUFFER_H_

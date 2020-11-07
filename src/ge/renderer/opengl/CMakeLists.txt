@@ -1,5 +1,6 @@
 set(GE_RENDERER_OPENGL_SRC
     buffers.cpp
+    framebuffer.cpp
     renderer_api.cpp
     shader_program.cpp
     shader.cpp
