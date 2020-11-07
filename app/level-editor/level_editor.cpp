@@ -105,9 +105,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    GE::Application app;
-    app.pushLayer(GE::makeShared<LE::EditorLayer>());
-    app.run();
+    GE::Application::pushLayer(GE::makeShared<LE::EditorLayer>());
+    GE::Application::run();
 
     return EXIT_SUCCESS;
 }

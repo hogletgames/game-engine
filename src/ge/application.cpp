@@ -76,6 +76,13 @@ void Application::run()
     get()->mainLoop();
 }
 
+void Application::close()
+{
+    GE_PROFILE_FUNC();
+
+    get()->m_running = false;
+}
+
 void Application::pushLayer(Shared<Layer> layer)
 {
     GE_PROFILE_FUNC();
@@ -97,7 +104,7 @@ void Application::mainLoop()
     GE_PROFILE_FUNC();
     m_prev_frame_time = Timestamp::now();
 
-    while (m_runnign) {
+    while (m_running) {
         GE_PROFILE_SCOPE("MainLoop");
 
         Timestamp now = Timestamp::now();
@@ -160,7 +167,7 @@ bool Application::onWindowClosed([[maybe_unused]] const WindowClosedEvent& event
 {
     GE_PROFILE_FUNC();
 
-    m_runnign = false;
+    m_running = false;
     return true;
 }
 

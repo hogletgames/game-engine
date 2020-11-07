@@ -109,6 +109,10 @@ void EditorLayer::showMenuBar()
 
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Exit")) {
+                GE::Application::close();
+            }
+
             ImGui::EndMenu();
         }
 
