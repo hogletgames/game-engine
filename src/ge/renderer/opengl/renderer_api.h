@@ -43,7 +43,10 @@ class RendererAPI: public ::GE::RendererAPI
 public:
     void clear(const glm::vec4& color) override;
     void draw(const Shared<VertexArray>& vertex_array) override;
+    void draw(uint32_t index_count) override;
     void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
+
+    const capabilities_t& getCapabilities() override;
 };
 
 } // namespace GE::OpenGL

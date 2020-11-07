@@ -34,12 +34,20 @@
 
 #include "ge/debug/profile.h"
 
-#define TEXTURE_SQUARE_ARROW "examples/assets/textures/square_arrow.png"
+#include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
 
-#define ZOOM_X10   10.0f
-#define ZOOM_X0_75 0.75f
+namespace {
 
-#define DEGREE_45 45.0f
+constexpr auto TEXTURE_SQUARE_ARROW = "examples/assets/textures/square_arrow.png";
+constexpr auto TEXTURE_BLUE_SQRS = "examples/assets/textures/blue_squares.png";
+
+constexpr float ZOOM_X10{10.0f};
+constexpr float ZOOM_X0_75{0.75f};
+
+constexpr float ROTATION_90D_PER_1S{90.0f};
+
+} // namespace
 
 namespace GE::Examples {
 
@@ -53,22 +61,26 @@ void Renderer2DLayer::onAttach()
 {
     GE_PROFILE_FUNC();
 
-    m_blue_quad = {0.2f, 0.3f, 0.8f, 1.0f};
-    m_blue_quad_params.pos = {-1.5f, 0.0f};
+    m_editable_quad.color = {0.2f, 0.3f, 0.8f, 1.0f};
+    m_editable_quad.pos = {-1.5f, 0.0f};
 
-    m_red_quad = {0.8f, 0.3f, 0.3f, 1.0f};
-    m_red_quad_params.size = GE_QUAD_SIZE_DEF * ZOOM_X0_75;
+    m_red_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
+    m_red_quad.size *= ZOOM_X0_75;
 
-    m_tex_quad = Texture2D::create(TEXTURE_SQUARE_ARROW);
-    m_tex_quad_params.size = GE_QUAD_SIZE_DEF * ZOOM_X10;
-    m_tex_quad_params.tiling_factor = GE_QUAD_TILE_FACT_DEF * ZOOM_X10;
-    m_tex_quad_params.rotation = glm::radians(DEGREE_45);
+    m_tex_blue_sqrs_quad.texture = Texture2D::create(TEXTURE_BLUE_SQRS);
+    m_tex_blue_sqrs_quad.pos = {1.5f, 1.5f};
+
+    m_tex_arrow_quad.texture = Texture2D::create(TEXTURE_SQUARE_ARROW);
+    m_tex_arrow_quad.size *= ZOOM_X10;
+    m_tex_arrow_quad.tiling_factor *= ZOOM_X10;
+    m_tex_arrow_quad.rotation = 45.0f;
 }
 void Renderer2DLayer::onDetach()
 {
     GE_PROFILE_FUNC();
 
-    m_tex_quad.reset();
+    m_tex_blue_sqrs_quad.texture.reset();
+    m_tex_arrow_quad.texture.reset();
 }
 
 void Renderer2DLayer::onUpdate(Timestamp delta_time)
@@ -79,16 +91,39 @@ void Renderer2DLayer::onUpdate(Timestamp delta_time)
         GE_PROFILE_SCOPE("Renderer2DLayer Prepare");
         m_camera_controller.onUpdate(delta_time);
         RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+
+        m_tex_blue_sqrs_quad.rotation +=
+            static_cast<float>(delta_time.sec()) * ROTATION_90D_PER_1S;
+        Renderer2D::resetStats();
     }
 
     {
         GE_PROFILE_SCOPE("Renderer2DLayer Draw");
 
         Begin<Renderer2D> begin{m_camera_controller.getCamera()};
-        Renderer2D::drawQuad(m_blue_quad, m_blue_quad_params);
-        Renderer2D::drawQuad(m_red_quad, m_red_quad_params);
-        Renderer2D::drawQuad(m_tex_quad, m_tex_quad_params);
+        Renderer2D::draw(m_editable_quad);
+        Renderer2D::draw(m_red_quad);
+        Renderer2D::draw(m_tex_blue_sqrs_quad);
+        Renderer2D::draw(m_tex_arrow_quad);
     }
+}
+
+void Renderer2DLayer::onGuiRender()
+{
+    GE_PROFILE_FUNC();
+
+    GuiLayer::onGuiRender();
+    auto stats = Renderer2D::getStats();
+
+    ImGui::Begin("Settings");
+    ImGui::ColorEdit4("Quad Color", glm::value_ptr(m_editable_quad.color));
+    ImGui::Separator();
+    ImGui::Text("Renderer2D stats:");
+    ImGui::Text("Draw calls: %u", stats.draw_calls_count);
+    ImGui::Text("Quads: %u", stats.quad_count);
+    ImGui::Text("Vertices: %u", stats.vertex_count);
+    ImGui::Text("Indices: %u", stats.index_count);
+    ImGui::End();
 }
 
 } // namespace GE::Examples

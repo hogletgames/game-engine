@@ -54,12 +54,22 @@ public:
         OPEN_GL
     };
 
+    struct capabilities_t {
+        uint32_t max_texture_slots{};
+    };
+
     virtual void clear(const glm::vec4& color) = 0;
     virtual void draw(const Shared<VertexArray>& vertex_array) = 0;
+    virtual void draw(uint32_t index_count) = 0;
     virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
+
+    virtual const capabilities_t& getCapabilities() = 0;
 
     static API getAPI() { return s_api; }
     static Scoped<RendererAPI> create(API api);
+
+protected:
+    Scoped<capabilities_t> m_capabilities;
 
 private:
     static API s_api;

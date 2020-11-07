@@ -52,7 +52,10 @@ public:
 
     static void clear(const glm::vec4& color);
     static void draw(const Shared<VertexArray>& vertex_array);
+    static void draw(uint32_t index_count);
     static void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
+    static const RendererAPI::capabilities_t& getCapabilities();
 
 private:
     static Scoped<RendererAPI> s_renderer_api;

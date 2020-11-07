@@ -109,6 +109,7 @@ bool Shader::compileFromSource(const std::string& source_code)
     GLCall(glCompileShader(m_id));
     GLCall(glGetShaderiv(m_id, GL_COMPILE_STATUS, &status));
 
+#ifndef GE_DEBUG
     if (status == GL_FALSE) {
         GLint msg_len{};
         GLCall(glGetShaderiv(m_id, GL_INFO_LOG_LENGTH, &msg_len));
@@ -116,10 +117,10 @@ bool Shader::compileFromSource(const std::string& source_code)
         std::vector<GLchar> msg(msg_len);
         GLCall(glGetShaderInfoLog(m_id, msg_len, nullptr, msg.data()));
         GE_CORE_ERR("Failed to compile shader: {}", msg.data());
-        return false;
     }
+#endif // GE_DEBUG
 
-    return true;
+    return status != GL_FALSE;
 }
 
 } // namespace GE::OpenGL

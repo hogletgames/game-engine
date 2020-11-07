@@ -66,6 +66,14 @@ std::string getPropString(const boost::property_tree::ptree& ptree,
     return ptree.get<std::string>(path, GE::toString(def));
 }
 
+void dumpProperties([[maybe_unused]] const GE::AppProperties::properties_t& props)
+{
+    GE_CORE_INFO("Render API: {}", GE::toString(props.api));
+    GE_CORE_INFO("Core log level: {}", GE::toString(props.core_log_lvl));
+    GE_CORE_INFO("Client log level: {}", GE::toString(props.client_log_lvl));
+    GE_CORE_INFO("Assets directory: {}", props.assets_dir);
+}
+
 } // namespace
 
 namespace GE {
@@ -73,7 +81,7 @@ namespace GE {
 bool AppProperties::read(const std::string& filename, properties_t* props)
 {
     GE_PROFILE_FUNC();
-    GE_INFO("Config file: '{}'", filename);
+    GE_CORE_INFO("Config file: '{}'", filename);
 
     if (!createFileIfNotExist(filename)) {
         GE_CORE_ERR("Failed to open properties file: '{}'", filename);
@@ -96,7 +104,10 @@ bool AppProperties::read(const std::string& filename, properties_t* props)
     props->api = toRendAPI(render_api_str);
     props->core_log_lvl = toLogLvl(core_log_lvl);
     props->client_log_lvl = toLogLvl(client_log_lvl);
-    props->assets_dir = ptree.get<std::string>(PROP_ASSETS_DIR, GE_ASSETS_DIR);
+    props->assets_dir = ptree.get<std::string>(PROP_ASSETS_DIR, Paths::ASSETS_DIR);
+
+    GE_CORE_INFO("Reading app properties: Succeed", filename);
+    dumpProperties(*props);
 
     return true;
 }
@@ -104,6 +115,7 @@ bool AppProperties::read(const std::string& filename, properties_t* props)
 bool AppProperties::write(const std::string& filename, const properties_t& props)
 {
     GE_PROFILE_FUNC();
+    GE_CORE_INFO("Config file: '{}'", filename);
 
     boost::property_tree::ptree ptree;
 
@@ -120,6 +132,9 @@ bool AppProperties::write(const std::string& filename, const properties_t& props
         GE_CORE_ERR("Failed to write properties to '{}", filename);
         return false;
     }
+
+    GE_CORE_INFO("Writing app properties: Succeed", filename);
+    dumpProperties(props);
 
     return true;
 }

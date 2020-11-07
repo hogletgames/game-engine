@@ -39,6 +39,7 @@
 #include "texture.h"
 #include "vertex_array.h"
 
+#include "ge/core/asserts.h"
 #include "ge/core/log.h"
 #include "ge/core/utils.h"
 #include "ge/debug/profile.h"
@@ -47,16 +48,20 @@
 
 #include <array>
 #include <filesystem>
-
-#define VERT_COUNT      4
-#define VERT_ELEM_COUNT 5
-#define IND_COUNT       6
-
-#define TEXTURE_SHADER "TextureShader"
-
-#define TILING_FACTOR_DEF 1.0f
+#include <numeric>
 
 namespace {
+
+constexpr size_t VERT_PER_QUAD{4};
+constexpr size_t IND_PER_QUAD{6};
+
+constexpr size_t DRAW_CALL_QUAD_MAX{20000};
+constexpr size_t DRAW_CALL_VERT_MAX{DRAW_CALL_QUAD_MAX * VERT_PER_QUAD};
+constexpr size_t DRAW_CALL_IND_MAX{DRAW_CALL_QUAD_MAX * IND_PER_QUAD};
+
+constexpr uint32_t WHITE_TEX_IDX{0};
+
+constexpr auto TEXTURE_SHADER = "TextureShader";
 
 std::pair<std::string, std::string> getShadersPath(const std::string& assets_dir,
                                                    const std::string& shader_dir)
@@ -68,20 +73,22 @@ std::pair<std::string, std::string> getShadersPath(const std::string& assets_dir
     return {shader_path + GE_VERT_EXT, shader_path + GE_FRAG_EXT};
 }
 
-glm::mat4 getTransformMat(const GE::Renderer2D::quad_params_t& params)
+glm::mat4 getTransformMat(const GE::Renderer2D::quad_t& quad)
 {
+    using Quad = GE::Renderer2D::quad_t;
     glm::mat4 transform{1.0};
 
-    if (params.pos != GE_QUAD_POS_DEF || params.depth != GE_QUAD_DEPTH_DEF) {
-        transform = glm::translate(glm::mat4{1.0f}, {params.pos, params.depth});
+    if (quad.pos != Quad::POS_DEFAULT || quad.depth != Quad::DEPTH_DEFAULT) {
+        transform = glm::translate(glm::mat4{1.0f}, {quad.pos, quad.depth});
     }
 
-    if (params.rotation != GE_QUAD_ROT_DEF) {
-        transform = glm::rotate(transform, params.rotation, {0.0f, 0.0f, 1.0f});
+    if (quad.rotation != Quad::ROTATION_DEFAULT) {
+        transform =
+            glm::rotate(transform, glm::radians(quad.rotation), {0.0f, 0.0f, 1.0f});
     }
 
-    if (params.size != GE_QUAD_SIZE_DEF) {
-        transform = glm::scale(transform, {params.size, 1.0});
+    if (quad.size != Quad::SIZE_DEFAULT) {
+        transform = glm::scale(transform, {quad.size, 1.0});
     }
 
     return transform;
@@ -97,49 +104,42 @@ bool Renderer2D::initialize(const std::string& assets_dir)
 {
     GE_PROFILE_FUNC();
 
-    GE_CORE_DBG("Initialize Renderer 2D");
-
     get()->m_assets_dir = assets_dir;
 
+    GE_CORE_DBG("Initialize Renderer 2D");
     GE_CORE_INFO("Renderer 2D: Assets dir: '{}'", get()->m_assets_dir);
 
-    // clang-format off
-    std::array<float, VERT_COUNT * VERT_ELEM_COUNT> vertices = {
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-        -0.5f, 0.5f,  0.0f, 0.0f, 1.0f,
-    };
-    // clang-format on
-
-    Shared<VertexBuffer> vbo =
-        VertexBuffer::create(vertices.data(), vertices.size() * sizeof(float));
-    BufferLayout layout{{GE_ELEMENT_FLOAT3, GE_ATTR_POSITION},
-                        {GE_ELEMENT_FLOAT2, GE_ATTR_TEX_COORD}};
-    vbo->setLayout(layout);
-
-    std::array<uint32_t, IND_COUNT> indexes = {0, 1, 2, 2, 3, 0};
-    Shared<IndexBuffer> ibo = IndexBuffer::create(indexes.data(), indexes.size());
-
-    auto& quad_vao = get()->m_quad_vao;
-    quad_vao = VertexArray::create();
-    quad_vao->addVertexBuffer(vbo);
-    quad_vao->setIndexBuffer(ibo);
-
-    constexpr uint32_t white_tex_data{0xFFFFFFFF};
-    auto& white_texture = get()->m_white_texture;
-    white_texture = Texture2D::create(1, 1, 4);
-    white_texture->setData(&white_tex_data, sizeof(white_tex_data));
-
-    auto tex_shader = get()->loadShader(TEXTURE_SHADER, GE_TEXTURE_SHADER_PATH);
-
-    if (tex_shader == nullptr) {
-        GE_CORE_ERR("Failed to load '{}'", GE_COLOR_SHADER_PATH);
+    if (get()->loadShader(TEXTURE_SHADER, Paths::TEXTURE_SHADER) == nullptr) {
+        GE_CORE_ERR("Failed to load '{}'", Paths::TEXTURE_SHADER);
         return false;
     }
 
-    tex_shader->bind();
-    tex_shader->setUniformInt(GE_UNIFORM_TEXTURE, 0);
+    auto& quad_vbo = get()->m_quad_vbo;
+    quad_vbo = VertexBuffer::create(DRAW_CALL_VERT_MAX * sizeof(quad_vertex_t));
+    quad_vbo->setLayout({{GE_ELEMENT_FLOAT3, Attributes::POS},
+                         {GE_ELEMENT_FLOAT4, Attributes::COLOR},
+                         {GE_ELEMENT_FLOAT2, Attributes::TEX_COORD},
+                         {GE_ELEMENT_FLOAT, Attributes::TEX_INDEX},
+                         {GE_ELEMENT_FLOAT, Attributes::TILING_FACTOR}});
+
+    std::vector<uint32_t> indices(DRAW_CALL_IND_MAX);
+    constexpr std::array<uint32_t, IND_PER_QUAD> one_quad_indices = {0, 1, 2, 2, 3, 0};
+
+    for (size_t i{0}; i < DRAW_CALL_QUAD_MAX; i++) {
+        auto indices_begin = std::next(indices.begin(), i * IND_PER_QUAD);
+        std::transform(one_quad_indices.begin(), one_quad_indices.end(), indices_begin,
+                       [i](uint32_t index) { return index + (i * VERT_PER_QUAD); });
+    }
+
+    Shared<IndexBuffer> ibo = IndexBuffer::create(indices.data(), indices.size());
+
+    auto& quad_vao = get()->m_quad_vao;
+    quad_vao = VertexArray::create();
+    quad_vao->addVertexBuffer(quad_vbo);
+    quad_vao->setIndexBuffer(ibo);
+
+    get()->initializeTextures();
+    get()->resetBatch();
 
     return true;
 }
@@ -151,8 +151,11 @@ void Renderer2D::shutdown()
     GE_CORE_DBG("Shutdown Renderer 2D");
     get()->m_assets_dir.clear();
     get()->m_quad_vao.reset();
+    get()->m_quad_vbo.reset();
     get()->m_shader_library.clear();
-    get()->m_white_texture.reset();
+
+    get()->resetBatch();
+    get()->m_textures.clear();
 }
 
 const std::string& Renderer2D::getAssetsDir()
@@ -166,41 +169,117 @@ void Renderer2D::begin(const OrthographicCamera& camera)
 
     auto tex_shader = get()->m_shader_library.get(TEXTURE_SHADER);
     tex_shader->bind();
-    tex_shader->setUniformMat4(GE_UNIFORM_VP_MATRIX, camera.getVPMatrix());
+    tex_shader->setUniformMat4(Uniforms::VP_MATRIX, camera.getVPMatrix());
 }
 
-void Renderer2D::end() {}
-
-void Renderer2D::drawQuad(const glm::vec4& color, const quad_params_t& params)
+void Renderer2D::end()
 {
     GE_PROFILE_FUNC();
 
-    drawQuad(get()->m_white_texture, color, params);
+    flush();
 }
 
-void Renderer2D::drawQuad(const Shared<Texture2D>& texture, const quad_params_t& params)
+void Renderer2D::draw(const quad_t& quad)
 {
     GE_PROFILE_FUNC();
 
-    drawQuad(texture, glm::vec4{1.0f}, params);
+    constexpr glm::mat4 quad_ver_pos = {{-0.5f, -0.5f, 0.0f, 1.0f},
+                                        {0.5f, -0.5f, 0.0f, 1.0f},
+                                        {0.5f, 0.5f, 0.0f, 1.0f},
+                                        {-0.5f, 0.5f, 0.0f, 1.0f}};
+    constexpr glm::mat4x2 tex_coords = {
+        {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+
+    auto& curr_vert_element = get()->m_curr_vert_element;
+    auto& vert_array = get()->m_quad_vert_array;
+    auto curr_elem_distance = std::distance(curr_vert_element, vert_array.end());
+    size_t vert_elements_left = curr_elem_distance > 0 ? curr_elem_distance : 0;
+
+    if (vert_elements_left < VERT_PER_QUAD) {
+        flush();
+    }
+
+    uint32_t tex_slot = get()->getTexSlot(quad.texture);
+    glm::mat4 transform = getTransformMat(quad);
+
+    for (size_t i{0}; i < VERT_PER_QUAD; i++) {
+        curr_vert_element->pos = transform * quad_ver_pos[i];
+        curr_vert_element->color = quad.color;
+        curr_vert_element->tex_coord = tex_coords[i];
+        curr_vert_element->tex_index = tex_slot;
+        curr_vert_element->tiling_factor = quad.tiling_factor;
+        ++curr_vert_element;
+    }
+
+    get()->m_index_count += IND_PER_QUAD;
+    get()->m_stats.quad_count++;
 }
 
-void Renderer2D::drawQuad(const Shared<Texture2D>& texture, const glm::vec4& color,
-                          const quad_params_t& params)
+void Renderer2D::flush()
 {
     GE_PROFILE_FUNC();
 
-    auto tex_shader = get()->m_shader_library.get(TEXTURE_SHADER);
-    tex_shader->setUniformFloat4(GE_UNIFORM_COLOR, color);
-    tex_shader->setUniformFloat(GE_UNIFORM_TILING_FACTOR, TILING_FACTOR_DEF);
+    auto& curr_vert_element = get()->m_curr_vert_element;
+    auto& vert_array = get()->m_quad_vert_array;
 
-    glm::mat4 transform = getTransformMat(params);
-    tex_shader->setUniformMat4(GE_UNIFORM_TRANSFORM, transform);
-    tex_shader->setUniformFloat(GE_UNIFORM_TILING_FACTOR, params.tiling_factor);
+    if (curr_vert_element == vert_array.begin()) {
+        return;
+    }
 
-    texture->bind();
+    uint32_t vert_count = std::distance(vert_array.begin(), get()->m_curr_vert_element);
+    get()->m_quad_vbo->setData(vert_array.data(), vert_count * sizeof(quad_vertex_t));
+
+    for (uint32_t i{0}; i < get()->m_curr_free_tex_slot; i++) {
+        get()->m_textures[i]->bind(i);
+    }
+
     get()->m_quad_vao->bind();
-    RenderCommand::draw(get()->m_quad_vao);
+    RenderCommand::draw(get()->m_index_count);
+
+    get()->m_stats.draw_calls_count++;
+    get()->resetBatch();
+}
+
+const Renderer2D::statistics_t& Renderer2D::getStats()
+{
+    auto& stats = get()->m_stats;
+    stats.vertex_count = stats.quad_count * VERT_PER_QUAD;
+    stats.index_count = stats.quad_count * IND_PER_QUAD;
+    return stats;
+}
+
+void Renderer2D::resetStats()
+{
+    GE_PROFILE_FUNC();
+
+    get()->m_stats = {};
+}
+
+Renderer2D::Renderer2D()
+    : m_quad_vert_array(DRAW_CALL_VERT_MAX)
+{}
+
+void Renderer2D::initializeTextures()
+{
+    GE_PROFILE_FUNC();
+
+    constexpr uint32_t white_tex_data{0xFFFFFFFF};
+    const uint32_t max_tex_slots{RenderCommand::getCapabilities().max_texture_slots};
+
+    auto white_texture = Texture2D::create(1, 1, 4);
+    white_texture->setData(&white_tex_data, sizeof(white_tex_data));
+
+    for (uint32_t i{0}; i < max_tex_slots; i++) {
+        m_textures.emplace(i, nullptr);
+    }
+
+    m_textures[WHITE_TEX_IDX] = std::move(white_texture);
+
+    std::vector<int> samplers(max_tex_slots);
+    std::iota(samplers.begin(), samplers.end(), 0);
+    auto tex_shader = get()->m_shader_library.get(TEXTURE_SHADER);
+    tex_shader->bind();
+    tex_shader->setUniformIntArray(Uniforms::TEXTURES, samplers.data(), samplers.size());
 }
 
 Shared<ShaderProgram> Renderer2D::loadShader(const std::string& name,
@@ -210,6 +289,48 @@ Shared<ShaderProgram> Renderer2D::loadShader(const std::string& name,
 
     auto [vert, frag] = getShadersPath(get()->m_assets_dir, shader_dir);
     return m_shader_library.load(vert, frag, name);
+}
+
+uint32_t Renderer2D::getTexSlot(const Shared<Texture2D>& texture)
+{
+    GE_PROFILE_FUNC();
+
+    if (texture == nullptr) {
+        return WHITE_TEX_IDX;
+    }
+
+    if (m_curr_free_tex_slot >= Renderer::getCapabilities().max_texture_slots) {
+        flush();
+    }
+
+    auto tex_slot_finder = [&texture](const auto& pair) {
+        if (pair.second == nullptr) {
+            return false;
+        }
+
+        return *pair.second == *texture;
+    };
+
+    auto it = std::find_if(m_textures.cbegin(), m_textures.cend(), tex_slot_finder);
+
+    if (it != m_textures.cend()) {
+        return it->first;
+    }
+
+    uint32_t curr_slot = m_curr_free_tex_slot;
+    m_textures[curr_slot] = texture;
+    m_curr_free_tex_slot++;
+
+    return curr_slot;
+}
+
+void Renderer2D::resetBatch()
+{
+    GE_PROFILE_FUNC();
+
+    m_curr_vert_element = get()->m_quad_vert_array.begin();
+    m_index_count = 0;
+    m_curr_free_tex_slot = WHITE_TEX_IDX + 1;
 }
 
 } // namespace GE

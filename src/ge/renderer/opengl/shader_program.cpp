@@ -82,6 +82,7 @@ bool ShaderProgram::link()
     GLCall(glLinkProgram(m_id));
     GLCall(glGetProgramiv(m_id, GL_LINK_STATUS, &status));
 
+#ifndef GE_DEBUG
     if (status == GL_FALSE) {
         GLint msg_len{};
         GLCall(glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &msg_len));
@@ -90,6 +91,7 @@ bool ShaderProgram::link()
         GLCall(glGetProgramInfoLog(m_id, msg_len, nullptr, msg.data()));
         GE_CORE_ERR("Failed to link shader program: {}", msg.data());
     }
+#endif // GE_DEBUG
 
     detachShaders();
     clear();

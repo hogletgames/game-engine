@@ -48,11 +48,20 @@ public:
         INDEX
     };
 
-    BufferBase(Type type, void* data, uint32_t size);
+    enum class Usage : uint8_t
+    {
+        STREAM = 0,
+        STATIC,
+        DYNAMIC
+    };
+
+    BufferBase(Type type, const void* data, uint32_t size, Usage usage);
     ~BufferBase() override;
 
     void bindBuffer() const;
     void unbindBuffer() const;
+
+    void setBufferData(const void* data, uint32_t size) const;
 
 private:
     uint32_t m_gl_type{0};
@@ -62,8 +71,8 @@ private:
 class VertexBuffer: public ::GE::VertexBuffer, public BufferBase
 {
 public:
-    VertexBuffer(float* vertices, uint32_t size)
-        : BufferBase{Type::VERTEX, vertices, size}
+    VertexBuffer(const float* vertices, uint32_t size, Usage usage = Usage::STATIC)
+        : BufferBase{Type::VERTEX, vertices, size, usage}
     {}
 
     void bind() const override { bindBuffer(); }
@@ -72,6 +81,8 @@ public:
     void setLayout(const BufferLayout& layout) override { m_layout = layout; }
     const BufferLayout& getLayout() const override { return m_layout; }
 
+    void setData(const void* data, uint32_t size) override { setBufferData(data, size); }
+
 private:
     BufferLayout m_layout;
 };
@@ -79,8 +90,8 @@ private:
 class IndexBuffer: public ::GE::IndexBuffer, public BufferBase
 {
 public:
-    IndexBuffer(uint32_t* indexes, uint32_t count)
-        : BufferBase(Type::INDEX, indexes, sizeof(*indexes) * count)
+    IndexBuffer(const uint32_t* indexes, uint32_t count)
+        : BufferBase(Type::INDEX, indexes, sizeof(*indexes) * count, Usage::STATIC)
         , m_count{count}
     {}
 

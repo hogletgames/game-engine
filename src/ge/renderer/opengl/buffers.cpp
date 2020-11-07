@@ -40,6 +40,7 @@
 namespace {
 
 using BufferType = ::GE::OpenGL::BufferBase::Type;
+using BufferUsage = ::GE::OpenGL::BufferBase::Usage;
 
 GLenum toGLBufferType(BufferType type)
 {
@@ -50,14 +51,27 @@ GLenum toGLBufferType(BufferType type)
     }
 
     GE_CORE_ASSERT_MSG(false, "Unknown OpenGL buffer type: {}", static_cast<int>(type));
-    return 0;
+    return GL_NONE;
+}
+
+GLenum toGLUsage(BufferUsage usage)
+{
+    switch (usage) {
+        case BufferUsage::STREAM: return GL_STREAM_DRAW;
+        case BufferUsage::STATIC: return GL_STATIC_DRAW;
+        case BufferUsage::DYNAMIC: return GL_DYNAMIC_DRAW;
+        default: break;
+    }
+
+    GE_CORE_ASSERT_MSG(false, "Unknown OpenGL buffer usage: {}", static_cast<int>(usage));
+    return GL_NONE;
 }
 
 } // namespace
 
 namespace GE::OpenGL {
 
-BufferBase::BufferBase(Type type, void* data, uint32_t size)
+BufferBase::BufferBase(Type type, const void* data, uint32_t size, Usage usage)
     : m_gl_type{toGLBufferType(type)}
 {
     GE_PROFILE_FUNC();
@@ -65,7 +79,7 @@ BufferBase::BufferBase(Type type, void* data, uint32_t size)
     GE_CORE_ASSERT_MSG(m_gl_type, "Unknown buffer type");
     GLCall(glCreateBuffers(1, &m_id));
     GLCall(glBindBuffer(m_gl_type, m_id));
-    GLCall(glBufferData(m_gl_type, size, data, GL_STATIC_DRAW));
+    GLCall(glBufferData(m_gl_type, size, data, toGLUsage(usage)));
 }
 
 BufferBase::~BufferBase()
@@ -87,6 +101,14 @@ void BufferBase::unbindBuffer() const
     GE_PROFILE_FUNC();
 
     GLCall(glBindBuffer(m_gl_type, 0));
+}
+
+void BufferBase::setBufferData(const void* data, uint32_t size) const
+{
+    GE_PROFILE_FUNC();
+
+    GLCall(glBindBuffer(m_gl_type, m_id));
+    GLCall(glBufferSubData(m_gl_type, 0, size, data));
 }
 
 } // namespace GE::OpenGL

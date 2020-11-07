@@ -59,6 +59,16 @@ public:
     static Scoped<Texture2D> create(uint32_t width, uint32_t height, uint32_t bpp);
 };
 
+inline bool operator<(const Texture& lhs, const Texture& rhs)
+{
+    return lhs.getNativeID() < rhs.getNativeID();
+}
+
+inline bool operator==(const Texture& lhs, const Texture& rhs)
+{
+    return lhs.getNativeID() == rhs.getNativeID();
+}
+
 } // namespace GE
 
 #endif // GE_RENDERER_TEXTURE_H_

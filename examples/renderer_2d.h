@@ -46,16 +46,13 @@ public:
     void onAttach() override;
     void onDetach() override;
     void onUpdate(Timestamp delta_time) override;
+    void onGuiRender() override;
 
 private:
-    Shared<Texture2D> m_tex_quad{};
-    GE::Renderer2D::quad_params_t m_tex_quad_params{};
-
-    glm::vec4 m_blue_quad{};
-    GE::Renderer2D::quad_params_t m_blue_quad_params{};
-
-    glm::vec4 m_red_quad{};
-    GE::Renderer2D::quad_params_t m_red_quad_params{};
+    GE::Renderer2D::quad_t m_tex_arrow_quad{};
+    GE::Renderer2D::quad_t m_tex_blue_sqrs_quad{};
+    GE::Renderer2D::quad_t m_editable_quad{};
+    GE::Renderer2D::quad_t m_red_quad{};
 };
 
 } // namespace GE::Examples
