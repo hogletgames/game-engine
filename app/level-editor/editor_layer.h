@@ -66,7 +66,6 @@ private:
     std::vector<GE::Shared<PanelBase>> m_panels;
 
     GE::OrthoCameraController m_vp_camera;
-    GE::Renderer2D::quad_t m_editable_quad{};
 };
 
 } // namespace LE
