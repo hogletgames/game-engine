@@ -53,6 +53,8 @@ public:
     void onUpdate(Timestamp delta_time);
     void onEvent(Event* event);
 
+    void resize(const glm::vec2& size);
+
     const OrthographicCamera& getCamera() const { return m_camera; }
 
     void setZoom(float zoom);
