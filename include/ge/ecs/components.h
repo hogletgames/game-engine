@@ -30,50 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_ECS_COMPONENTS_H_
+#define GE_ECS_COMPONENTS_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
+#include <ge/core/core.h>
 
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-#include <ge/ecs/components.h>
-#include <ge/ecs/entity.h>
+#include <string>
 
-#include <ge/gui/gui.h>
+namespace GE {
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
+struct GE_API SpriteRendererComponent {
+    glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+};
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+struct GE_API TagComponent {
+    std::string tag;
+};
 
-#endif // GE_GE_H_
+struct GE_API TransformComponent {
+    glm::vec3 translation{0.0f, 0.0f, 0.0f};
+    glm::vec3 rotation{0.0f, 0.0f, 0.0f};
+    glm::vec3 scale{1.0f, 1.0f, 1.0f};
+
+    glm::mat4 getTransform() const
+    {
+        glm::mat4 rot = glm::rotate(glm::mat4{1.0f}, rotation.x, {1, 0, 0});
+        rot = glm::rotate(rot, rotation.y, {0, 1, 0});
+        rot = glm::rotate(rot, rotation.z, {0, 0, 1});
+
+        return glm::translate(glm::mat4{1.0f}, translation) * rot *
+               glm::scale(glm::mat4{1.0f}, scale);
+    }
+};
+
+} // namespace GE
+
+#endif // GE_ECS_COMPONENTS_H_

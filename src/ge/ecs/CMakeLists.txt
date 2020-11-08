@@ -5,6 +5,7 @@ list(APPEND GE_ECS_SRC
 )
 
 list(APPEND GE_ECS_HEADERS
+    ${GE_ECS_INCLUDE_DIR}/components.h
     ${GE_ECS_INCLUDE_DIR}/entity.h
 )
 
