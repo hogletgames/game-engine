@@ -119,7 +119,7 @@ bool onKeyPressed(const GE::KeyPressedEvent& event)
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = true;
     setControlKeys();
-    return false;
+    return GE::Gui::isEventsBlocked() && io.WantCaptureKeyboard;
 }
 
 bool onKeyReleased(const GE::KeyReleasedEvent& event)
@@ -129,7 +129,7 @@ bool onKeyReleased(const GE::KeyReleasedEvent& event)
     ImGuiIO& io = ImGui::GetIO();
     io.KeysDown[CAST_KEY(event.getKeyCode())] = false;
     setControlKeys();
-    return false;
+    return GE::Gui::isEventsBlocked() && io.WantCaptureKeyboard;
 }
 
 bool onKeyTyped(const GE::KeyTypedEvent& event)
@@ -138,7 +138,7 @@ bool onKeyTyped(const GE::KeyTypedEvent& event)
 
     ImGuiIO& io = ImGui::GetIO();
     io.AddInputCharactersUTF8(event.getText());
-    return false;
+    return GE::Gui::isEventsBlocked() && io.WantCaptureKeyboard;
 }
 
 bool onMouseMoved(const GE::MouseMovedEvent& event)
@@ -147,7 +147,7 @@ bool onMouseMoved(const GE::MouseMovedEvent& event)
 
     ImGuiIO& io = ImGui::GetIO();
     io.MousePos = ImVec2(event.getPosX(), event.getPosY());
-    return false;
+    return GE::Gui::isEventsBlocked() && io.WantCaptureMouse;
 }
 
 bool onMouseScrolled(const GE::MouseScrolledEvent& event)
@@ -157,7 +157,7 @@ bool onMouseScrolled(const GE::MouseScrolledEvent& event)
     ImGuiIO& io = ImGui::GetIO();
     io.MouseWheelH = event.getOffsetX();
     io.MouseWheel = event.getOffsetY();
-    return false;
+    return GE::Gui::isEventsBlocked() && io.WantCaptureMouse;
 }
 
 bool onMouseButtonPressed(const GE::MouseButtonPressedEvent& event)
@@ -171,7 +171,7 @@ bool onMouseButtonPressed(const GE::MouseButtonPressedEvent& event)
 
     ImGuiIO& io = ImGui::GetIO();
     io.MouseDown[toImGuiButton(button)] = true;
-    return false;
+    return GE::Gui::isEventsBlocked() && io.WantCaptureMouse;
 }
 
 bool onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event)
@@ -185,7 +185,7 @@ bool onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event)
 
     ImGuiIO& io = ImGui::GetIO();
     io.MouseDown[toImGuiButton(button)] = false;
-    return false;
+    return GE::Gui::isEventsBlocked() && io.WantCaptureMouse;
 }
 
 bool onWindowResized(const GE::WindowResizedEvent& event)
