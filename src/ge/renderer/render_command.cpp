@@ -36,13 +36,13 @@
 
 namespace GE {
 
-Scoped<RendererAPI> RenderCommand::s_renderer_api{nullptr};
-
 bool RenderCommand::initialize(RendererAPI::API api)
 {
     GE_CORE_DBG("Initialize Renderer Command");
 
-    if (s_renderer_api = RendererAPI::create(api); s_renderer_api == nullptr) {
+    auto& renderer_api = get()->m_renderer_api;
+
+    if (renderer_api = RendererAPI::create(api); renderer_api == nullptr) {
         GE_CORE_ERR("Failed to create RenderAPI");
         return false;
     }
@@ -53,32 +53,37 @@ bool RenderCommand::initialize(RendererAPI::API api)
 void RenderCommand::shutdown()
 {
     GE_CORE_DBG("Shutdown Renderer Command");
-    s_renderer_api.reset();
+    get()->m_renderer_api.reset();
 }
 
 void RenderCommand::clear(const glm::vec4& color)
 {
-    s_renderer_api->clear(color);
+    get()->m_renderer_api->clear(color);
 }
 
 void RenderCommand::draw(const Shared<VertexArray>& vertex_array)
 {
-    s_renderer_api->draw(vertex_array);
+    get()->m_renderer_api->draw(vertex_array);
 }
 
 void RenderCommand::draw(uint32_t index_count)
 {
-    s_renderer_api->draw(index_count);
+    get()->m_renderer_api->draw(index_count);
 }
 
 void RenderCommand::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
-    s_renderer_api->setViewport(x, y, width, height);
+    get()->m_renderer_api->setViewport(x, y, width, height);
+}
+
+RendererAPI::API RenderCommand::getAPI()
+{
+    return get()->m_renderer_api->getAPI();
 }
 
 const RendererAPI::capabilities_t& RenderCommand::getCapabilities()
 {
-    return s_renderer_api->getCapabilities();
+    return get()->m_renderer_api->getCapabilities();
 }
 
 } // namespace GE

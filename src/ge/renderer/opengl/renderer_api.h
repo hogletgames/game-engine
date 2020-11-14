@@ -41,6 +41,10 @@ namespace GE::OpenGL {
 class RendererAPI: public ::GE::RendererAPI
 {
 public:
+    explicit RendererAPI(API api)
+        : GE::RendererAPI{api}
+    {}
+
     void clear(const glm::vec4& color) override;
     void draw(const Shared<VertexArray>& vertex_array) override;
     void draw(uint32_t index_count) override;

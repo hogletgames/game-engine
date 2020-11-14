@@ -45,8 +45,6 @@ class VertexArray;
 class GE_API RenderCommand
 {
 public:
-    RenderCommand() = delete;
-
     static bool initialize(RendererAPI::API api);
     static void shutdown();
 
@@ -55,10 +53,19 @@ public:
     static void draw(uint32_t index_count);
     static void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
+    static RendererAPI::API getAPI();
     static const RendererAPI::capabilities_t& getCapabilities();
 
 private:
-    static Scoped<RendererAPI> s_renderer_api;
+    RenderCommand() = default;
+
+    static RenderCommand* get()
+    {
+        static RenderCommand instance;
+        return &instance;
+    }
+
+    Scoped<RendererAPI> m_renderer_api;
 };
 
 } // namespace GE
