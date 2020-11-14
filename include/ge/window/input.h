@@ -33,7 +33,7 @@
 #ifndef GE_WINDOW_INPUT_H_
 #define GE_WINDOW_INPUT_H_
 
-#include <ge/core/non_copyable.h>
+#include <ge/core/interface.h>
 #include <ge/window/key_codes.h>
 #include <ge/window/mouse_button_codes.h>
 
@@ -45,7 +45,23 @@
 
 namespace GE {
 
-class GE_API Input: public NonCopyable
+class InputImpl: public Interface
+{
+public:
+    virtual bool initialize() = 0;
+    virtual void shutdown() = 0;
+
+    virtual int32_t toNativeKeyCode(KeyCode key_code) const = 0;
+    virtual KeyCode toGEKeyCode(int32_t key_code) const = 0;
+    virtual bool isKeyPressed(KeyCode key_code) const = 0;
+
+    virtual uint8_t toNativeButton(MouseButton button) const = 0;
+    virtual MouseButton toGEMouseButton(uint8_t button) const = 0;
+    virtual bool isMouseButtonPressed(MouseButton button) const = 0;
+    virtual glm::vec2 getMousePos() const = 0;
+};
+
+class GE_API Input
 {
 public:
     static bool initialize();
@@ -53,53 +69,46 @@ public:
 
     static int32_t toNativeKeyCode(KeyCode key_code)
     {
-        return s_impl->toNativeKeyCodeImpl(key_code);
+        return get()->m_pimpl->toNativeKeyCode(key_code);
     }
 
     static KeyCode toGEKeyCode(int32_t key_code)
     {
-        return s_impl->toGEKeyCodeImpl(key_code);
+        return get()->m_pimpl->toGEKeyCode(key_code);
     }
 
     static bool isKeyPressed(KeyCode key_code)
     {
-        return s_impl->isKeyPressedImpl(key_code);
+        return get()->m_pimpl->isKeyPressed(key_code);
     }
 
     static uint8_t toNativeButton(MouseButton button)
     {
-        return s_impl->toNativeButtonImpl(button);
+        return get()->m_pimpl->toNativeButton(button);
     }
 
     static MouseButton toGEMouseButton(uint8_t button)
     {
-        return s_impl->toGEMouseButtonImpl(button);
+        return get()->m_pimpl->toGEMouseButton(button);
     }
 
     static bool isMouseButtonPressed(MouseButton button)
     {
-        return s_impl->isMouseButtonPressedImpl(button);
+        return get()->m_pimpl->isMouseButtonPressed(button);
     }
 
-    static glm::vec2 getMousePos() { return s_impl->getMousePosImpl(); }
-
-protected:
-    Input() = default;
-
-    virtual bool initializeImpl() = 0;
-    virtual void shutdownImpl() = 0;
-
-    virtual int32_t toNativeKeyCodeImpl(KeyCode key_code) const = 0;
-    virtual KeyCode toGEKeyCodeImpl(int32_t key_code) const = 0;
-    virtual bool isKeyPressedImpl(KeyCode key_code) const = 0;
-
-    virtual uint8_t toNativeButtonImpl(MouseButton button) const = 0;
-    virtual MouseButton toGEMouseButtonImpl(uint8_t button) const = 0;
-    virtual bool isMouseButtonPressedImpl(MouseButton button) const = 0;
-    virtual glm::vec2 getMousePosImpl() const = 0;
+    static glm::vec2 getMousePos() { return get()->m_pimpl->getMousePos(); }
 
 private:
-    static Scoped<Input> s_impl;
+    Input() = default;
+
+    static Input* get()
+    {
+        static Input instance;
+        return &instance;
+    }
+
+    Scoped<InputImpl> m_pimpl;
 };
 
 } // namespace GE

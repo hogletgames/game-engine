@@ -38,33 +38,33 @@
 
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/input.h"
-using PlatformInput = ::GE::UNIX::Input;
+using PlatformInput = ::GE::UNIX::InputImpl;
 #else
     #error "Platform is not defined!"
 #endif
 
 namespace GE {
 
-Scoped<Input> Input::s_impl{nullptr};
-
 bool Input::initialize()
 {
     GE_PROFILE_FUNC();
 
-    if (s_impl = makeScoped<PlatformInput>(); s_impl == nullptr) {
-        GE_CORE_ERR("Failed to create Platform::Input");
+    auto& pimpl = get()->m_pimpl;
+
+    if (pimpl = makeScoped<PlatformInput>(); pimpl == nullptr) {
+        GE_CORE_ERR("Failed to create Platform::InputImpl");
         return false;
     }
 
-    return s_impl->initializeImpl();
+    return pimpl->initialize();
 }
 
 void Input::shutdown()
 {
     GE_PROFILE_FUNC();
 
-    s_impl->shutdownImpl();
-    s_impl.reset();
+    get()->m_pimpl->shutdown();
+    get()->m_pimpl.reset();
 }
 
 } // namespace GE

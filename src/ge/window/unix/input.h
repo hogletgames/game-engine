@@ -42,23 +42,20 @@
 
 namespace GE::UNIX {
 
-class Input: public ::GE::Input
+class InputImpl: public ::GE::InputImpl
 {
 public:
-    Input() = default;
+    bool initialize() override;
+    void shutdown() override;
 
-protected:
-    bool initializeImpl() override;
-    void shutdownImpl() override;
+    int32_t toNativeKeyCode(KeyCode key_code) const override;
+    KeyCode toGEKeyCode(int32_t key_code) const override;
+    bool isKeyPressed(KeyCode key_code) const override;
 
-    int32_t toNativeKeyCodeImpl(KeyCode key_code) const override;
-    KeyCode toGEKeyCodeImpl(int32_t key_code) const override;
-    bool isKeyPressedImpl(KeyCode key_code) const override;
-
-    uint8_t toNativeButtonImpl(MouseButton button) const override;
-    MouseButton toGEMouseButtonImpl(uint8_t button) const override;
-    bool isMouseButtonPressedImpl(MouseButton button) const override;
-    glm::vec2 getMousePosImpl() const override;
+    uint8_t toNativeButton(MouseButton button) const override;
+    MouseButton toGEMouseButton(uint8_t button) const override;
+    bool isMouseButtonPressed(MouseButton button) const override;
+    glm::vec2 getMousePos() const override;
 
 private:
     void mapKeyCodes();
