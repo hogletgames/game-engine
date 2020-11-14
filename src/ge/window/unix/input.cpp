@@ -107,7 +107,7 @@ bool Input::isMouseButtonPressedImpl(MouseButton button) const
     return SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(sdl_button); // NOLINT
 }
 
-std::pair<float, float> Input::getMousePosImpl() const
+glm::vec2 Input::getMousePosImpl() const
 {
     GE_PROFILE_FUNC();
 
@@ -115,24 +115,6 @@ std::pair<float, float> Input::getMousePosImpl() const
     int pos_y{0};
     SDL_GetMouseState(&pos_x, &pos_y);
     return {pos_x, pos_y};
-}
-
-float Input::getMousePosXImpl() const
-{
-    GE_PROFILE_FUNC();
-
-    int pos_x{0};
-    SDL_GetMouseState(&pos_x, nullptr);
-    return static_cast<float>(pos_x);
-}
-
-float Input::getMousePosYImpl() const
-{
-    GE_PROFILE_FUNC();
-
-    int pos_y{0};
-    SDL_GetMouseState(nullptr, &pos_y);
-    return static_cast<float>(pos_y);
 }
 
 void Input::mapKeyCodes()

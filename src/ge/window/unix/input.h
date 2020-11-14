@@ -58,9 +58,7 @@ protected:
     uint8_t toNativeButtonImpl(MouseButton button) const override;
     MouseButton toGEMouseButtonImpl(uint8_t button) const override;
     bool isMouseButtonPressedImpl(MouseButton button) const override;
-    std::pair<float, float> getMousePosImpl() const override;
-    float getMousePosXImpl() const override;
-    float getMousePosYImpl() const override;
+    glm::vec2 getMousePosImpl() const override;
 
 private:
     void mapKeyCodes();

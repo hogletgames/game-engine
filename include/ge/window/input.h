@@ -37,6 +37,8 @@
 #include <ge/window/key_codes.h>
 #include <ge/window/mouse_button_codes.h>
 
+#include <glm/glm.hpp>
+
 #include <cstdint>
 #include <memory>
 #include <utility>
@@ -79,9 +81,7 @@ public:
         return s_impl->isMouseButtonPressedImpl(button);
     }
 
-    static std::pair<float, float> getMousePos() { return s_impl->getMousePosImpl(); }
-    static float getMousePosX() { return s_impl->getMousePosXImpl(); }
-    static float getMousePosY() { return s_impl->getMousePosYImpl(); }
+    static glm::vec2 getMousePos() { return s_impl->getMousePosImpl(); }
 
 protected:
     Input() = default;
@@ -96,9 +96,7 @@ protected:
     virtual uint8_t toNativeButtonImpl(MouseButton button) const = 0;
     virtual MouseButton toGEMouseButtonImpl(uint8_t button) const = 0;
     virtual bool isMouseButtonPressedImpl(MouseButton button) const = 0;
-    virtual std::pair<float, float> getMousePosImpl() const = 0;
-    virtual float getMousePosXImpl() const = 0;
-    virtual float getMousePosYImpl() const = 0;
+    virtual glm::vec2 getMousePosImpl() const = 0;
 
 private:
     static Scoped<Input> s_impl;
