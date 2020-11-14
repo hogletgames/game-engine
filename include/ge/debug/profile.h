@@ -43,10 +43,6 @@
     #include <iomanip>
     #include <sstream>
 
-    #define _GE_PROFILER_THREAD_NAME  "Profiler"
-    #define _GE_PROFILER_THREAD_NUM   1
-    #define _GE_PROFILER_DEF_FILENAME "profile.json"
-
     #define GE_PROFILE_ENABLE(enabled) ::GE::Debug::Profiler::enable(enabled)
     #define GE_PROFILE_BEGIN_SESSION(name, filepath) \
         ::GE::Debug::Profiler::begin(name, filepath)
@@ -55,6 +51,10 @@
     #define GE_PROFILE_FUNC()        GE_PROFILE_SCOPE(GE_FUNC_NAME)
 
 namespace GE::Debug {
+
+constexpr auto PROFILER_THREAD_NAME = "Profiler";
+constexpr uint32_t PROFILER_THREAD_NUM{1};
+constexpr auto PROFILER_FILENAME_DEFAULT = "profile.json";
 
 class GE_API Profiler
 {
@@ -73,7 +73,7 @@ public:
     static void enable(bool enabled) { get()->m_enabled = enabled; }
 
     static void begin(const std::string& name,
-                      const std::string& filepath = _GE_PROFILER_DEF_FILENAME)
+                      const std::string& filepath = PROFILER_FILENAME_DEFAULT)
     {
         auto& profile_log = get()->m_profile_log;
         auto& session = get()->m_session;
@@ -92,7 +92,7 @@ public:
         session = std::make_unique<session_t>();
         session->name = name;
         get()->writeHeader();
-        get()->m_thread_pool.start(_GE_PROFILER_THREAD_NUM, true);
+        get()->m_thread_pool.start(PROFILER_THREAD_NUM, true);
     }
 
     static void end() { get()->endSession(); }
@@ -149,7 +149,7 @@ private:
         m_profile_log.close();
     }
 
-    ThreadPool m_thread_pool{_GE_PROFILER_THREAD_NAME};
+    ThreadPool m_thread_pool{PROFILER_THREAD_NAME};
     std::unique_ptr<session_t> m_session;
     std::atomic_bool m_enabled{false};
     std::ofstream m_profile_log;
