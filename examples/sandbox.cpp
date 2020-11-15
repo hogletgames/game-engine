@@ -41,21 +41,9 @@
 #include <iostream>
 #include <unordered_map>
 
-#define EXAMPLE_OPT  "--example"
-#define SHOW_GUI_OPT "--show-demo"
-#define PROFILE_OPT  "--profiling"
-#define CONFIG_OPT   "--config"
-
-#define EXAMPLE_EMPTY       "empty"
-#define EXAMPLE_RENDERER_2D "renderer2d"
-#define EXAMPLE_TRIANGLE    "triangle"
-
-#define PROFILE_SESSION_NAME "Sandbox Profiling"
-#define PROFILE_FILE         "profile.json"
-
 namespace {
 
-const char* usage = R"(Sanbox.
+constexpr auto USAGE = R"(Sanbox.
 Run one of the existing examples:
     - empty
     - renderer2d
@@ -72,6 +60,18 @@ Options:
     -e --example <example>      Example [default: empty].
     -c --config <file>          Path to config.ini [default: examples/assets/config.ini]
 )";
+
+constexpr auto OPTION_EXAMPLE = "--example";
+constexpr auto OPTION_SHOW_GUI = "--show-demo";
+constexpr auto OPTION_PROFILE = "--profiling";
+constexpr auto OPTION_CONFIG = "--config";
+
+constexpr auto EXAMPLE_EMPTY = "empty";
+constexpr auto EXAMPLE_RENDERER_2D = "renderer2d";
+constexpr auto EXAMPLE_TRIANGLE = "triangle";
+
+constexpr auto PROFILE_SESSION_NAME = "Sandbox Profiling";
+constexpr auto PROFILE_FILE = "profile.json";
 
 enum class LayerType : uint8_t
 {
@@ -103,12 +103,12 @@ ParseArgs parseArgs(int argc, char** argv)
     std::map<std::string, docopt::value> args;
 
     try {
-        args = docopt::docopt_parse(usage, {argv + 1, argv + argc}, true);
+        args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, true);
     } catch (const docopt::DocoptExitHelp& e) {
-        std::cout << usage << std::endl;
+        std::cout << USAGE << std::endl;
         exit(0);
     } catch (const docopt::DocoptArgumentError& e) {
-        std::cout << usage << std::endl;
+        std::cout << USAGE << std::endl;
         exit(1);
     }
 
@@ -116,10 +116,10 @@ ParseArgs parseArgs(int argc, char** argv)
     std::string example;
 
     try {
-        example = args[EXAMPLE_OPT].asString();
-        parsed_args.show_gui_demo = args[SHOW_GUI_OPT].asBool();
-        parsed_args.enable_profile = args[PROFILE_OPT].asBool();
-        parsed_args.config = args[CONFIG_OPT].asString();
+        example = args[OPTION_EXAMPLE].asString();
+        parsed_args.show_gui_demo = args[OPTION_SHOW_GUI].asBool();
+        parsed_args.enable_profile = args[OPTION_PROFILE].asBool();
+        parsed_args.config = args[OPTION_CONFIG].asString();
     } catch (const std::exception& e) {
         std::cout << "Failed to parse arguments: " << e.what() << std::endl;
         exit(1);
@@ -129,7 +129,7 @@ ParseArgs parseArgs(int argc, char** argv)
 
     if (parsed_args.layer == LayerType::NONE) {
         std::cout << "Unknown example: " << example << "\n\n";
-        std::cout << usage << std::endl;
+        std::cout << USAGE << std::endl;
         exit(1);
     }
 

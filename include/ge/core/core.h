@@ -38,8 +38,8 @@
 // Macros
 #define GE_BIND_EVENT_FN(fn) [this](const auto& event) { return fn(event); }
 
-#define _GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
-#define GE_CONCAT(lhs, rhs)       _GE_CONCAT_IMPL(lhs, rhs)
+#define GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
+#define GE_CONCAT(lhs, rhs)      GE_CONCAT_IMPL(lhs, rhs)
 
 #define GE_UNUSED(var) static_cast<void>(var)
 
