@@ -43,34 +43,20 @@
 #include "ge/window/window_event.h"
 
 namespace GE {
-Application* Application::s_instance{nullptr};
-Scoped<Window> Application::s_window{nullptr};
-
-Application::Application()
-{
-    GE_PROFILE_FUNC();
-
-    GE_CORE_ASSERT_MSG(!s_instance, "Application already exists");
-    s_instance = this;
-    s_window->setEventCallback([this](Event* event) { onEvent(event); });
-}
-
-Application::~Application()
-{
-    GE_PROFILE_FUNC();
-
-    s_instance = nullptr;
-}
 
 bool Application::initialize()
 {
     GE_PROFILE_FUNC();
     GE_CORE_DBG("Initialize Application");
 
-    if (s_window = Window::create(); s_window == nullptr) {
+    auto& window = get()->m_window;
+
+    if (window = Window::create(); window == nullptr) {
         GE_CORE_ERR("Failed to create Window");
         return false;
     }
+
+    window->setEventCallback([](Event* event) { get()->onEvent(event); });
 
     return true;
 }
@@ -80,10 +66,33 @@ void Application::shutdown()
     GE_PROFILE_FUNC();
 
     GE_CORE_DBG("Shutdown Application");
-    s_window.reset();
+    get()->m_window.reset();
 }
 
 void Application::run()
+{
+    GE_PROFILE_FUNC();
+
+    get()->mainLoop();
+}
+
+void Application::pushLayer(Shared<Layer> layer)
+{
+    GE_PROFILE_FUNC();
+
+    layer->onAttach();
+    get()->m_layer_stack.pushLayer(std::move(layer));
+}
+
+void Application::pushOverlay(Shared<Layer> overlay)
+{
+    GE_PROFILE_FUNC();
+
+    overlay->onAttach();
+    get()->m_layer_stack.pushOverlay(std::move(overlay));
+}
+
+void Application::mainLoop()
 {
     GE_PROFILE_FUNC();
     m_prev_frame_time = Timestamp::now();
@@ -99,24 +108,8 @@ void Application::run()
             updateLayers(delta_time);
         }
 
-        s_window->onUpdate();
+        m_window->onUpdate();
     }
-}
-
-void Application::pushLayer(Shared<Layer> layer)
-{
-    GE_PROFILE_FUNC();
-
-    layer->onAttach();
-    m_layer_stack.pushLayer(std::move(layer));
-}
-
-void Application::pushOverlay(Shared<Layer> overlay)
-{
-    GE_PROFILE_FUNC();
-
-    overlay->onAttach();
-    m_layer_stack.pushOverlay(std::move(overlay));
 }
 
 void Application::updateLayers(Timestamp delta_time)

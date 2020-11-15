@@ -49,31 +49,36 @@ class WindowMinimizedEvent;
 class WindowMaximizedEvent;
 class WindowRestoredEvent;
 
-class GE_API Application: public NonCopyable
+class GE_API Application
 {
 public:
-    Application();
-    ~Application() override;
-
     static bool initialize();
     static void shutdown();
 
-    void run();
+    static void run();
 
-    void pushLayer(Shared<Layer> layer);
-    void pushOverlay(Shared<Layer> overlay);
+    static void pushLayer(Shared<Layer> layer);
+    static void pushOverlay(Shared<Layer> overlay);
 
-    static const Window& getWindow() { return *s_window; }
-    static void* getNativeWindow() { return s_window->getNativeWindow(); }
-    static void* getNativeContext() { return s_window->getNativeContext(); }
+    static const Window& getWindow() { return *get()->m_window; }
 
 private:
+    Application() = default;
+
     enum class WindowState : uint8_t
     {
         NONE = 0,
         MAXIMIZED,
         MINIMIZED
     };
+
+    static Application* get()
+    {
+        static Application instance;
+        return &instance;
+    }
+
+    void mainLoop();
 
     void updateLayers(Timestamp delta_time);
 
@@ -83,12 +88,11 @@ private:
     bool onWindowMinimized(const WindowMinimizedEvent& event);
     bool onWindowRestored(const WindowRestoredEvent& event);
 
-    static Application* s_instance;
-    static Scoped<Window> s_window;
+    Scoped<Window> m_window;
+    WindowState m_window_state{WindowState::NONE};
 
     LayerStack m_layer_stack;
     bool m_runnign{true};
-    WindowState m_window_state{WindowState::NONE};
     Timestamp m_prev_frame_time;
 };
 

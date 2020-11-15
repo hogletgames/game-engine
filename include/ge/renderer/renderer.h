@@ -34,7 +34,7 @@
 #define GE_RENDERER_RENDERER_H_
 
 #include <ge/core/core.h>
-#include <ge/renderer/renderer_api.h>
+#include <ge/renderer/render_command.h>
 
 #include <glm/glm.hpp>
 
@@ -86,7 +86,7 @@ public:
                        const Shared<VertexArray>& vertex_array,
                        const glm::mat4& transform = glm::mat4{1.0});
 
-    static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
+    static RendererAPI::API getAPI() { return RenderCommand::getAPI(); }
     static const RendererAPI::capabilities_t& getCapabilities();
 
 private:

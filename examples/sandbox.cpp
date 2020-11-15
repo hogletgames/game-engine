@@ -170,8 +170,8 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    GE::Application app{};
-    app.pushLayer(getLayer(args));
-    app.run();
+    GE::Application::pushLayer(getLayer(args));
+    GE::Application::run();
+
     return 0;
 }

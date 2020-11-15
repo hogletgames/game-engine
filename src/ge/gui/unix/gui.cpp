@@ -54,8 +54,8 @@ bool Gui::initialize()
     GE_PROFILE_FUNC();
     GE_CORE_DBG("Initialize Unix::PlatformImGui");
 
-    void* window = Application::getNativeWindow();
-    void* context = Application::getNativeContext();
+    void* window = Application::getWindow().getNativeWindow();
+    void* context = Application::getWindow().getNativeContext();
 
     if (!ImGui_ImplSDL2_InitForOpenGL(reinterpret_cast<SDL_Window*>(window), context)) {
         GE_CORE_ERR("Failed to initialize SDL2+OpenGL");
@@ -82,7 +82,7 @@ void Gui::shutdown()
 void Gui::newFrame()
 {
     GE_PROFILE_FUNC();
-    void* window = Application::getNativeWindow();
+    void* window = Application::getWindow().getNativeWindow();
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(reinterpret_cast<SDL_Window*>(window));
