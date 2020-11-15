@@ -55,7 +55,7 @@ public:
     bool isVSync() const override { return m_vsync; }
 
     void* getNativeWindow() const override { return m_window; };
-    void* getNativeContext() const override { return m_contex->getNativeContext(); }
+    void* getNativeContext() const override { return m_context->getNativeContext(); }
     uint32_t getWidth() const override { return m_prop.width; }
     uint32_t getHeight() const override { return m_prop.height; }
 
@@ -71,10 +71,8 @@ private:
     void onSDLKeyEvent(const SDL_Event& sdl_event);
     void onSDLWindowEvent(const SDL_Event& sdl_event);
 
-    static bool s_initialized;
-
     SDL_Window* m_window{nullptr};
-    Scoped<GraphicsContext> m_contex;
+    Scoped<GraphicsContext> m_context;
 
     WinEventCallback m_event_callback;
     properties_t m_prop;

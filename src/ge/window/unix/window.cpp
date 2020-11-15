@@ -51,8 +51,6 @@
 
 namespace GE::UNIX {
 
-bool Window::s_initialized{false};
-
 Window::Window(properties_t prop)
     : m_prop(std::move(prop))
 {
@@ -75,11 +73,11 @@ Window::Window(properties_t prop)
         GE_CORE_ASSERT_MSG(m_window, SDL_GetError());
     }
 
-    m_contex = GraphicsContext::create(m_window);
-    GE_CORE_ASSERT_MSG(m_contex != nullptr, "Failed to create graphics context");
+    m_context = GraphicsContext::create(m_window);
+    GE_CORE_ASSERT_MSG(m_context != nullptr, "Failed to create graphics context");
 
-    SDLCall(SDL_GL_MakeCurrent(m_window, m_contex->getNativeContext()));
-    m_contex->initialize();
+    SDLCall(SDL_GL_MakeCurrent(m_window, m_context->getNativeContext()));
+    m_context->initialize();
 
     GE_CORE_DBG("Window '{}' created", m_prop.title);
 }
@@ -93,8 +91,8 @@ Window::~Window()
         GE_CORE_DBG("SDL window '{}' has been destroyed", m_prop.title);
     }
 
-    if (m_contex != nullptr) {
-        m_contex->shutdown();
+    if (m_context != nullptr) {
+        m_context->shutdown();
     }
 }
 
@@ -133,7 +131,7 @@ void Window::onUpdate()
     GE_PROFILE_FUNC();
 
     pollEvents();
-    m_contex->swapBuffers();
+    m_context->swapBuffers();
 }
 
 void Window::pollEvents()
