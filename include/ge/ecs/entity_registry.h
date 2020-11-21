@@ -77,6 +77,8 @@ public:
         return m_registry.has<T>(getNativeID(entity));
     }
 
+    void drawEntities();
+
 private:
     using NativeEntityID = entt::entity;
 

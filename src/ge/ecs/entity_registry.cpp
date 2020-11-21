@@ -35,6 +35,7 @@
 #include "entity.h"
 
 #include "ge/debug/profile.h"
+#include "ge/renderer/renderer_2d.h"
 
 namespace {
 
@@ -64,6 +65,17 @@ Entity EntityRegistry::create(const std::string& name)
     tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
 
     return entity;
+}
+
+void EntityRegistry::drawEntities()
+{
+    GE_PROFILE_FUNC();
+
+    auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+
+    for (auto entity : group) {
+        Renderer2D::draw({entity, this});
+    }
 }
 
 EntityRegistry::NativeEntityID EntityRegistry::getNativeID(const Entity& entity)

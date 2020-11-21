@@ -32,7 +32,6 @@
 
 #include "scene.h"
 #include "entity.h"
-#include "entity_registry.h"
 
 #include "ge/debug/profile.h"
 
@@ -45,6 +44,8 @@ Scene::Scene()
 void Scene::onUpdate([[maybe_unused]] Timestamp delta_time)
 {
     GE_PROFILE_FUNC();
+
+    m_registry.drawEntities();
 }
 
 Entity Scene::createEntity(const std::string& name)
