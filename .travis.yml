@@ -31,10 +31,10 @@ env:
   jobs:
   - MATRIX_EVAL="export ${RELEASE_ARGS}"
   - MATRIX_EVAL="export ${DEBUG_ARGS}"
-  - MATRIX_EVAL="export VALGRIND=ON"
-  - MATRIX_EVAL="export ENABLE_ASAN=ON"
-  - MATRIX_EVAL="export ENABLE_USAN=ON"
-  - MATRIX_EVAL="export ENABLE_TSAN=ON"
+  # - MATRIX_EVAL="export VALGRIND=ON"
+  # - MATRIX_EVAL="export ENABLE_ASAN=ON"
+  # - MATRIX_EVAL="export ENABLE_USAN=ON"
+  # - MATRIX_EVAL="export ENABLE_TSAN=ON"
 
 script:
 - eval "${MATRIX_EVAL}"
