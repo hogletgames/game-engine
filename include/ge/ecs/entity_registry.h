@@ -30,63 +30,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_ECS_ENTITY_H_
-#define GE_ECS_ENTITY_H_
+#ifndef GE_ECS_ENTITY_REGISTRY_H_
+#define GE_ECS_ENTITY_REGISTRY_H_
 
-#include <ge/ecs/entity_registry.h>
+#include <ge/core/asserts.h>
+#include <ge/core/core.h>
 
 #include <entt/entt.hpp>
 
 namespace GE {
 
-class GE_API Entity
+class Entity;
+class Scene;
+
+class GE_API EntityRegistry
 {
 public:
-    using ID = entt::entity;
+    explicit EntityRegistry(Scene* scene);
 
-    Entity() = default;
-    Entity(ID id, EntityRegistry* registry);
-
-    ID getID() const { return m_id; }
-    bool isNull() const { return m_id != nullID(); }
+    Entity create(const std::string& name = {});
 
     template<typename T, typename... Args>
-    T& addComponent(Args&&... args)
+    T& addComponent(const Entity& entity, Args&&... args)
     {
-        return m_registry->addComponent<T>(*this, std::forward<Args>(args)...);
+        GE_ASSERT_MSG(!hasComponent<T>(entity), "Entity has already had this component");
+        return m_registry.emplace<T>(getNativeID(entity), std::forward<Args>(args)...);
     }
 
     template<typename T>
-    void removeComponent()
+    void removeComponent(const Entity& entity)
     {
-        m_registry->removeComponent<T>(*this);
+        GE_ASSERT_MSG(hasComponent<T>(entity), "Unable to remove non-existent component");
+        m_registry.remove<T>(getNativeID(entity));
     }
 
     template<typename T>
-    const T& getComponent() const
+    T& getComponent(const Entity& entity)
     {
-        return m_registry->getComponent<T>(*this);
+        GE_ASSERT_MSG(hasComponent<T>(entity), "Unable to get non-existent component");
+        return m_registry.get<T>(getNativeID(entity));
     }
 
     template<typename T>
-    T& getComponent()
+    bool hasComponent(const Entity& entity) const
     {
-        return m_registry->getComponent<T>(*this);
+        return m_registry.has<T>(getNativeID(entity));
     }
-
-    template<typename T>
-    bool hasComponent() const
-    {
-        return m_registry->hasComponent<T>(*this);
-    }
-
-    static constexpr ID nullID() { return entt::null; }
 
 private:
-    ID m_id{nullID()};
-    EntityRegistry* m_registry{nullptr};
+    using NativeEntityID = entt::entity;
+
+    static NativeEntityID getNativeID(const Entity& entity);
+
+    Scene* m_scene{nullptr};
+    entt::registry m_registry;
 };
 
 } // namespace GE
 
-#endif // GE_ECS_ENTITY_H_
+#endif // GE_ECS_ENTITY_REGISTRY_H_

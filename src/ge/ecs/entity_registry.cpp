@@ -30,63 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_ECS_ENTITY_H_
-#define GE_ECS_ENTITY_H_
+#include "entity_registry.h"
+#include "components.h"
+#include "entity.h"
 
-#include <ge/ecs/entity_registry.h>
+#include "ge/debug/profile.h"
 
-#include <entt/entt.hpp>
+namespace {
+
+constexpr auto ENTITY_TAG_DEFAULT = "Entity";
+
+} // namespace
 
 namespace GE {
 
-class GE_API Entity
+EntityRegistry::EntityRegistry(Scene* scene)
+    : m_scene{scene}
 {
-public:
-    using ID = entt::entity;
+    GE_PROFILE_FUNC();
 
-    Entity() = default;
-    Entity(ID id, EntityRegistry* registry);
+    GE_UNUSED(m_scene);
+}
 
-    ID getID() const { return m_id; }
-    bool isNull() const { return m_id != nullID(); }
+Entity EntityRegistry::create(const std::string& name)
+{
+    GE_PROFILE_FUNC();
 
-    template<typename T, typename... Args>
-    T& addComponent(Args&&... args)
-    {
-        return m_registry->addComponent<T>(*this, std::forward<Args>(args)...);
-    }
+    Entity entity{m_registry.create(), this};
 
-    template<typename T>
-    void removeComponent()
-    {
-        m_registry->removeComponent<T>(*this);
-    }
+    entity.addComponent<TransformComponent>();
 
-    template<typename T>
-    const T& getComponent() const
-    {
-        return m_registry->getComponent<T>(*this);
-    }
+    auto& tag = entity.addComponent<TagComponent>().tag;
+    tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
 
-    template<typename T>
-    T& getComponent()
-    {
-        return m_registry->getComponent<T>(*this);
-    }
+    return entity;
+}
 
-    template<typename T>
-    bool hasComponent() const
-    {
-        return m_registry->hasComponent<T>(*this);
-    }
+EntityRegistry::NativeEntityID EntityRegistry::getNativeID(const Entity& entity)
+{
+    GE_PROFILE_FUNC();
 
-    static constexpr ID nullID() { return entt::null; }
-
-private:
-    ID m_id{nullID()};
-    EntityRegistry* m_registry{nullptr};
-};
+    return entity.getID();
+}
 
 } // namespace GE
-
-#endif // GE_ECS_ENTITY_H_
