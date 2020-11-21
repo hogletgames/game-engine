@@ -116,6 +116,7 @@ install(DIRECTORY include/ge
 # Include directories
 include_directories(include)
 include_directories(SYSTEM
+    third-party/entt/single_include
     third-party/glm
     third-party/imgui
     third-party/spdlog/include
