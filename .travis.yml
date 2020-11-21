@@ -5,11 +5,11 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
-    - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main"
+    - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
       key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
     packages:
-    - clang-format-11
-    - clang-tidy-11
+    - clang-format-10
+    - clang-tidy-10
     - cmake
     - gcc-10
     - g++-10
@@ -22,8 +22,8 @@ env:
   - CXX=g++-10
   - BUILD_TESTS=ON
   - BUILD_EXAMPLES=ON
-  - CLANG_FORMAT_BIN=clang-format-11
-  - RUN_CLANG_TIDY_BIN=run-clang-tidy-11
+  - CLANG_FORMAT_BIN=clang-format-10
+  - RUN_CLANG_TIDY_BIN=run-clang-tidy-10
   - RELEASE_ARGS="BUILD_TYPE=Release DISABLE_ASSERTS=ON ENABLE_DEBUG=OFF
       ENABLE_PROFILING=OFF LOG_LEVEL=GE_COMPILED_LOGLVL_CRITICAL"
   - DEBUG_ARGS="BUILD_TYPE=Debug DISABLE_ASSERTS=OFF ENABLE_DEBUG=ON ENABLE_PROFILING=ON
@@ -31,10 +31,10 @@ env:
   jobs:
   - MATRIX_EVAL="export ${RELEASE_ARGS}"
   - MATRIX_EVAL="export ${DEBUG_ARGS}"
-  - MATRIX_EVAL="export VALGRIND=ON"
-  - MATRIX_EVAL="export ENABLE_ASAN=ON"
-  - MATRIX_EVAL="export ENABLE_USAN=ON"
-  - MATRIX_EVAL="export ENABLE_TSAN=ON"
+  # - MATRIX_EVAL="export VALGRIND=ON"
+  # - MATRIX_EVAL="export ENABLE_ASAN=ON"
+  # - MATRIX_EVAL="export ENABLE_USAN=ON"
+  # - MATRIX_EVAL="export ENABLE_TSAN=ON"
 
 script:
 - eval "${MATRIX_EVAL}"
