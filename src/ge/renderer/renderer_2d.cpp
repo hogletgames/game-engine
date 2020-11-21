@@ -43,6 +43,8 @@
 #include "ge/core/log.h"
 #include "ge/core/utils.h"
 #include "ge/debug/profile.h"
+#include "ge/ecs/components.h"
+#include "ge/ecs/entity.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -179,40 +181,23 @@ void Renderer2D::end()
     flush();
 }
 
+void Renderer2D::draw(const Entity& entity)
+{
+    GE_PROFILE_FUNC();
+
+    draw_object_t draw_object{};
+    draw_object.transform = entity.getComponent<TransformComponent>().getTransform();
+    draw_object.color = entity.getComponent<SpriteRendererComponent>().color;
+
+    get()->draw(draw_object);
+}
+
 void Renderer2D::draw(const quad_t& quad)
 {
     GE_PROFILE_FUNC();
 
-    constexpr glm::mat4 quad_ver_pos = {{-0.5f, -0.5f, 0.0f, 1.0f},
-                                        {0.5f, -0.5f, 0.0f, 1.0f},
-                                        {0.5f, 0.5f, 0.0f, 1.0f},
-                                        {-0.5f, 0.5f, 0.0f, 1.0f}};
-    constexpr glm::mat4x2 tex_coords = {
-        {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
-
-    auto& curr_vert_element = get()->m_curr_vert_element;
-    auto& vert_array = get()->m_quad_vert_array;
-    auto curr_elem_distance = std::distance(curr_vert_element, vert_array.end());
-    size_t vert_elements_left = curr_elem_distance > 0 ? curr_elem_distance : 0;
-
-    if (vert_elements_left < VERT_PER_QUAD) {
-        flush();
-    }
-
-    uint32_t tex_slot = get()->getTexSlot(quad.texture);
-    glm::mat4 transform = getTransformMat(quad);
-
-    for (size_t i{0}; i < VERT_PER_QUAD; i++) {
-        curr_vert_element->pos = transform * quad_ver_pos[i];
-        curr_vert_element->color = quad.color;
-        curr_vert_element->tex_coord = tex_coords[i];
-        curr_vert_element->tex_index = tex_slot;
-        curr_vert_element->tiling_factor = quad.tiling_factor;
-        ++curr_vert_element;
-    }
-
-    get()->m_index_count += IND_PER_QUAD;
-    get()->m_stats.quad_count++;
+    get()->draw(draw_object_t{getTransformMat(quad), quad.color, quad.texture,
+                              quad.tiling_factor});
 }
 
 void Renderer2D::flush()
@@ -226,7 +211,7 @@ void Renderer2D::flush()
         return;
     }
 
-    uint32_t vert_count = std::distance(vert_array.begin(), get()->m_curr_vert_element);
+    uint32_t vert_count = std::distance(vert_array.begin(), curr_vert_element);
     get()->m_quad_vbo->setData(vert_array.data(), vert_count * sizeof(quad_vertex_t));
 
     for (uint32_t i{0}; i < get()->m_curr_free_tex_slot; i++) {
@@ -258,6 +243,39 @@ void Renderer2D::resetStats()
 Renderer2D::Renderer2D()
     : m_quad_vert_array(DRAW_CALL_VERT_MAX)
 {}
+
+void Renderer2D::draw(const draw_object_t& draw_object)
+{
+    GE_PROFILE_FUNC();
+
+    static constexpr glm::mat4 quad_ver_pos = {{-0.5f, -0.5f, 0.0f, 1.0f},
+                                               {0.5f, -0.5f, 0.0f, 1.0f},
+                                               {0.5f, 0.5f, 0.0f, 1.0f},
+                                               {-0.5f, 0.5f, 0.0f, 1.0f}};
+    static constexpr glm::mat4x2 tex_coords = {
+        {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+
+    auto curr_elem_distance = std::distance(m_curr_vert_element, m_quad_vert_array.end());
+    size_t vert_elements_left = curr_elem_distance > 0 ? curr_elem_distance : 0;
+
+    if (vert_elements_left < VERT_PER_QUAD) {
+        flush();
+    }
+
+    uint32_t tex_slot = getTexSlot(draw_object.texture);
+
+    for (size_t i{0}; i < VERT_PER_QUAD; i++) {
+        m_curr_vert_element->pos = draw_object.transform * quad_ver_pos[i];
+        m_curr_vert_element->color = draw_object.color;
+        m_curr_vert_element->tex_coord = tex_coords[i];
+        m_curr_vert_element->tex_index = tex_slot;
+        m_curr_vert_element->tiling_factor = draw_object.tiling_factor;
+        ++m_curr_vert_element;
+    }
+
+    m_index_count += IND_PER_QUAD;
+    m_stats.quad_count++;
+}
 
 void Renderer2D::initializeTextures()
 {

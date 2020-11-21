@@ -42,6 +42,7 @@
 
 namespace GE {
 
+class Entity;
 class OrthographicCamera;
 class Texture2D;
 class VertexArray;
@@ -84,6 +85,7 @@ public:
     static void begin(const OrthographicCamera& camera);
     static void end();
 
+    static void draw(const Entity& entity);
     static void draw(const quad_t& quad);
     static void flush();
 
@@ -91,6 +93,13 @@ public:
     static void resetStats();
 
 private:
+    struct draw_object_t {
+        glm::mat4 transform{1.0f};
+        glm::vec4 color{1.0f};
+        Shared<Texture2D> texture;
+        float tiling_factor{1.0f};
+    };
+
     struct quad_vertex_t {
         glm::vec3 pos{};
         glm::vec4 color{};
@@ -109,6 +118,9 @@ private:
     using QVAIterator = QuadVertexArray::iterator;
 
     Renderer2D();
+
+    void draw(const draw_object_t& draw_object);
+
     void initializeTextures();
 
     Shared<ShaderProgram> loadShader(const std::string& name,
