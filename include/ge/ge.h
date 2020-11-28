@@ -51,6 +51,7 @@
 #include <ge/ecs/components.h>
 #include <ge/ecs/entity.h>
 #include <ge/ecs/scene.h>
+#include <ge/ecs/scene_camera.h>
 
 #include <ge/gui/gui.h>
 
