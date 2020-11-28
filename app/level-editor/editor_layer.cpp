@@ -72,6 +72,11 @@ void EditorLayer::onAttach()
     square.addComponent<GE::SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
     square.getComponent<GE::TransformComponent>().scale = glm::vec3{0.5f};
 
+    auto main_camera = scene->createCamera("Main Camera");
+    main_camera.addComponent<GE::NativeScriptComponent>()
+        .bind<GE::CameraControllerScript>(main_camera);
+    scene->setMainCamera(main_camera);
+
     m_editor_state =
         GE::makeShared<EditorState>(std::move(framebuffer), std::move(scene));
 
@@ -157,6 +162,7 @@ void EditorLayer::updateViewport()
     if (is_vp_changed && is_vp_positive) {
         m_editor_state->framebuffer()->resize(viewport);
         m_vp_camera.resize(viewport);
+        m_editor_state->scene()->onViewportResize(viewport);
     }
 }
 
