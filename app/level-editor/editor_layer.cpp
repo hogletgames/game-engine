@@ -97,14 +97,12 @@ void EditorLayer::onUpdate(GE::Timestamp delta_time)
         m_vp_camera.onUpdate(delta_time);
     }
 
-    m_editor_state->framebuffer()->bind();
-    GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
     GE::Renderer2D::resetStats();
 
-    {
-        GE::Begin<GE::Renderer2D> begin{m_vp_camera.getCamera()};
-        m_editor_state->scene()->onUpdate(delta_time);
-    }
+    m_editor_state->framebuffer()->bind();
+
+    GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+    m_editor_state->scene()->onUpdate(delta_time);
 
     m_editor_state->framebuffer()->unbind();
 }

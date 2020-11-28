@@ -53,6 +53,16 @@ EntityRegistry::EntityRegistry(Scene* scene)
     GE_UNUSED(m_scene);
 }
 
+void EntityRegistry::onViewportResize(const glm::vec2& viewport)
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.view<CameraComponent>().each(
+        [&viewport]([[maybe_unused]] auto entity, auto& camera) {
+            camera.camera.setViewport(viewport);
+        });
+}
+
 Entity EntityRegistry::create(const std::string& name)
 {
     GE_PROFILE_FUNC();

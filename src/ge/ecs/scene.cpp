@@ -31,9 +31,12 @@
  */
 
 #include "scene.h"
-#include "entity.h"
+#include "components.h"
 
+#include "ge/core/begin.h"
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
+#include "ge/renderer/renderer_2d.h"
 
 namespace GE {
 
@@ -45,7 +48,20 @@ void Scene::onUpdate([[maybe_unused]] Timestamp delta_time)
 {
     GE_PROFILE_FUNC();
 
+    if (m_main_camera.isNull()) {
+        return;
+    }
+
+    Begin<GE::Renderer2D> begin{m_main_camera};
     m_registry.drawEntities();
+}
+
+void Scene::onViewportResize(const glm::vec2& viewport)
+{
+    GE_PROFILE_FUNC();
+
+    m_viewport = viewport;
+    m_registry.onViewportResize(m_viewport);
 }
 
 Entity Scene::createEntity(const std::string& name)
@@ -53,6 +69,28 @@ Entity Scene::createEntity(const std::string& name)
     GE_PROFILE_FUNC();
 
     return m_registry.create(name);
+}
+
+Entity Scene::createCamera(const std::string& name)
+{
+    GE_PROFILE_FUNC();
+
+    auto camera = createEntity(name);
+    camera.addComponent<CameraComponent>();
+    return camera;
+}
+
+bool Scene::setMainCamera(const Entity& camera)
+{
+    GE_PROFILE_FUNC();
+
+    if (!camera.hasComponent<CameraComponent>()) {
+        GE_CORE_ERR("Trying to set entity without CameraComponent as main camera");
+        return false;
+    }
+
+    m_main_camera = camera;
+    return true;
 }
 
 } // namespace GE

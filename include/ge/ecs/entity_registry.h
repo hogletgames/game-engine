@@ -37,6 +37,7 @@
 #include <ge/core/core.h>
 
 #include <entt/entt.hpp>
+#include <glm/glm.hpp>
 
 namespace GE {
 
@@ -47,6 +48,8 @@ class GE_API EntityRegistry
 {
 public:
     explicit EntityRegistry(Scene* scene);
+
+    void onViewportResize(const glm::vec2& viewport);
 
     Entity create(const std::string& name = {});
 
