@@ -34,6 +34,7 @@
 #define GE_ECS_COMPONENTS_H_
 
 #include <ge/core/core.h>
+#include <ge/ecs/scene_camera.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -41,6 +42,11 @@
 #include <string>
 
 namespace GE {
+
+struct GE_API CameraComponent {
+    SceneCamera camera;
+    bool fixed_aspect_ratio{false};
+};
 
 struct GE_API SpriteRendererComponent {
     glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
