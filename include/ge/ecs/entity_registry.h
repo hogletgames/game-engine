@@ -35,6 +35,7 @@
 
 #include <ge/core/asserts.h>
 #include <ge/core/core.h>
+#include <ge/core/timestamp.h>
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
@@ -49,6 +50,7 @@ class GE_API EntityRegistry
 public:
     explicit EntityRegistry(Scene* scene);
 
+    void onUpdate(Timestamp dt);
     void onViewportResize(const glm::vec2& viewport);
 
     Entity create(const std::string& name = {});

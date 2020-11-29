@@ -48,6 +48,8 @@ void Scene::onUpdate([[maybe_unused]] Timestamp delta_time)
 {
     GE_PROFILE_FUNC();
 
+    m_registry.onUpdate(delta_time);
+
     if (m_main_camera.isNull()) {
         return;
     }

@@ -53,6 +53,14 @@ EntityRegistry::EntityRegistry(Scene* scene)
     GE_UNUSED(m_scene);
 }
 
+void EntityRegistry::onUpdate(Timestamp dt)
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.view<NativeScriptComponent>().each(
+        [dt]([[maybe_unused]] auto entity, auto& script) { script.onUpdate(dt); });
+}
+
 void EntityRegistry::onViewportResize(const glm::vec2& viewport)
 {
     GE_PROFILE_FUNC();
