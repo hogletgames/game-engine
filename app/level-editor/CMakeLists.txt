@@ -3,12 +3,17 @@ list(APPEND LE_LEVEL_EDITOR_SRC
     editor_layer.h
     level_editor.cpp
     panels/panel_base.h
+    panels/statistic_panel.cpp
+    panels/statistic_panel.h
 )
 
 add_executable(level_editor ${LE_LEVEL_EDITOR_SRC})
 target_link_libraries(level_editor
     ge
     docopt
+)
+target_include_directories(level_editor PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_include_directories(level_editor SYSTEM PRIVATE
     ${CMAKE_SOURCE_DIR}/third-party/docopt

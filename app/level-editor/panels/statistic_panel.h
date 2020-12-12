@@ -31,37 +31,20 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#ifndef LE_PANELS_STATISTIC_PANEL_H_
+#define LE_PANELS_STATISTIC_PANEL_H_
 
-#include <ge/empty_layer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
+#include <panels/panel_base.h>
 
 namespace LE {
 
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+class GE_API StatisticPanel: public PanelBase
 {
 public:
-    EditorLayer();
-
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
     void onGuiRender() override;
-
-private:
-    void showMenuBar();
-
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::OrthoCameraController m_camera_controller;
-    GE::Renderer2D::quad_t m_editable_quad{};
+    void clear() override{};
 };
 
 } // namespace LE
 
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#endif // LE_STATISTIC_PANEL_H_

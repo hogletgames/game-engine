@@ -30,38 +30,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#include "statistic_panel.h"
 
-#include <ge/empty_layer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
+#include "ge/debug/profile.h"
+#include "ge/renderer/renderer_2d.h"
+
+#include <imgui.h>
 
 namespace LE {
 
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+void StatisticPanel::onGuiRender()
 {
-public:
-    EditorLayer();
+    GE_PROFILE_FUNC();
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
-    void onGuiRender() override;
+    auto stats = GE::Renderer2D::getStats();
 
-private:
-    void showMenuBar();
+    if (ImGui::Begin("Statistic")) {
+        ImGui::Text("Renderer2D Statistic");
+        ImGui::Separator();
+        ImGui::Text("Draw calls: %u", stats.draw_calls_count);
+        ImGui::Text("Quads: %u", stats.quad_count);
+        ImGui::Text("Vertices: %u", stats.vertex_count);
+        ImGui::Text("Indices: %u", stats.index_count);
+    }
 
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::OrthoCameraController m_camera_controller;
-    GE::Renderer2D::quad_t m_editable_quad{};
-};
+    ImGui::End();
+}
 
 } // namespace LE
-
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_

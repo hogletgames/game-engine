@@ -31,11 +31,11 @@
  */
 
 #include "editor_layer.h"
+#include "panels/statistic_panel.h"
 
 #include "ge/debug/profile.h"
 #include "ge/ge.h"
 
-#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 
 namespace {
@@ -58,6 +58,15 @@ void EditorLayer::onAttach()
     GE_PROFILE_FUNC();
 
     m_editable_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
+
+    m_panels = {GE::makeShared<StatisticPanel>()};
+}
+
+void EditorLayer::onDetach()
+{
+    GE_PROFILE_FUNC();
+
+    m_panels.clear();
 }
 
 void EditorLayer::onUpdate(GE::Timestamp delta_time)
@@ -87,7 +96,10 @@ void EditorLayer::onGuiRender()
     GE_PROFILE_FUNC();
 
     showMenuBar();
-    showSettingsPanel();
+
+    for (auto& panel : m_panels) {
+        panel->onGuiRender();
+    }
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
@@ -102,32 +114,6 @@ void EditorLayer::showMenuBar()
 
         ImGui::EndMainMenuBar();
     }
-}
-
-void EditorLayer::showSettingsPanel()
-{
-    GE_PROFILE_FUNC();
-
-    auto stats = GE::Renderer2D::getStats();
-    auto cam_pos = m_camera_controller.getCamera().getPosition();
-    float cam_rotation = m_camera_controller.getCamera().getRotation();
-
-    if (ImGui::Begin("Settings")) {
-        ImGui::ColorEdit4("Quad Color", glm::value_ptr(m_editable_quad.color));
-        ImGui::Separator();
-        ImGui::Text("Renderer2D stats:");
-        ImGui::Text("Draw calls: %u", stats.draw_calls_count);
-        ImGui::Text("Quads: %u", stats.quad_count);
-        ImGui::Text("Vertices: %u", stats.vertex_count);
-        ImGui::Text("Indices: %u", stats.index_count);
-        ImGui::Separator();
-        ImGui::Text("Camera:");
-        ImGui::Text("Zoom: %f", m_camera_controller.getZoom());
-        ImGui::Text("Camera position:(%f, %f, %f)", cam_pos.x, cam_pos.y, cam_pos.z);
-        ImGui::Text("Camera rotation: %f", cam_rotation);
-    }
-
-    ImGui::End();
 }
 
 } // namespace LE
