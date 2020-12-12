@@ -2,6 +2,7 @@ list(APPEND LE_LEVEL_EDITOR_SRC
     editor_layer.cpp
     editor_layer.h
     level_editor.cpp
+    panels/panel_base.h
 )
 
 add_executable(level_editor ${LE_LEVEL_EDITOR_SRC})
