@@ -1,6 +1,7 @@
 list(APPEND LE_LEVEL_EDITOR_SRC
     editor_layer.cpp
     editor_layer.h
+    editor_state.h
     level_editor.cpp
     panels/panel_base.h
     panels/statistic_panel.cpp
