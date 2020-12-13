@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-18.04
+    container: hogletgames/game-engine
+    strategy:
+      matrix:
+        build-type: [release, debug, valgrind, asan, usan, tsan]
+        include:
+          - build-type: release
+            BUILD_TYPE: Release
+            DISABLE_ASSERTS: ON
+            ENABLE_DEBUG: OFF
+            ENABLE_PROFILING: OFF
+            LOG_LEVEL: GE_COMPILED_LOGLVL_CRITICAL
+          - build-type: debug
+            BUILD_TYPE: Debug
+            DISABLE_ASSERTS: OFF
+            ENABLE_DEBUG: ON
+            ENABLE_PROFILING: ON
+            LOG_LEVEL: GE_COMPILED_LOGLVL_TRACE
+          - build-type: valgrind
+            VALGRIND: ON
+          - build-type: asan
+            ENABLE_ASAN: ON
+          - build-type: usan
+            ENABLE_USAN: ON
+          - build-type: tsan
+            ENABLE_TSAN: ON
+    env:
+      CC: gcc-10
+      CXX: g++-10
+      BUILD_TESTS: ON
+      BUILD_EXAMPLES: ON
+      BUILD_TYPE: ${{matrix.BUILD_TYPE}}
+      DISABLE_ASSERTS: ${{matrix.DISABLE_ASSERTS}}
+      ENABLE_DEBUG: ${{matrix.ENABLE_DEBUG}}
+      ENABLE_PROFILING: ${{matrix.ENABLE_PROFILING}}
+      LOG_LEVEL: ${{matrix.LOG_LEVEL}}
+      VALGRIND: ${{matrix.VALGRIND}}
+      ENABLE_ASAN: ${{matrix.ENABLE_ASAN}}
+      ENABLE_USAN: ${{matrix.ENABLE_USAN}}
+      ENABLE_TSAN: ${{matrix.ENABLE_TSAN}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build project
+        run: make -j$(nproc)
+      - name: Run tests
+        run: make test
+
+  clang-tools:
+    runs-on: ubuntu-18.04
+    container: hogletgames/game-engine
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: clang-format check
+        run: bash tools/clang_format.sh --clang-format-bin clang-format-10
+      - name: clang-tidy check
+        run: make RUN_CLANG_TIDY_BIN=run-clang-tidy-10 clang-tidy
