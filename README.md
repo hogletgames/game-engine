@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/hogletgames/game-engine.svg?branch=master)](https://travis-ci.com/hogletgames/game-engine)
+![CI](https://github.com/hogletgames/game-engine/workflows/CI/badge.svg?branch=master)
 
 ## Game Engine
 
