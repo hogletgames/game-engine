@@ -55,8 +55,8 @@ Window::Window(properties_t prop)
     : m_prop(std::move(prop))
 {
     GE_PROFILE_FUNC();
-    GE_CORE_DBG("Create window '{}', ({}, {})", m_prop.title, m_prop.width,
-                m_prop.height);
+    GE_CORE_DBG("Create window '{}', ({}, {}), VSync: {}", m_prop.title, m_prop.width,
+                m_prop.height, m_prop.vsync);
 
     int32_t pos_x = SDL_WINDOWPOS_CENTERED;
     int32_t pos_y = SDL_WINDOWPOS_CENTERED;
@@ -78,6 +78,8 @@ Window::Window(properties_t prop)
 
     SDLCall(SDL_GL_MakeCurrent(m_window, m_context->getNativeContext()));
     m_context->initialize();
+
+    setVSync(m_prop.vsync);
 
     GE_CORE_DBG("Window '{}' created", m_prop.title);
 }
@@ -123,7 +125,7 @@ void Window::setVSync(bool enabled)
         SDLCall(SDL_GL_SetSwapInterval(VSYNC_OFF));
     }
 
-    m_vsync = enabled;
+    m_prop.vsync = enabled;
 }
 
 void Window::onUpdate()

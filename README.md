@@ -31,6 +31,32 @@ Install:
 make install CC=gcc CXX=g++ BUILD_TUPE=Release INSTALL_PREFIX=~/.local -j$(nproc)
 ```
 
+### How to build project using Docker
+
+Creating Docker image:
+
+```bash
+make docker_init
+```
+
+Removing Docker image
+
+```bash
+make docker_shutdown
+```
+
+Building project inside Docker container:
+
+```bash
+make BUILD_TESTS=ON BUILD_EXAMPLES=ON docker_build
+```
+
+Running tests:
+
+```bash
+make DOCKER_RUN_CMD="make test" docker_run
+```
+
 ### What about tests?
 Build tests:
 ```bash

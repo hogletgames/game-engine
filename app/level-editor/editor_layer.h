@@ -30,50 +30,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gui_layer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
 
-#include "ge/debug/profile.h"
-#include "ge/ge.h"
+#include <ge/empty_layer.h>
+#include <ge/renderer/ortho_camera_controller.h>
+#include <ge/renderer/renderer_2d.h>
 
-using WindowProp = GE::Window::properties_t;
+namespace LE {
 
-namespace {
+class PanelBase;
 
-constexpr float ASPECT_RATIO_DEFAULT{static_cast<float>(WindowProp::WIDTH_DEFAULT) /
-                                     WindowProp::HEIGHT_DEFAULT};
-
-} // namespace
-
-namespace GE::Examples {
-
-GuiLayer::GuiLayer(bool show_gui_demo, const char* name)
-    : EmptyLayer{name}
-    , m_camera_controller{ASPECT_RATIO_DEFAULT, true}
-    , m_show_gui_demo{show_gui_demo}
-{}
-
-void GuiLayer::onUpdate(Timestamp delta_time)
+class GE_API EditorLayer: public GE::EmptyLayer
 {
-    GE_PROFILE_FUNC();
+public:
+    EditorLayer();
 
-    m_camera_controller.onUpdate(delta_time);
-    RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0});
-}
+    void onAttach() override;
+    void onDetach() override;
+    void onUpdate(GE::Timestamp delta_time) override;
+    void onEvent(GE::Event *event) override;
+    void onGuiRender() override;
 
-void GuiLayer::onEvent(Event* event)
-{
-    GE_PROFILE_FUNC();
+private:
+    void showMenuBar();
 
-    m_camera_controller.onEvent(event);
-}
+    std::vector<GE::Shared<PanelBase>> m_panels;
 
-void GuiLayer::onGuiRender()
-{
-    GE_PROFILE_FUNC();
+    GE::OrthoCameraController m_camera_controller;
+    GE::Renderer2D::quad_t m_editable_quad{};
+};
 
-    if (m_show_gui_demo) {
-        ImGui::ShowDemoWindow(&m_show_gui_demo);
-    }
-}
+} // namespace LE
 
-} // namespace GE::Examples
+#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_

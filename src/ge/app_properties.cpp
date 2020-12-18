@@ -42,12 +42,17 @@
 #include <filesystem>
 #include <fstream>
 
-#define PROP_RENDER_API    "general.render_api"
-#define PROP_CORE_LOGLVL   "general.core_loglvl"
-#define PROP_CLIENT_LOGLVL "general.client_loglvl"
-#define PROP_ASSETS_DIR    "general.assets_dir"
-
 namespace {
+
+constexpr auto PROP_GENERAL_RENDER_API = "general.render_api";
+constexpr auto PROP_GENERAL_CORE_LOGLVL = "general.core_loglvl";
+constexpr auto PROP_GENERAL_CLIENT_LOGLVL = "general.client_loglvl";
+constexpr auto PROP_GENERAL_ASSETS_DIR = "general.assets_dir";
+
+constexpr auto PROP_WINDOW_TITLE = "window.title";
+constexpr auto PROP_WINDOW_WIDTH = "window.width";
+constexpr auto PROP_WINDOW_HEIGHT = "window.height";
+constexpr auto PROP_WINDOW_VSYNC = "window.vsync";
 
 bool createFileIfNotExist(const std::string& filename)
 {
@@ -68,10 +73,16 @@ std::string getPropString(const boost::property_tree::ptree& ptree,
 
 void dumpProperties([[maybe_unused]] const GE::AppProperties::properties_t& props)
 {
-    GE_CORE_INFO("Render API: {}", GE::toString(props.api));
-    GE_CORE_INFO("Core log level: {}", GE::toString(props.core_log_lvl));
-    GE_CORE_INFO("Client log level: {}", GE::toString(props.client_log_lvl));
-    GE_CORE_INFO("Assets directory: {}", props.assets_dir);
+    GE_CORE_INFO("General:");
+    GE_CORE_INFO("\tRender API: {}", GE::toString(props.api));
+    GE_CORE_INFO("\tCore log level: {}", GE::toString(props.core_log_lvl));
+    GE_CORE_INFO("\tClient log level: {}", GE::toString(props.client_log_lvl));
+    GE_CORE_INFO("\tAssets directory: {}", props.assets_dir);
+    GE_CORE_INFO("Window:");
+    GE_CORE_INFO("\tTitle: {}", props.window.title);
+    GE_CORE_INFO("\tWidth: {}", props.window.width);
+    GE_CORE_INFO("\tHeight: {}", props.window.height);
+    GE_CORE_INFO("\tVSync: {}", props.window.vsync);
 }
 
 } // namespace
@@ -97,14 +108,29 @@ bool AppProperties::read(const std::string& filename, properties_t* props)
         return false;
     }
 
-    std::string render_api_str = getPropString(ptree, PROP_RENDER_API, GE_OPEN_GL_API);
-    std::string core_log_lvl = getPropString(ptree, PROP_CORE_LOGLVL, GE_LOGLVL_INFO);
-    std::string client_log_lvl = getPropString(ptree, PROP_CLIENT_LOGLVL, GE_LOGLVL_INFO);
+    // general
+    std::string render_api_str =
+        getPropString(ptree, PROP_GENERAL_RENDER_API, GE_OPEN_GL_API);
+    std::string core_log_lvl =
+        getPropString(ptree, PROP_GENERAL_CORE_LOGLVL, GE_LOGLVL_INFO);
+    std::string client_log_lvl =
+        getPropString(ptree, PROP_GENERAL_CLIENT_LOGLVL, GE_LOGLVL_INFO);
 
     props->api = toRendAPI(render_api_str);
     props->core_log_lvl = toLogLvl(core_log_lvl);
     props->client_log_lvl = toLogLvl(client_log_lvl);
-    props->assets_dir = ptree.get<std::string>(PROP_ASSETS_DIR, Paths::ASSETS_DIR);
+    props->assets_dir =
+        ptree.get<std::string>(PROP_GENERAL_ASSETS_DIR, Paths::ASSETS_DIR);
+
+    // window
+    using WindowProps = Window::properties_t;
+    props->window.title =
+        ptree.get<std::string>(PROP_WINDOW_TITLE, WindowProps::TITLE_DEFAULT);
+    props->window.width =
+        ptree.get<uint32_t>(PROP_WINDOW_WIDTH, WindowProps::WIDTH_DEFAULT);
+    props->window.height =
+        ptree.get<uint32_t>(PROP_WINDOW_HEIGHT, WindowProps::HEIGHT_DEFAULT);
+    props->window.vsync = ptree.get<bool>(PROP_WINDOW_VSYNC, WindowProps::VSYNC_DEFAULT);
 
     GE_CORE_INFO("Reading app properties: Succeed", filename);
     dumpProperties(*props);
@@ -122,10 +148,18 @@ bool AppProperties::write(const std::string& filename, const properties_t& props
     GE_ASSERT(!filename.empty());
 
     try {
-        ptree.put<std::string>(PROP_RENDER_API, toString(props.api));
-        ptree.put<std::string>(PROP_CORE_LOGLVL, toString(props.core_log_lvl));
-        ptree.put<std::string>(PROP_CLIENT_LOGLVL, toString(props.client_log_lvl));
-        ptree.put<std::string>(PROP_ASSETS_DIR, props.assets_dir);
+        // general
+        ptree.put<std::string>(PROP_GENERAL_RENDER_API, toString(props.api));
+        ptree.put<std::string>(PROP_GENERAL_CORE_LOGLVL, toString(props.core_log_lvl));
+        ptree.put<std::string>(PROP_GENERAL_CLIENT_LOGLVL,
+                               toString(props.client_log_lvl));
+        ptree.put<std::string>(PROP_GENERAL_ASSETS_DIR, props.assets_dir);
+
+        // window
+        ptree.put<std::string>(PROP_WINDOW_TITLE, props.window.title);
+        ptree.put<uint32_t>(PROP_WINDOW_WIDTH, props.window.width);
+        ptree.put<uint32_t>(PROP_WINDOW_HEIGHT, props.window.height);
+        ptree.put<bool>(PROP_WINDOW_VSYNC, props.window.vsync);
 
         boost::property_tree::ini_parser::write_ini(filename, ptree);
     } catch (const std::exception& e) {

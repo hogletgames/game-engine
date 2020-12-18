@@ -30,50 +30,96 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gui_layer.h"
+#include "editor_layer.h"
+#include "panels/statistic_panel.h"
 
 #include "ge/debug/profile.h"
 #include "ge/ge.h"
 
-using WindowProp = GE::Window::properties_t;
+#include <imgui.h>
+
+using WindowProps = GE::Window::properties_t;
 
 namespace {
 
-constexpr float ASPECT_RATIO_DEFAULT{static_cast<float>(WindowProp::WIDTH_DEFAULT) /
-                                     WindowProp::HEIGHT_DEFAULT};
+constexpr float ASPECT_RATION_DEFAULT{static_cast<float>(WindowProps::WIDTH_DEFAULT) /
+                                      WindowProps::HEIGHT_DEFAULT};
 
 } // namespace
 
-namespace GE::Examples {
+namespace LE {
 
-GuiLayer::GuiLayer(bool show_gui_demo, const char* name)
-    : EmptyLayer{name}
-    , m_camera_controller{ASPECT_RATIO_DEFAULT, true}
-    , m_show_gui_demo{show_gui_demo}
-{}
+EditorLayer::EditorLayer()
+    : m_camera_controller{ASPECT_RATION_DEFAULT, true}
+{
+    GE_PROFILE_FUNC();
+}
 
-void GuiLayer::onUpdate(Timestamp delta_time)
+void EditorLayer::onAttach()
+{
+    GE_PROFILE_FUNC();
+
+    m_editable_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
+
+    m_panels = {GE::makeShared<StatisticPanel>()};
+}
+
+void EditorLayer::onDetach()
+{
+    GE_PROFILE_FUNC();
+
+    m_panels.clear();
+}
+
+void EditorLayer::onUpdate(GE::Timestamp delta_time)
 {
     GE_PROFILE_FUNC();
 
     m_camera_controller.onUpdate(delta_time);
-    RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0});
+
+    GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+
+    {
+        GE::Begin<GE::Renderer2D> begin{m_camera_controller.getCamera()};
+        GE::Renderer2D::resetStats();
+        GE::Renderer2D::draw(m_editable_quad);
+    }
 }
 
-void GuiLayer::onEvent(Event* event)
+void EditorLayer::onEvent(GE::Event* event)
 {
     GE_PROFILE_FUNC();
 
     m_camera_controller.onEvent(event);
 }
 
-void GuiLayer::onGuiRender()
+void EditorLayer::onGuiRender()
 {
     GE_PROFILE_FUNC();
 
-    if (m_show_gui_demo) {
-        ImGui::ShowDemoWindow(&m_show_gui_demo);
+    showMenuBar();
+
+    for (auto& panel : m_panels) {
+        panel->onGuiRender();
     }
 }
 
-} // namespace GE::Examples
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void EditorLayer::showMenuBar()
+{
+    GE_PROFILE_FUNC();
+
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Exit")) {
+                GE::Application::close();
+            }
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+    }
+}
+
+} // namespace LE

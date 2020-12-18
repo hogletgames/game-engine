@@ -2,7 +2,7 @@
 
 CLANG_FORMAT_BIN=clang-format
 EXIT_CODE=0
-PATHS_TO_SRC="./examples ./include/ge ./src/ge ./tests"
+PATHS_TO_SRC="./app ./examples ./include/ge ./src/ge ./tests"
 SRC_FILES=$(find ${PATHS_TO_SRC} -name "*.h" -o -name "*.cpp")
 
 while [[ -n $1 ]]; do

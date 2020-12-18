@@ -52,10 +52,11 @@ class WindowRestoredEvent;
 class GE_API Application
 {
 public:
-    static bool initialize();
+    static bool initialize(const Window::properties_t& window_props);
     static void shutdown();
 
     static void run();
+    static void close();
 
     static void pushLayer(Shared<Layer> layer);
     static void pushOverlay(Shared<Layer> overlay);
@@ -92,7 +93,7 @@ private:
     WindowState m_window_state{WindowState::NONE};
 
     LayerStack m_layer_stack;
-    bool m_runnign{true};
+    bool m_running{true};
     Timestamp m_prev_frame_time;
 };
 

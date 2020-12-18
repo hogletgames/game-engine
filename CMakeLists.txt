@@ -122,6 +122,9 @@ include_directories(SYSTEM
 )
 
 # Subdirectories
+add_subdirectory(app)
+add_subdirectory(src)
+
 if(GE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
@@ -131,4 +134,3 @@ endif()
 if(NOT GE_EXPORT_COMPILE_CMD)
     add_subdirectory(third-party)
 endif()
-add_subdirectory(src)

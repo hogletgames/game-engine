@@ -52,12 +52,13 @@ public:
     static void shutdown();
 
     void setVSync(bool enabled) override;
-    bool isVSync() const override { return m_vsync; }
+    bool isVSync() const override { return m_prop.vsync; }
 
     void* getNativeWindow() const override { return m_window; };
     void* getNativeContext() const override { return m_context->getNativeContext(); }
     uint32_t getWidth() const override { return m_prop.width; }
     uint32_t getHeight() const override { return m_prop.height; }
+    const properties_t& getProps() const override { return m_prop; }
 
     void onUpdate() override;
     void setEventCallback(WinEventCallback callback) override
@@ -76,7 +77,6 @@ private:
 
     WinEventCallback m_event_callback;
     properties_t m_prop;
-    bool m_vsync{true};
 };
 
 } // namespace GE::UNIX

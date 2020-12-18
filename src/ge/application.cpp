@@ -44,14 +44,14 @@
 
 namespace GE {
 
-bool Application::initialize()
+bool Application::initialize(const Window::properties_t& window_props)
 {
     GE_PROFILE_FUNC();
     GE_CORE_DBG("Initialize Application");
 
     auto& window = get()->m_window;
 
-    if (window = Window::create(); window == nullptr) {
+    if (window = Window::create(window_props); window == nullptr) {
         GE_CORE_ERR("Failed to create Window");
         return false;
     }
@@ -76,6 +76,13 @@ void Application::run()
     get()->mainLoop();
 }
 
+void Application::close()
+{
+    GE_PROFILE_FUNC();
+
+    get()->m_running = false;
+}
+
 void Application::pushLayer(Shared<Layer> layer)
 {
     GE_PROFILE_FUNC();
@@ -97,7 +104,7 @@ void Application::mainLoop()
     GE_PROFILE_FUNC();
     m_prev_frame_time = Timestamp::now();
 
-    while (m_runnign) {
+    while (m_running) {
         GE_PROFILE_SCOPE("MainLoop");
 
         Timestamp now = Timestamp::now();
@@ -160,7 +167,7 @@ bool Application::onWindowClosed([[maybe_unused]] const WindowClosedEvent& event
 {
     GE_PROFILE_FUNC();
 
-    m_runnign = false;
+    m_running = false;
     return true;
 }
 

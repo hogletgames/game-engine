@@ -30,50 +30,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gui_layer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef LE_PANELS_PANEL_BASE_H_
+#define LE_PANELS_PANEL_BASE_H_
 
-#include "ge/debug/profile.h"
-#include "ge/ge.h"
+#include <ge/core/interface.h>
 
-using WindowProp = GE::Window::properties_t;
+namespace LE {
 
-namespace {
-
-constexpr float ASPECT_RATIO_DEFAULT{static_cast<float>(WindowProp::WIDTH_DEFAULT) /
-                                     WindowProp::HEIGHT_DEFAULT};
-
-} // namespace
-
-namespace GE::Examples {
-
-GuiLayer::GuiLayer(bool show_gui_demo, const char* name)
-    : EmptyLayer{name}
-    , m_camera_controller{ASPECT_RATIO_DEFAULT, true}
-    , m_show_gui_demo{show_gui_demo}
-{}
-
-void GuiLayer::onUpdate(Timestamp delta_time)
+class GE_API PanelBase: public GE::Interface
 {
-    GE_PROFILE_FUNC();
+public:
+    virtual void onGuiRender() = 0;
+    virtual void clear() = 0;
+};
 
-    m_camera_controller.onUpdate(delta_time);
-    RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0});
-}
+} // namespace LE
 
-void GuiLayer::onEvent(Event* event)
-{
-    GE_PROFILE_FUNC();
-
-    m_camera_controller.onEvent(event);
-}
-
-void GuiLayer::onGuiRender()
-{
-    GE_PROFILE_FUNC();
-
-    if (m_show_gui_demo) {
-        ImGui::ShowDemoWindow(&m_show_gui_demo);
-    }
-}
-
-} // namespace GE::Examples
+#endif // LE_PANELS_PANEL_BASE_H_
