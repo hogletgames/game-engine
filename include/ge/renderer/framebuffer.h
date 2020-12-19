@@ -30,45 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#ifndef GE_RENDERER_FRAMEBUFFER_H_
+#define GE_RENDERER_FRAMEBUFFER_H_
 
-#include <ge/empty_layer.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
+#include <ge/core/interface.h>
 
 #include <glm/glm.hpp>
 
-namespace LE {
+namespace GE {
 
-class EditorState;
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+class GE_API Framebuffer: public Interface
 {
 public:
-    EditorLayer();
+    struct properties_t {
+        uint32_t width{0};
+        uint32_t height{0};
+        uint32_t samples{1};
+        bool swap_chain_target{false};
+    };
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
-    void onGuiRender() override;
+    virtual void bind() = 0;
+    virtual void unbind() = 0;
 
-private:
-    void showMenuBar();
+    virtual void resize(const glm::vec2& size) = 0;
 
-    void updateViewport();
+    virtual uint32_t getColorAttachmentID() const = 0;
+    virtual const properties_t& getProps() const = 0;
 
-    GE::Shared<EditorState> m_editor_state;
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::OrthoCameraController m_vp_camera;
-    GE::Renderer2D::quad_t m_editable_quad{};
+    static Scoped<GE::Framebuffer> create(const properties_t& props);
 };
 
-} // namespace LE
+} // namespace GE
 
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#endif // GE_RENDERER_FRAMEBUFFER_H_

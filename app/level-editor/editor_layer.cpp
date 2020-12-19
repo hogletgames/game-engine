@@ -31,7 +31,9 @@
  */
 
 #include "editor_layer.h"
+#include "editor_state.h"
 #include "panels/statistic_panel.h"
+#include "panels/viewport_panel.h"
 
 #include "ge/debug/profile.h"
 #include "ge/ge.h"
@@ -50,7 +52,7 @@ constexpr float ASPECT_RATION_DEFAULT{static_cast<float>(WindowProps::WIDTH_DEFA
 namespace LE {
 
 EditorLayer::EditorLayer()
-    : m_camera_controller{ASPECT_RATION_DEFAULT, true}
+    : m_vp_camera{ASPECT_RATION_DEFAULT, true}
 {
     GE_PROFILE_FUNC();
 }
@@ -61,7 +63,15 @@ void EditorLayer::onAttach()
 
     m_editable_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
 
-    m_panels = {GE::makeShared<StatisticPanel>()};
+    GE::Framebuffer::properties_t framebuffer_props{};
+    framebuffer_props.width = GE::Application::getWindow().getWidth();
+    framebuffer_props.height = GE::Application::getWindow().getHeight();
+    auto framebuffer = GE::Framebuffer::create(framebuffer_props);
+
+    m_editor_state = GE::makeShared<EditorState>(std::move(framebuffer));
+
+    m_panels = {GE::makeShared<ViewportPanel>(m_editor_state),
+                GE::makeShared<StatisticPanel>()};
 }
 
 void EditorLayer::onDetach()
@@ -69,34 +79,43 @@ void EditorLayer::onDetach()
     GE_PROFILE_FUNC();
 
     m_panels.clear();
+    m_editor_state.reset();
 }
 
 void EditorLayer::onUpdate(GE::Timestamp delta_time)
 {
     GE_PROFILE_FUNC();
 
-    m_camera_controller.onUpdate(delta_time);
+    updateViewport();
 
+    if (m_editor_state->isVPFocused()) {
+        m_vp_camera.onUpdate(delta_time);
+    }
+
+    m_editor_state->framebuffer()->bind();
     GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
 
     {
-        GE::Begin<GE::Renderer2D> begin{m_camera_controller.getCamera()};
+        GE::Begin<GE::Renderer2D> begin{m_vp_camera.getCamera()};
         GE::Renderer2D::resetStats();
         GE::Renderer2D::draw(m_editable_quad);
     }
+
+    m_editor_state->framebuffer()->unbind();
 }
 
 void EditorLayer::onEvent(GE::Event* event)
 {
     GE_PROFILE_FUNC();
 
-    m_camera_controller.onEvent(event);
+    m_vp_camera.onEvent(event);
 }
 
 void EditorLayer::onGuiRender()
 {
     GE_PROFILE_FUNC();
 
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     showMenuBar();
 
     for (auto& panel : m_panels) {
@@ -119,6 +138,22 @@ void EditorLayer::showMenuBar()
         }
 
         ImGui::EndMainMenuBar();
+    }
+}
+
+void EditorLayer::updateViewport()
+{
+    GE_PROFILE_FUNC();
+
+    const auto& framebuffer_props = m_editor_state->framebuffer()->getProps();
+    const auto& viewport = m_editor_state->viewport();
+    bool is_vp_positive = viewport.x > 0 && viewport.y > 0;
+    bool is_vp_changed = framebuffer_props.width != viewport.x ||
+                         framebuffer_props.height != viewport.y;
+
+    if (is_vp_changed && is_vp_positive) {
+        m_editor_state->framebuffer()->resize(viewport);
+        m_vp_camera.resize(viewport);
     }
 }
 

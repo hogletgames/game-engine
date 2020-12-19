@@ -31,44 +31,37 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#ifndef GE_RENDERER_OPENGL_FRAMEBUFFER_H_
+#define GE_RENDERER_OPENGL_FRAMEBUFFER_H_
 
-#include <ge/empty_layer.h>
 #include <ge/renderer/framebuffer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
 
-#include <glm/glm.hpp>
+namespace GE::OpenGL {
 
-namespace LE {
-
-class EditorState;
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+class Framebuffer: public ::GE::Framebuffer
 {
 public:
-    EditorLayer();
+    explicit Framebuffer(const properties_t& props);
+    ~Framebuffer() override;
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
-    void onGuiRender() override;
+    void bind() override;
+    void unbind() override;
+
+    void resize(const glm::vec2& size) override;
+
+    uint32_t getColorAttachmentID() const override { return m_color_attachment_id; }
+    const properties_t& getProps() const override { return m_props; }
 
 private:
-    void showMenuBar();
+    void create();
+    void release();
 
-    void updateViewport();
-
-    GE::Shared<EditorState> m_editor_state;
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::OrthoCameraController m_vp_camera;
-    GE::Renderer2D::quad_t m_editable_quad{};
+    uint32_t m_id{};
+    uint32_t m_color_attachment_id{};
+    uint32_t m_depth_attachment_id{};
+    properties_t m_props{};
 };
 
-} // namespace LE
+} // namespace GE::OpenGL
 
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#endif // GE_RENDERER_OPENGL_FRAMEBUFFER_H_

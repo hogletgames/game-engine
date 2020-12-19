@@ -42,8 +42,6 @@ class Event;
 class GE_API Gui
 {
 public:
-    Gui() = delete;
-
     static bool initialize();
     static void shutdown();
 
@@ -51,6 +49,20 @@ public:
     static void end();
 
     static void onEvent(Event* event);
+
+    static void blockEvents(bool is_blocked) { get()->m_is_events_blocked = is_blocked; }
+    static bool isEventsBlocked() { return get()->m_is_events_blocked; }
+
+private:
+    Gui() = default;
+
+    static Gui* get()
+    {
+        static Gui instance;
+        return &instance;
+    }
+
+    bool m_is_events_blocked{true};
 };
 
 } // namespace GE

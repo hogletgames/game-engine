@@ -112,6 +112,14 @@ void OrthoCameraController::onEvent(Event *event)
     dispatcher.dispatch<WindowResizedEvent>(GE_BIND_EVENT_FN(onWindowResizedEvent));
 }
 
+void OrthoCameraController::resize(const glm::vec2 &size)
+{
+    GE_PROFILE_FUNC();
+
+    m_aspect_ratio = size.x / size.y;
+    setCameraProjection();
+}
+
 void OrthoCameraController::setZoom(float zoom)
 {
     GE_PROFILE_FUNC();
@@ -134,8 +142,7 @@ bool OrthoCameraController::onWindowResizedEvent(const WindowResizedEvent &event
 {
     GE_PROFILE_FUNC();
 
-    m_aspect_ratio = static_cast<float>(event.getWidth()) / event.getHeight();
-    setCameraProjection();
+    resize({event.getWidth(), event.getHeight()});
     return false;
 }
 

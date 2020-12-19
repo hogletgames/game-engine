@@ -31,44 +31,37 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#ifndef LE_EDITOR_STATE_H_
+#define LE_EDITOR_STATE_H_
 
-#include <ge/empty_layer.h>
 #include <ge/renderer/framebuffer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
 
 #include <glm/glm.hpp>
 
 namespace LE {
 
-class EditorState;
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+class GE_API EditorState
 {
 public:
-    EditorLayer();
+    explicit EditorState(GE::Scoped<GE::Framebuffer> framebuffer)
+        : m_framebuffer{std::move(framebuffer)}
+    {}
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
-    void onGuiRender() override;
+    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
+    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
+
+    void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
+    const glm::vec2& viewport() const { return m_viewport; }
+
+    void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
+    bool isVPFocused() const { return m_is_vp_focused; }
 
 private:
-    void showMenuBar();
-
-    void updateViewport();
-
-    GE::Shared<EditorState> m_editor_state;
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::OrthoCameraController m_vp_camera;
-    GE::Renderer2D::quad_t m_editable_quad{};
+    GE::Scoped<GE::Framebuffer> m_framebuffer;
+    glm::vec2 m_viewport{0.0f, 0.0f};
+    bool m_is_vp_focused{false};
 };
 
 } // namespace LE
 
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#endif // LE_EDITOR_STATE_H_

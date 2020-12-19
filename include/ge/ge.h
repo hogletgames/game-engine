@@ -52,6 +52,7 @@
 
 #include <ge/renderer/buffer_layout.h>
 #include <ge/renderer/buffers.h>
+#include <ge/renderer/framebuffer.h>
 #include <ge/renderer/graphics_context.h>
 #include <ge/renderer/ortho_camera_controller.h>
 #include <ge/renderer/orthographic_camera.h>

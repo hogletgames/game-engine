@@ -30,45 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#include "framebuffer.h"
+#include "opengl/framebuffer.h"
+#include "renderer.h"
 
-#include <ge/empty_layer.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
+#include "ge/core/asserts.h"
+#include "ge/core/utils.h"
+#include "ge/debug/profile.h"
 
-#include <glm/glm.hpp>
+namespace GE {
 
-namespace LE {
-
-class EditorState;
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+Scoped<GE::Framebuffer> Framebuffer::create(const properties_t& props)
 {
-public:
-    EditorLayer();
+    GE_PROFILE_FUNC();
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
-    void onGuiRender() override;
+    switch (Renderer::getAPI()) {
+        case GE_OPEN_GL_API: return makeScoped<OpenGL::Framebuffer>(props);
+        default: GE_CORE_ASSERT_MSG(false, "Unsupported API: '{}'", Renderer::getAPI());
+    }
 
-private:
-    void showMenuBar();
+    return nullptr;
+}
 
-    void updateViewport();
-
-    GE::Shared<EditorState> m_editor_state;
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::OrthoCameraController m_vp_camera;
-    GE::Renderer2D::quad_t m_editable_quad{};
-};
-
-} // namespace LE
-
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+} // namespace GE

@@ -31,44 +31,27 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#ifndef LE_PANELS_VIEWPORT_PANEL_H_
+#define LE_PANELS_VIEWPORT_PANEL_H_
 
-#include <ge/empty_layer.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
-
-#include <glm/glm.hpp>
+#include <panels/panel_base.h>
 
 namespace LE {
 
 class EditorState;
-class PanelBase;
 
-class GE_API EditorLayer: public GE::EmptyLayer
+class GE_API ViewportPanel: public PanelBase
 {
 public:
-    EditorLayer();
+    explicit ViewportPanel(GE::Shared<EditorState> editor_state);
 
-    void onAttach() override;
-    void onDetach() override;
-    void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
     void onGuiRender() override;
+    void clear() override{};
 
 private:
-    void showMenuBar();
-
-    void updateViewport();
-
     GE::Shared<EditorState> m_editor_state;
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::OrthoCameraController m_vp_camera;
-    GE::Renderer2D::quad_t m_editable_quad{};
 };
 
 } // namespace LE
 
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#endif // LE_PANELS_VIEWPORT_PANEL_H_
