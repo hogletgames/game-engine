@@ -48,10 +48,14 @@ class Entity;
 class GE_API Scene
 {
 public:
+    using ForeachCallback = EntityRegistry::ForeachCallback;
+
     Scene();
 
     void onUpdate(Timestamp delta_time);
     void onViewportResize(const glm::vec2& viewport);
+
+    void eachEntity(const ForeachCallback& callback);
 
     Entity createEntity(const std::string& name = {});
     Entity createCamera(const std::string& name = {});

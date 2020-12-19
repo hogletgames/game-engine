@@ -66,6 +66,13 @@ void Scene::onViewportResize(const glm::vec2& viewport)
     m_registry.onViewportResize(m_viewport);
 }
 
+void Scene::eachEntity(const ForeachCallback& callback)
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.eachEntity(callback);
+}
+
 Entity Scene::createEntity(const std::string& name)
 {
     GE_PROFILE_FUNC();

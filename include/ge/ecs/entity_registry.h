@@ -48,6 +48,8 @@ class Scene;
 class GE_API EntityRegistry
 {
 public:
+    using ForeachCallback = std::function<void(Entity)>;
+
     explicit EntityRegistry(Scene* scene);
 
     void onUpdate(Timestamp dt);
@@ -85,8 +87,43 @@ public:
 
     void drawEntities();
 
+    void eachEntity(const ForeachCallback& callback)
+    {
+        m_registry.each([&](auto entity_id) { callback({entity_id, this}); });
+    }
+
+    template<typename... Args>
+    void eachEntityWith(const ForeachCallback& callback)
+    {
+        if constexpr (sizeof...(Args) > 1) {
+            eachEntityGroup<Args...>(callback);
+        } else {
+            eachEntityView<Args...>(callback);
+        }
+    }
+
 private:
     using NativeEntityID = entt::entity;
+
+    template<typename Component, typename... Args>
+    void eachEntityGroup(const ForeachCallback& callback)
+    {
+        auto group = m_registry.group<Component>(entt::get<Args...>);
+
+        for (auto entity_id : group) {
+            callback({entity_id, this});
+        }
+    }
+
+    template<typename Component>
+    void eachEntityView(const ForeachCallback& callback)
+    {
+        auto view = m_registry.view<Component>();
+
+        for (auto entity_id : view) {
+            callback({entity_id, this});
+        }
+    }
 
     static NativeEntityID getNativeID(const Entity& entity);
 
