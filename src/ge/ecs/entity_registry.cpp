@@ -85,6 +85,13 @@ Entity EntityRegistry::create(const std::string& name)
     return entity;
 }
 
+void EntityRegistry::destroy(const Entity& entity)
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.destroy(entity.getID());
+}
+
 void EntityRegistry::drawEntities()
 {
     GE_PROFILE_FUNC();

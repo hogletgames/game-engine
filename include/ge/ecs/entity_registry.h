@@ -54,6 +54,7 @@ public:
     void onViewportResize(const glm::vec2& viewport);
 
     Entity create(const std::string& name = {});
+    void destroy(const Entity& entity);
 
     template<typename T, typename... Args>
     T& addComponent(const Entity& entity, Args&&... args)

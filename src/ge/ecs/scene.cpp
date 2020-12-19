@@ -82,6 +82,13 @@ Entity Scene::createCamera(const std::string& name)
     return camera;
 }
 
+void Scene::destroyEntity(const Entity& entity)
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.destroy(entity);
+}
+
 bool Scene::setMainCamera(const Entity& camera)
 {
     GE_PROFILE_FUNC();
