@@ -30,45 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef LE_EDITOR_STATE_H_
-#define LE_EDITOR_STATE_H_
+#ifndef GE_ECS_COMPONENTS_H_
+#define GE_ECS_COMPONENTS_H_
 
-#include <ge/ecs/scene.h>
-#include <ge/renderer/framebuffer.h>
+#include <ge/core/core.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-namespace LE {
+#include <string>
 
-class GE_API EditorState
-{
-public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Scoped<GE::Scene> scene)
-        : m_framebuffer{std::move(framebuffer)}
-        , m_scene{std::move(scene)}
-    {}
+namespace GE {
 
-    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
-    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
-
-    void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
-    const glm::vec2& viewport() const { return m_viewport; }
-
-    void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
-    bool isVPFocused() const { return m_is_vp_focused; }
-
-    const GE::Scoped<GE::Scene>& scene() const { return m_scene; }
-    GE::Scoped<GE::Scene>& scene() { return m_scene; }
-
-private:
-    GE::Scoped<GE::Framebuffer> m_framebuffer;
-    glm::vec2 m_viewport{0.0f, 0.0f};
-    bool m_is_vp_focused{false};
-
-    GE::Scoped<GE::Scene> m_scene;
+struct GE_API SpriteRendererComponent {
+    glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
 };
 
-} // namespace LE
+struct GE_API TagComponent {
+    std::string tag;
+};
 
-#endif // LE_EDITOR_STATE_H_
+struct GE_API TransformComponent {
+    glm::vec3 translation{0.0f, 0.0f, 0.0f};
+    glm::vec3 rotation{0.0f, 0.0f, 0.0f};
+    glm::vec3 scale{1.0f, 1.0f, 1.0f};
+
+    glm::mat4 getTransform() const
+    {
+        glm::mat4 rot = glm::rotate(glm::mat4{1.0f}, rotation.x, {1, 0, 0});
+        rot = glm::rotate(rot, rotation.y, {0, 1, 0});
+        rot = glm::rotate(rot, rotation.z, {0, 0, 1});
+
+        return glm::translate(glm::mat4{1.0f}, translation) * rot *
+               glm::scale(glm::mat4{1.0f}, scale);
+    }
+};
+
+} // namespace GE
+
+#endif // GE_ECS_COMPONENTS_H_

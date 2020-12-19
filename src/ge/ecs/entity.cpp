@@ -30,45 +30,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef LE_EDITOR_STATE_H_
-#define LE_EDITOR_STATE_H_
+#include "entity.h"
 
-#include <ge/ecs/scene.h>
-#include <ge/renderer/framebuffer.h>
+#include "ge/debug/profile.h"
 
-#include <glm/glm.hpp>
+namespace GE {
 
-namespace LE {
-
-class GE_API EditorState
+Entity::Entity(ID id, EntityRegistry* registry)
+    : m_id{id}
+    , m_registry{registry}
 {
-public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Scoped<GE::Scene> scene)
-        : m_framebuffer{std::move(framebuffer)}
-        , m_scene{std::move(scene)}
-    {}
+    GE_PROFILE_FUNC();
+}
 
-    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
-    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
-
-    void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
-    const glm::vec2& viewport() const { return m_viewport; }
-
-    void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
-    bool isVPFocused() const { return m_is_vp_focused; }
-
-    const GE::Scoped<GE::Scene>& scene() const { return m_scene; }
-    GE::Scoped<GE::Scene>& scene() { return m_scene; }
-
-private:
-    GE::Scoped<GE::Framebuffer> m_framebuffer;
-    glm::vec2 m_viewport{0.0f, 0.0f};
-    bool m_is_vp_focused{false};
-
-    GE::Scoped<GE::Scene> m_scene;
-};
-
-} // namespace LE
-
-#endif // LE_EDITOR_STATE_H_
+} // namespace GE

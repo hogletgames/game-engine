@@ -17,6 +17,7 @@ set(GE_RENDERER_SRC
 
 add_library(ge-renderer STATIC ${GE_RENDERER_SRC})
 target_link_libraries(ge-renderer PUBLIC
+    ge-ecs
     ge-renderer-opengl
 )
 target_include_directories(ge-renderer PRIVATE

@@ -30,45 +30,59 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef LE_EDITOR_STATE_H_
-#define LE_EDITOR_STATE_H_
+#include "entity_registry.h"
+#include "components.h"
+#include "entity.h"
 
-#include <ge/ecs/scene.h>
-#include <ge/renderer/framebuffer.h>
+#include "ge/debug/profile.h"
+#include "ge/renderer/renderer_2d.h"
 
-#include <glm/glm.hpp>
+namespace {
 
-namespace LE {
+constexpr auto ENTITY_TAG_DEFAULT = "Entity";
 
-class GE_API EditorState
+} // namespace
+
+namespace GE {
+
+EntityRegistry::EntityRegistry(Scene* scene)
+    : m_scene{scene}
 {
-public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Scoped<GE::Scene> scene)
-        : m_framebuffer{std::move(framebuffer)}
-        , m_scene{std::move(scene)}
-    {}
+    GE_PROFILE_FUNC();
 
-    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
-    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
+    GE_UNUSED(m_scene);
+}
 
-    void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
-    const glm::vec2& viewport() const { return m_viewport; }
+Entity EntityRegistry::create(const std::string& name)
+{
+    GE_PROFILE_FUNC();
 
-    void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
-    bool isVPFocused() const { return m_is_vp_focused; }
+    Entity entity{m_registry.create(), this};
 
-    const GE::Scoped<GE::Scene>& scene() const { return m_scene; }
-    GE::Scoped<GE::Scene>& scene() { return m_scene; }
+    entity.addComponent<TransformComponent>();
 
-private:
-    GE::Scoped<GE::Framebuffer> m_framebuffer;
-    glm::vec2 m_viewport{0.0f, 0.0f};
-    bool m_is_vp_focused{false};
+    auto& tag = entity.addComponent<TagComponent>().tag;
+    tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
 
-    GE::Scoped<GE::Scene> m_scene;
-};
+    return entity;
+}
 
-} // namespace LE
+void EntityRegistry::drawEntities()
+{
+    GE_PROFILE_FUNC();
 
-#endif // LE_EDITOR_STATE_H_
+    auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+
+    for (auto entity : group) {
+        Renderer2D::draw({entity, this});
+    }
+}
+
+EntityRegistry::NativeEntityID EntityRegistry::getNativeID(const Entity& entity)
+{
+    GE_PROFILE_FUNC();
+
+    return entity.getID();
+}
+
+} // namespace GE

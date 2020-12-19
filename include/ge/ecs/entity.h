@@ -30,45 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef LE_EDITOR_STATE_H_
-#define LE_EDITOR_STATE_H_
+#ifndef GE_ECS_ENTITY_H_
+#define GE_ECS_ENTITY_H_
 
-#include <ge/ecs/scene.h>
-#include <ge/renderer/framebuffer.h>
+#include <ge/ecs/entity_registry.h>
 
-#include <glm/glm.hpp>
+#include <entt/entt.hpp>
 
-namespace LE {
+namespace GE {
 
-class GE_API EditorState
+class GE_API Entity
 {
 public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Scoped<GE::Scene> scene)
-        : m_framebuffer{std::move(framebuffer)}
-        , m_scene{std::move(scene)}
-    {}
+    using ID = entt::entity;
 
-    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
-    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
+    Entity() = default;
+    Entity(ID id, EntityRegistry* registry);
 
-    void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
-    const glm::vec2& viewport() const { return m_viewport; }
+    ID getID() const { return m_id; }
+    bool isNull() const { return m_id != nullID(); }
 
-    void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
-    bool isVPFocused() const { return m_is_vp_focused; }
+    template<typename T, typename... Args>
+    T& addComponent(Args&&... args)
+    {
+        return m_registry->addComponent<T>(*this, std::forward<Args>(args)...);
+    }
 
-    const GE::Scoped<GE::Scene>& scene() const { return m_scene; }
-    GE::Scoped<GE::Scene>& scene() { return m_scene; }
+    template<typename T>
+    void removeComponent()
+    {
+        m_registry->removeComponent<T>(*this);
+    }
+
+    template<typename T>
+    const T& getComponent() const
+    {
+        return m_registry->getComponent<T>(*this);
+    }
+
+    template<typename T>
+    T& getComponent()
+    {
+        return m_registry->getComponent<T>(*this);
+    }
+
+    template<typename T>
+    bool hasComponent() const
+    {
+        return m_registry->hasComponent<T>(*this);
+    }
+
+    static constexpr ID nullID() { return entt::null; }
 
 private:
-    GE::Scoped<GE::Framebuffer> m_framebuffer;
-    glm::vec2 m_viewport{0.0f, 0.0f};
-    bool m_is_vp_focused{false};
-
-    GE::Scoped<GE::Scene> m_scene;
+    ID m_id{nullID()};
+    EntityRegistry* m_registry{nullptr};
 };
 
-} // namespace LE
+} // namespace GE
 
-#endif // LE_EDITOR_STATE_H_
+#endif // GE_ECS_ENTITY_H_

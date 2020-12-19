@@ -30,45 +30,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef LE_EDITOR_STATE_H_
-#define LE_EDITOR_STATE_H_
+#include "scene.h"
+#include "entity.h"
 
-#include <ge/ecs/scene.h>
-#include <ge/renderer/framebuffer.h>
+#include "ge/debug/profile.h"
 
-#include <glm/glm.hpp>
+namespace GE {
 
-namespace LE {
+Scene::Scene()
+    : m_registry{this}
+{}
 
-class GE_API EditorState
+void Scene::onUpdate([[maybe_unused]] Timestamp delta_time)
 {
-public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Scoped<GE::Scene> scene)
-        : m_framebuffer{std::move(framebuffer)}
-        , m_scene{std::move(scene)}
-    {}
+    GE_PROFILE_FUNC();
 
-    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
-    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
+    m_registry.drawEntities();
+}
 
-    void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
-    const glm::vec2& viewport() const { return m_viewport; }
+Entity Scene::createEntity(const std::string& name)
+{
+    GE_PROFILE_FUNC();
 
-    void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
-    bool isVPFocused() const { return m_is_vp_focused; }
+    return m_registry.create(name);
+}
 
-    const GE::Scoped<GE::Scene>& scene() const { return m_scene; }
-    GE::Scoped<GE::Scene>& scene() { return m_scene; }
-
-private:
-    GE::Scoped<GE::Framebuffer> m_framebuffer;
-    glm::vec2 m_viewport{0.0f, 0.0f};
-    bool m_is_vp_focused{false};
-
-    GE::Scoped<GE::Scene> m_scene;
-};
-
-} // namespace LE
-
-#endif // LE_EDITOR_STATE_H_
+} // namespace GE

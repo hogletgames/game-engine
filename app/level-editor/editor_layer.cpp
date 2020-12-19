@@ -61,14 +61,19 @@ void EditorLayer::onAttach()
 {
     GE_PROFILE_FUNC();
 
-    m_editable_quad.color = {0.8f, 0.3f, 0.3f, 1.0f};
-
     GE::Framebuffer::properties_t framebuffer_props{};
     framebuffer_props.width = GE::Application::getWindow().getWidth();
     framebuffer_props.height = GE::Application::getWindow().getHeight();
     auto framebuffer = GE::Framebuffer::create(framebuffer_props);
 
-    m_editor_state = GE::makeShared<EditorState>(std::move(framebuffer));
+    auto scene = GE::makeScoped<GE::Scene>();
+
+    auto square = scene->createEntity("Red Square");
+    square.addComponent<GE::SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    square.getComponent<GE::TransformComponent>().scale = glm::vec3{0.5f};
+
+    m_editor_state =
+        GE::makeShared<EditorState>(std::move(framebuffer), std::move(scene));
 
     m_panels = {GE::makeShared<ViewportPanel>(m_editor_state),
                 GE::makeShared<StatisticPanel>()};
@@ -94,11 +99,11 @@ void EditorLayer::onUpdate(GE::Timestamp delta_time)
 
     m_editor_state->framebuffer()->bind();
     GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+    GE::Renderer2D::resetStats();
 
     {
         GE::Begin<GE::Renderer2D> begin{m_vp_camera.getCamera()};
-        GE::Renderer2D::resetStats();
-        GE::Renderer2D::draw(m_editable_quad);
+        m_editor_state->scene()->onUpdate(delta_time);
     }
 
     m_editor_state->framebuffer()->unbind();

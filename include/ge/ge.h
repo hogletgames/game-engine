@@ -48,6 +48,10 @@
 #include <ge/core/timestamp.h>
 #include <ge/core/utils.h>
 
+#include <ge/ecs/components.h>
+#include <ge/ecs/entity.h>
+#include <ge/ecs/scene.h>
+
 #include <ge/gui/gui.h>
 
 #include <ge/renderer/buffer_layout.h>

@@ -30,45 +30,64 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef LE_EDITOR_STATE_H_
-#define LE_EDITOR_STATE_H_
+#ifndef GE_ECS_ENTITY_REGISTRY_H_
+#define GE_ECS_ENTITY_REGISTRY_H_
 
-#include <ge/ecs/scene.h>
-#include <ge/renderer/framebuffer.h>
+#include <ge/core/asserts.h>
+#include <ge/core/core.h>
 
-#include <glm/glm.hpp>
+#include <entt/entt.hpp>
 
-namespace LE {
+namespace GE {
 
-class GE_API EditorState
+class Entity;
+class Scene;
+
+class GE_API EntityRegistry
 {
 public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Scoped<GE::Scene> scene)
-        : m_framebuffer{std::move(framebuffer)}
-        , m_scene{std::move(scene)}
-    {}
+    explicit EntityRegistry(Scene* scene);
 
-    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
-    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
+    Entity create(const std::string& name = {});
 
-    void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
-    const glm::vec2& viewport() const { return m_viewport; }
+    template<typename T, typename... Args>
+    T& addComponent(const Entity& entity, Args&&... args)
+    {
+        GE_ASSERT_MSG(!hasComponent<T>(entity), "Entity has already had this component");
+        return m_registry.emplace<T>(getNativeID(entity), std::forward<Args>(args)...);
+    }
 
-    void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
-    bool isVPFocused() const { return m_is_vp_focused; }
+    template<typename T>
+    void removeComponent(const Entity& entity)
+    {
+        GE_ASSERT_MSG(hasComponent<T>(entity), "Unable to remove non-existent component");
+        m_registry.remove<T>(getNativeID(entity));
+    }
 
-    const GE::Scoped<GE::Scene>& scene() const { return m_scene; }
-    GE::Scoped<GE::Scene>& scene() { return m_scene; }
+    template<typename T>
+    T& getComponent(const Entity& entity)
+    {
+        GE_ASSERT_MSG(hasComponent<T>(entity), "Unable to get non-existent component");
+        return m_registry.get<T>(getNativeID(entity));
+    }
+
+    template<typename T>
+    bool hasComponent(const Entity& entity) const
+    {
+        return m_registry.has<T>(getNativeID(entity));
+    }
+
+    void drawEntities();
 
 private:
-    GE::Scoped<GE::Framebuffer> m_framebuffer;
-    glm::vec2 m_viewport{0.0f, 0.0f};
-    bool m_is_vp_focused{false};
+    using NativeEntityID = entt::entity;
 
-    GE::Scoped<GE::Scene> m_scene;
+    static NativeEntityID getNativeID(const Entity& entity);
+
+    Scene* m_scene{nullptr};
+    entt::registry m_registry;
 };
 
-} // namespace LE
+} // namespace GE
 
-#endif // LE_EDITOR_STATE_H_
+#endif // GE_ECS_ENTITY_REGISTRY_H_
