@@ -48,7 +48,7 @@ public:
     Entity(ID id, EntityRegistry* registry);
 
     ID getID() const { return m_id; }
-    bool isNull() const { return m_id != nullID(); }
+    bool isNull() const { return m_id == nullID(); }
 
     template<typename T, typename... Args>
     T& addComponent(Args&&... args)

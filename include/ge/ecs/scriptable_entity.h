@@ -30,54 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_ECS_SCRIPTABLE_ENTITY_H_
+#define GE_ECS_SCRIPTABLE_ENTITY_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
-
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
 #include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
 #include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-
-#include <ge/ecs/camera_controller_script.h>
-#include <ge/ecs/components.h>
 #include <ge/ecs/entity.h>
-#include <ge/ecs/scene.h>
-#include <ge/ecs/scene_camera.h>
-#include <ge/ecs/scriptable_entity.h>
 
-#include <ge/gui/gui.h>
+namespace GE {
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
+class GE_API ScriptableEntity: public Interface
+{
+public:
+    explicit ScriptableEntity(const Entity& entity)
+        : m_entity{entity}
+    {}
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+    virtual void onCreate() = 0;
+    virtual void onDestroy() = 0;
+    virtual void onUpdate(Timestamp dt) = 0;
 
-#endif // GE_GE_H_
+protected:
+    template<typename T>
+    T& getComponent()
+    {
+        return m_entity.getComponent<T>();
+    }
+
+private:
+    Entity m_entity;
+};
+
+} // namespace GE
+
+#endif // GE_ECS_SCRIPTABLE_ENTITY_H_

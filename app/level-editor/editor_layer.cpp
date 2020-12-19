@@ -68,9 +68,14 @@ void EditorLayer::onAttach()
 
     auto scene = GE::makeScoped<GE::Scene>();
 
-    auto square = scene->createEntity("Red Square");
-    square.addComponent<GE::SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    auto square = scene->createEntity("Green Square");
+    square.addComponent<GE::SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
     square.getComponent<GE::TransformComponent>().scale = glm::vec3{0.5f};
+
+    auto main_camera = scene->createCamera("Main Camera");
+    main_camera.addComponent<GE::NativeScriptComponent>()
+        .bind<GE::CameraControllerScript>(main_camera);
+    scene->setMainCamera(main_camera);
 
     m_editor_state =
         GE::makeShared<EditorState>(std::move(framebuffer), std::move(scene));
@@ -97,14 +102,12 @@ void EditorLayer::onUpdate(GE::Timestamp delta_time)
         m_vp_camera.onUpdate(delta_time);
     }
 
-    m_editor_state->framebuffer()->bind();
-    GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
     GE::Renderer2D::resetStats();
 
-    {
-        GE::Begin<GE::Renderer2D> begin{m_vp_camera.getCamera()};
-        m_editor_state->scene()->onUpdate(delta_time);
-    }
+    m_editor_state->framebuffer()->bind();
+
+    GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+    m_editor_state->scene()->onUpdate(delta_time);
 
     m_editor_state->framebuffer()->unbind();
 }
@@ -159,6 +162,7 @@ void EditorLayer::updateViewport()
     if (is_vp_changed && is_vp_positive) {
         m_editor_state->framebuffer()->resize(viewport);
         m_vp_camera.resize(viewport);
+        m_editor_state->scene()->onViewportResize(viewport);
     }
 }
 

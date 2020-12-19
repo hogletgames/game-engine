@@ -34,6 +34,9 @@
 #define GE_ECS_COMPONENTS_H_
 
 #include <ge/core/core.h>
+#include <ge/core/utils.h>
+#include <ge/ecs/scene_camera.h>
+#include <ge/ecs/scriptable_entity.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -41,6 +44,62 @@
 #include <string>
 
 namespace GE {
+
+class Entity;
+
+struct GE_API CameraComponent {
+    SceneCamera camera;
+    bool fixed_aspect_ratio{false};
+};
+
+struct GE_API NativeScriptComponent {
+    NativeScriptComponent() = default;
+    NativeScriptComponent(const NativeScriptComponent&& other) = delete;
+    NativeScriptComponent& operator=(const NativeScriptComponent& other) = delete;
+
+    NativeScriptComponent(NativeScriptComponent&& other) noexcept
+    {
+        *this = std::move(other);
+    }
+
+    NativeScriptComponent& operator=(NativeScriptComponent&& other) noexcept
+    {
+        if (this != &other) {
+            m_script = std::move(other.m_script);
+        }
+
+        return *this;
+    }
+
+    ~NativeScriptComponent()
+    {
+        if (isScriptBound()) {
+            destroy();
+        }
+    }
+
+    template<typename T, typename... Args>
+    void bind(Args&&... args)
+    {
+        GE_ASSERT_MSG(!m_script, "Scriptable Entity has already been bound!");
+        m_script = makeScoped<T>(std::forward<Args>(args)...);
+        m_script->onCreate();
+    }
+
+    void destroy()
+    {
+        GE_ASSERT_MSG(m_script, "Scriptable Entity hasn't been initialized!");
+        m_script->onDestroy();
+        m_script.reset();
+    }
+
+    void onUpdate(Timestamp dt) { m_script->onUpdate(dt); }
+
+    bool isScriptBound() const { return m_script != nullptr; }
+
+private:
+    Scoped<ScriptableEntity> m_script;
+};
 
 struct GE_API SpriteRendererComponent {
     glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};

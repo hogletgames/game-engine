@@ -169,9 +169,17 @@ void Renderer2D::begin(const OrthographicCamera& camera)
 {
     GE_PROFILE_FUNC();
 
-    auto tex_shader = get()->m_shader_library.get(TEXTURE_SHADER);
-    tex_shader->bind();
-    tex_shader->setUniformMat4(Uniforms::VP_MATRIX, camera.getVPMatrix());
+    get()->begin(camera.getVPMatrix());
+}
+
+void Renderer2D::begin(const Entity& camera)
+{
+    GE_PROFILE_FUNC();
+
+    const auto& transform = camera.getComponent<TransformComponent>().getTransform();
+    const auto& scene_camera = camera.getComponent<CameraComponent>().camera;
+
+    get()->begin(scene_camera.getProjection() * glm::inverse(transform));
 }
 
 void Renderer2D::end()
@@ -243,6 +251,15 @@ void Renderer2D::resetStats()
 Renderer2D::Renderer2D()
     : m_quad_vert_array(DRAW_CALL_VERT_MAX)
 {}
+
+void Renderer2D::begin(const glm::mat4& vp_matrix)
+{
+    GE_PROFILE_FUNC();
+
+    auto tex_shader = m_shader_library.get(TEXTURE_SHADER);
+    tex_shader->bind();
+    tex_shader->setUniformMat4(Uniforms::VP_MATRIX, vp_matrix);
+}
 
 void Renderer2D::draw(const draw_object_t& draw_object)
 {

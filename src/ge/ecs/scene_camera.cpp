@@ -30,77 +30,87 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "entity_registry.h"
-#include "components.h"
-#include "entity.h"
+#include "scene_camera.h"
 
+#include "ge/core/log.h"
 #include "ge/debug/profile.h"
-#include "ge/renderer/renderer_2d.h"
 
-namespace {
-
-constexpr auto ENTITY_TAG_DEFAULT = "Entity";
-
-} // namespace
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace GE {
 
-EntityRegistry::EntityRegistry(Scene* scene)
-    : m_scene{scene}
+SceneCamera::SceneCamera()
 {
     GE_PROFILE_FUNC();
 
-    GE_UNUSED(m_scene);
+    calculateProjection();
 }
 
-void EntityRegistry::onUpdate(Timestamp dt)
+void SceneCamera::setProjectionType(ProjectionType projection_type)
 {
     GE_PROFILE_FUNC();
 
-    m_registry.view<NativeScriptComponent>().each(
-        [dt]([[maybe_unused]] auto entity, auto& script) { script.onUpdate(dt); });
+    m_projection_type = projection_type;
+    calculateProjection();
 }
 
-void EntityRegistry::onViewportResize(const glm::vec2& viewport)
+void SceneCamera::setViewport(const glm::vec2& viewport)
 {
     GE_PROFILE_FUNC();
 
-    m_registry.view<CameraComponent>().each(
-        [&viewport]([[maybe_unused]] auto entity, auto& camera) {
-            camera.camera.setViewport(viewport);
-        });
+    m_aspect_ratio = std::abs(viewport.x / viewport.y);
+    calculateProjection();
 }
 
-Entity EntityRegistry::create(const std::string& name)
+void SceneCamera::setPerspective(const SceneCamera::perspective_params_t& perspective)
 {
     GE_PROFILE_FUNC();
 
-    Entity entity{m_registry.create(), this};
-
-    entity.addComponent<TransformComponent>();
-
-    auto& tag = entity.addComponent<TagComponent>().tag;
-    tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
-
-    return entity;
+    m_perspective = perspective;
+    calculateProjection();
 }
 
-void EntityRegistry::drawEntities()
+void SceneCamera::setOrthographic(const SceneCamera::orthographic_params_t& orthographic)
 {
     GE_PROFILE_FUNC();
 
-    auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+    m_orthographic = orthographic;
+    calculateProjection();
+}
 
-    for (auto entity : group) {
-        Renderer2D::draw({entity, this});
+void SceneCamera::calculateProjection()
+{
+    GE_PROFILE_FUNC();
+
+    switch (m_projection_type) {
+        case ProjectionType::PERSPECTIVE: calculatePerspectiveProjection(); break;
+        case ProjectionType::ORTHOGRAPHIC: calculateOrthographicProjection(); break;
+        default:
+            GE_CORE_ERR("Unknown projection type: {}",
+                        static_cast<int>(m_projection_type));
+            break;
     }
 }
 
-EntityRegistry::NativeEntityID EntityRegistry::getNativeID(const Entity& entity)
+void SceneCamera::calculatePerspectiveProjection()
 {
     GE_PROFILE_FUNC();
 
-    return entity.getID();
+    m_projection = glm::perspective(m_perspective.fov, m_aspect_ratio, m_perspective.near,
+                                    m_perspective.far);
+}
+
+void SceneCamera::calculateOrthographicProjection()
+{
+    GE_PROFILE_FUNC();
+
+    float left = -m_orthographic.size * m_aspect_ratio * 0.5f;
+    float right = m_orthographic.size * m_aspect_ratio * 0.5f;
+    float bottom = -m_orthographic.size * 0.5f;
+    float top = m_orthographic.size * 0.5f;
+
+    m_projection =
+        glm::ortho(left, right, bottom, top, m_orthographic.near, m_orthographic.far);
 }
 
 } // namespace GE

@@ -34,7 +34,10 @@
 #define GE_ECS_SCENE_H_
 
 #include <ge/core/timestamp.h>
+#include <ge/ecs/entity.h>
 #include <ge/ecs/entity_registry.h>
+
+#include <glm/glm.hpp>
 
 #include <string>
 
@@ -48,11 +51,18 @@ public:
     Scene();
 
     void onUpdate(Timestamp delta_time);
+    void onViewportResize(const glm::vec2& viewport);
 
     Entity createEntity(const std::string& name = {});
+    Entity createCamera(const std::string& name = {});
+
+    bool setMainCamera(const Entity& camera);
 
 private:
     EntityRegistry m_registry;
+    Entity m_main_camera;
+
+    glm::vec2 m_viewport{0.0f, 0.0f};
 };
 
 } // namespace GE

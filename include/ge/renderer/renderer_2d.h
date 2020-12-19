@@ -83,6 +83,7 @@ public:
     static const std::string& getAssetsDir();
 
     static void begin(const OrthographicCamera& camera);
+    static void begin(const Entity& camera);
     static void end();
 
     static void draw(const Entity& entity);
@@ -119,6 +120,7 @@ private:
 
     Renderer2D();
 
+    void begin(const glm::mat4& vp_matrix);
     void draw(const draw_object_t& draw_object);
 
     void initializeTextures();

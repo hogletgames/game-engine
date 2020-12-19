@@ -49,7 +49,7 @@ Usage:
 
 Options:
     -h, --help                  Show this help.
-    -p, --profile-file <path>   Enable profiling. [default: empty]
+    -p, --profile-file <path>   Enable profiling.
     -c, --config-file <path>    Path to config file.
 )";
 
@@ -63,9 +63,14 @@ struct app_args_t {
     std::string config_file;
 };
 
+std::string getStringOptIfExist(const docopt::Options& args, const std::string& option)
+{
+    return args.at(option) ? args.at(option).asString() : std::string{};
+}
+
 app_args_t parseArgs(int argc, char** argv)
 {
-    std::map<std::string, docopt::value> args;
+    docopt::Options args;
 
     try {
         args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, true);
@@ -80,7 +85,7 @@ app_args_t parseArgs(int argc, char** argv)
     app_args_t app_args{};
 
     try {
-        app_args.profile_file = args[OPT_PROFILE_FILE].asString();
+        app_args.profile_file = getStringOptIfExist(args, OPT_PROFILE_FILE);
         app_args.config_file = args[OPT_CONFIG_FILE].asString();
     } catch (const std::exception& e) {
         std::cout << "Failed to parse arguments: " << e.what() << std::endl;
