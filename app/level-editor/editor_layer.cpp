@@ -68,8 +68,8 @@ void EditorLayer::onAttach()
 
     auto scene = GE::makeScoped<GE::Scene>();
 
-    auto square = scene->createEntity("Red Square");
-    square.addComponent<GE::SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    auto square = scene->createEntity("Green Square");
+    square.addComponent<GE::SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
     square.getComponent<GE::TransformComponent>().scale = glm::vec3{0.5f};
 
     auto main_camera = scene->createCamera("Main Camera");
