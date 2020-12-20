@@ -50,8 +50,6 @@ class GE_API Scene
 public:
     using ForeachCallback = EntityRegistry::ForeachCallback;
 
-    Scene();
-
     void onUpdate(Timestamp dt);
     void onViewportResize(const glm::vec2& viewport);
 

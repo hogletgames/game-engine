@@ -40,10 +40,6 @@
 
 namespace GE {
 
-Scene::Scene()
-    : m_registry{this}
-{}
-
 void Scene::onUpdate(Timestamp dt)
 {
     GE_PROFILE_FUNC();

@@ -43,14 +43,11 @@
 namespace GE {
 
 class Entity;
-class Scene;
 
 class GE_API EntityRegistry
 {
 public:
     using ForeachCallback = std::function<void(Entity)>;
-
-    explicit EntityRegistry(Scene* scene);
 
     Entity create(const std::string& name = {});
     void destroy(const Entity& entity);
@@ -122,7 +119,6 @@ private:
 
     static NativeEntityID getNativeID(const Entity& entity);
 
-    Scene* m_scene{nullptr};
     entt::registry m_registry;
 };
 

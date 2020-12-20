@@ -44,14 +44,6 @@ constexpr auto ENTITY_TAG_DEFAULT = "Entity";
 
 namespace GE {
 
-EntityRegistry::EntityRegistry(Scene* scene)
-    : m_scene{scene}
-{
-    GE_PROFILE_FUNC();
-
-    GE_UNUSED(m_scene);
-}
-
 Entity EntityRegistry::create(const std::string& name)
 {
     GE_PROFILE_FUNC();
