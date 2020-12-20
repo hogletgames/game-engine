@@ -52,7 +52,7 @@ public:
 
     Scene();
 
-    void onUpdate(Timestamp delta_time);
+    void onUpdate(Timestamp dt);
     void onViewportResize(const glm::vec2& viewport);
 
     void eachEntity(const ForeachCallback& callback);

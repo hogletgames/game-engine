@@ -52,9 +52,6 @@ public:
 
     explicit EntityRegistry(Scene* scene);
 
-    void onUpdate(Timestamp dt);
-    void onViewportResize(const glm::vec2& viewport);
-
     Entity create(const std::string& name = {});
     void destroy(const Entity& entity);
 
@@ -84,8 +81,6 @@ public:
     {
         return m_registry.has<T>(getNativeID(entity));
     }
-
-    void drawEntities();
 
     void eachEntity(const ForeachCallback& callback)
     {

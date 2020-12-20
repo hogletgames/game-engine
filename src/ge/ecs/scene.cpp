@@ -44,18 +44,22 @@ Scene::Scene()
     : m_registry{this}
 {}
 
-void Scene::onUpdate([[maybe_unused]] Timestamp delta_time)
+void Scene::onUpdate(Timestamp dt)
 {
     GE_PROFILE_FUNC();
 
-    m_registry.onUpdate(delta_time);
+    m_registry.eachEntityWith<NativeScriptComponent>([dt](Entity entity) {
+        entity.getComponent<NativeScriptComponent>().onUpdate(dt);
+    });
 
     if (m_main_camera.isNull()) {
         return;
     }
 
     Begin<GE::Renderer2D> begin{m_main_camera};
-    m_registry.drawEntities();
+
+    m_registry.eachEntityWith<TransformComponent, SpriteRendererComponent>(
+        [](Entity entity) { Renderer2D::draw(entity); });
 }
 
 void Scene::onViewportResize(const glm::vec2& viewport)
@@ -63,7 +67,10 @@ void Scene::onViewportResize(const glm::vec2& viewport)
     GE_PROFILE_FUNC();
 
     m_viewport = viewport;
-    m_registry.onViewportResize(m_viewport);
+
+    m_registry.eachEntityWith<CameraComponent>([this](Entity entity) {
+        entity.getComponent<CameraComponent>().camera.setViewport(m_viewport);
+    });
 }
 
 void Scene::eachEntity(const ForeachCallback& callback)
