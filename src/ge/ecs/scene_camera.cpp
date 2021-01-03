@@ -67,6 +67,7 @@ void SceneCamera::setPerspective(const SceneCamera::perspective_params_t& perspe
 {
     GE_PROFILE_FUNC();
 
+    m_projection_type = ProjectionType::PERSPECTIVE;
     m_perspective = perspective;
     calculateProjection();
 }
@@ -75,6 +76,7 @@ void SceneCamera::setOrthographic(const SceneCamera::orthographic_params_t& orth
 {
     GE_PROFILE_FUNC();
 
+    m_projection_type = ProjectionType::ORTHOGRAPHIC;
     m_orthographic = orthographic;
     calculateProjection();
 }
