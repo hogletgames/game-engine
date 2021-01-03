@@ -30,55 +30,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_CORE_HASH_H_
+#define GE_CORE_HASH_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
+#include <boost/functional/hash.hpp>
+#include <glm/glm.hpp>
 
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/hash.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
+namespace GE {
 
-#include <ge/ecs/camera_controller_script.h>
-#include <ge/ecs/components.h>
-#include <ge/ecs/entity.h>
-#include <ge/ecs/scene.h>
-#include <ge/ecs/scene_camera.h>
-#include <ge/ecs/scriptable_entity.h>
+struct MathTypesHash {
+    size_t operator()(const glm::vec3& vec) const { return getVectorHash(vec); }
 
-#include <ge/gui/gui.h>
+    size_t operator()(const glm::vec4& vec) const { return getVectorHash(vec); }
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
+    size_t operator()(const glm::mat4& mat) const { return getMatHash(mat); }
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+private:
+    template<typename Vec>
+    size_t getVectorHash(const Vec& vec) const
+    {
+        size_t seed{0};
 
-#endif // GE_GE_H_
+        for (int i{0}; i < vec.length(); i++) {
+            boost::hash_combine(seed, boost::hash_value(vec[i]));
+        }
+
+        return seed;
+    }
+
+    template<typename Mat>
+    size_t getMatHash(const Mat& mat) const
+    {
+        size_t seed{0};
+
+        for (int i{0}; i < mat.length(); i++) {
+            for (int j{0}; j < mat[i].length(); j++) {
+                boost::hash_combine(seed, boost::hash_value(mat[i][j]));
+            }
+        }
+
+        return seed;
+    }
+};
+
+} // namespace GE
+
+#endif // GE_CORE_HASH_H_
