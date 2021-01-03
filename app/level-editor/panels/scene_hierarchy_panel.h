@@ -30,44 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_ECS_SCENE_H_
-#define GE_ECS_SCENE_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef LE_PANELS_SCENE_HIERARCHY_PANEL_H_
+#define LE_PANELS_SCENE_HIERARCHY_PANEL_H_
 
-#include <ge/core/timestamp.h>
-#include <ge/ecs/entity.h>
-#include <ge/ecs/entity_registry.h>
-
-#include <glm/glm.hpp>
-
-#include <string>
+#include <panels/panel_base.h>
 
 namespace GE {
 
 class Entity;
 
-class GE_API Scene
-{
-public:
-    using ForeachCallback = EntityRegistry::ForeachCallback;
-
-    void onUpdate(Timestamp dt);
-    void onViewportResize(const glm::vec2& viewport);
-
-    void eachEntity(const ForeachCallback& callback);
-
-    Entity createEntity(const std::string& name = {});
-    Entity createCamera(const std::string& name = {});
-    void destroyEntity(const Entity& entity);
-
-    bool setMainCamera(const Entity& camera);
-
-private:
-    EntityRegistry m_registry;
-    Entity m_main_camera;
-
-    glm::vec2 m_viewport{0.0f, 0.0f};
-};
-
 } // namespace GE
 
-#endif // GE_ECS_SCENE_H_
+namespace LE {
+
+class EditorState;
+
+class GE_API SceneHierarchyPanel: public PanelBase
+{
+public:
+    explicit SceneHierarchyPanel(GE::Shared<EditorState> editor_state);
+
+    void onGuiRender() override;
+    void clear() override;
+
+private:
+    void drawEntityNode(const GE::Entity& entity);
+
+    GE::Shared<EditorState> m_editor_state;
+};
+
+} // namespace LE
+
+#endif // LE_PANELS_SCENE_HIERARCHY_PANEL_H_

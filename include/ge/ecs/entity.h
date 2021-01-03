@@ -82,6 +82,13 @@ public:
 
     static constexpr ID nullID() { return entt::null; }
 
+    bool operator==(const Entity& other) const
+    {
+        return m_id == other.m_id && m_registry == other.m_registry;
+    }
+
+    bool operator!=(const Entity& other) const { return !operator==(other); }
+
 private:
     ID m_id{nullID()};
     EntityRegistry* m_registry{nullptr};

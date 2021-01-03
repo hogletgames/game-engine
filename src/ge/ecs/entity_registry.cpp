@@ -35,7 +35,6 @@
 #include "entity.h"
 
 #include "ge/debug/profile.h"
-#include "ge/renderer/renderer_2d.h"
 
 namespace {
 
@@ -44,32 +43,6 @@ constexpr auto ENTITY_TAG_DEFAULT = "Entity";
 } // namespace
 
 namespace GE {
-
-EntityRegistry::EntityRegistry(Scene* scene)
-    : m_scene{scene}
-{
-    GE_PROFILE_FUNC();
-
-    GE_UNUSED(m_scene);
-}
-
-void EntityRegistry::onUpdate(Timestamp dt)
-{
-    GE_PROFILE_FUNC();
-
-    m_registry.view<NativeScriptComponent>().each(
-        [dt]([[maybe_unused]] auto entity, auto& script) { script.onUpdate(dt); });
-}
-
-void EntityRegistry::onViewportResize(const glm::vec2& viewport)
-{
-    GE_PROFILE_FUNC();
-
-    m_registry.view<CameraComponent>().each(
-        [&viewport]([[maybe_unused]] auto entity, auto& camera) {
-            camera.camera.setViewport(viewport);
-        });
-}
 
 Entity EntityRegistry::create(const std::string& name)
 {
@@ -85,15 +58,11 @@ Entity EntityRegistry::create(const std::string& name)
     return entity;
 }
 
-void EntityRegistry::drawEntities()
+void EntityRegistry::destroy(const Entity& entity)
 {
     GE_PROFILE_FUNC();
 
-    auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-
-    for (auto entity : group) {
-        Renderer2D::draw({entity, this});
-    }
+    m_registry.destroy(entity.getID());
 }
 
 EntityRegistry::NativeEntityID EntityRegistry::getNativeID(const Entity& entity)
