@@ -59,6 +59,7 @@ public:
     Entity createCamera(const std::string& name = {});
     void destroyEntity(const Entity& entity);
 
+    const Entity& getMainCamera() const { return m_main_camera; }
     bool setMainCamera(const Entity& camera);
 
 private:
