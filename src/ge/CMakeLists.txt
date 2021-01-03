@@ -1,5 +1,3 @@
-find_package(Boost 1.65 REQUIRED)
-
 include_directories(
     utils
 )
@@ -22,9 +20,6 @@ target_link_libraries(ge PUBLIC
 )
 target_include_directories(ge PRIVATE
     ${CMAKE_SOURCE_DIR}/include/ge
-)
-target_include_directories(ge SYSTEM PRIVATE
-    ${Boost_INCLUDE_DIR}
 )
 
 install(TARGETS ge
