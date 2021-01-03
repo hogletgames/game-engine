@@ -33,6 +33,7 @@
 #include "scene_camera.h"
 
 #include "ge/core/log.h"
+#include "ge/core/utils.h"
 #include "ge/debug/profile.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -86,8 +87,7 @@ void SceneCamera::calculateProjection()
         case ProjectionType::PERSPECTIVE: calculatePerspectiveProjection(); break;
         case ProjectionType::ORTHOGRAPHIC: calculateOrthographicProjection(); break;
         default:
-            GE_CORE_ERR("Unknown projection type: {}",
-                        static_cast<int>(m_projection_type));
+            GE_CORE_ERR("Unknown projection type: {}", toString(m_projection_type));
             break;
     }
 }
@@ -111,6 +111,16 @@ void SceneCamera::calculateOrthographicProjection()
 
     m_projection =
         glm::ortho(left, right, bottom, top, m_orthographic.near, m_orthographic.far);
+}
+
+std::string toString(SceneCamera::ProjectionType projection)
+{
+    using Projection = SceneCamera::ProjectionType;
+    static const std::unordered_map<Projection, std::string> projection_to_string{
+        {Projection::PERSPECTIVE, "Perspective"},
+        {Projection::ORTHOGRAPHIC, "Orthographic"}};
+
+    return toType(projection_to_string, projection, std::string("Unknown"));
 }
 
 } // namespace GE

@@ -95,6 +95,8 @@ private:
     orthographic_params_t m_orthographic{};
 };
 
+std::string toString(SceneCamera::ProjectionType projection);
+
 } // namespace GE
 
 #endif // GE_ECS_SCENE_CAMERA_H_
