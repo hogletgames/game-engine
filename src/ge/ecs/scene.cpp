@@ -65,7 +65,11 @@ void Scene::onViewportResize(const glm::vec2& viewport)
     m_viewport = viewport;
 
     m_registry.eachEntityWith<CameraComponent>([this](Entity entity) {
-        entity.getComponent<CameraComponent>().camera.setViewport(m_viewport);
+        auto& camera = entity.getComponent<CameraComponent>();
+
+        if (!camera.fixed_aspect_ratio) {
+            camera.camera.setViewport(m_viewport);
+        }
     });
 }
 
