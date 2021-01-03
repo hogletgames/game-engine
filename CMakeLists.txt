@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.9)
 project(game_engine)
 
+find_package(Boost 1.65 REQUIRED)
+
 # Project options
 option(GE_STATIC                "Build static library"      OFF)
 option(GE_BUILD_EXAMPLES        "Build examples"            OFF)

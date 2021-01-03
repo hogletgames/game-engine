@@ -1,5 +1,3 @@
-find_package(Boost 1.65 REQUIRED)
-
 include_directories(
     utils
 )
