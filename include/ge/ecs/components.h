@@ -96,6 +96,7 @@ struct GE_API NativeScriptComponent {
     void onUpdate(Timestamp dt) { m_script->onUpdate(dt); }
 
     bool isScriptBound() const { return m_script != nullptr; }
+    const ScriptableEntity* getScript() const { return m_script.get(); }
 
 private:
     Scoped<ScriptableEntity> m_script;

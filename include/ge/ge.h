@@ -52,6 +52,7 @@
 #include <ge/ecs/camera_controller_script.h>
 #include <ge/ecs/components.h>
 #include <ge/ecs/entity.h>
+#include <ge/ecs/hash.h>
 #include <ge/ecs/scene.h>
 #include <ge/ecs/scene_camera.h>
 #include <ge/ecs/scriptable_entity.h>
