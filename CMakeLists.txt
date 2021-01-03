@@ -116,12 +116,14 @@ install(DIRECTORY include/ge
 )
 
 # Include directories
+set(GE_THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third-party)
+
 include_directories(include)
 include_directories(SYSTEM
-    third-party/entt/single_include
-    third-party/glm
-    third-party/imgui
-    third-party/spdlog/include
+    ${GE_THIRD_PARTY_DIR}/entt/single_include
+    ${GE_THIRD_PARTY_DIR}/glm
+    ${GE_THIRD_PARTY_DIR}/imgui
+    ${GE_THIRD_PARTY_DIR}/spdlog/include
 )
 
 # Subdirectories
