@@ -1,8 +1,6 @@
-include_directories(
-    utils
-)
+set(GE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/ge)
 
-set(GE_SRC
+list(APPEND GE_SRC
     app_properties.cpp
     application.cpp
     layer_stack.cpp
@@ -10,7 +8,18 @@ set(GE_SRC
     thread_pool.cpp
 )
 
-add_library(ge ${GE_LIB_TYPE} ${GE_SRC})
+list(APPEND GE_HEADERS
+    ${GE_INCLUDE_DIR}/app_properties.h
+    ${GE_INCLUDE_DIR}/application.h
+    ${GE_INCLUDE_DIR}/empty_layer.h
+    ${GE_INCLUDE_DIR}/ge.h
+    ${GE_INCLUDE_DIR}/layer.h
+    ${GE_INCLUDE_DIR}/layer_stack.h
+    ${GE_INCLUDE_DIR}/manager.h
+    ${GE_INCLUDE_DIR}/thread_pool.h
+)
+
+add_library(ge ${GE_LIB_TYPE} ${GE_SRC} ${GE_HEADERS})
 target_link_libraries(ge PUBLIC
     ge-core
     ge-ecs
@@ -19,7 +28,7 @@ target_link_libraries(ge PUBLIC
     ge-window
 )
 target_include_directories(ge PRIVATE
-    ${CMAKE_SOURCE_DIR}/include/ge
+    ${GE_INCLUDE_DIR}
 )
 target_include_directories(ge SYSTEM PRIVATE
     ${Boost_INCLUDE_DIR}
@@ -30,6 +39,8 @@ install(TARGETS ge
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
+
+include_directories(utils)
 
 add_subdirectory(core)
 add_subdirectory(ecs)
