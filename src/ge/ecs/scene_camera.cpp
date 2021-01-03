@@ -96,8 +96,8 @@ void SceneCamera::calculatePerspectiveProjection()
 {
     GE_PROFILE_FUNC();
 
-    m_projection = glm::perspective(m_perspective.fov, m_aspect_ratio, m_perspective.near,
-                                    m_perspective.far);
+    m_projection = glm::perspective(glm::radians(m_perspective.fov), m_aspect_ratio,
+                                    m_perspective.near, m_perspective.far);
 }
 
 void SceneCamera::calculateOrthographicProjection()

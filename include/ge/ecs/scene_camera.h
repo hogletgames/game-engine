@@ -53,7 +53,7 @@ public:
         float near{NEAR_DEFAULT};
         float far{FAR_DEFAULT};
 
-        static constexpr float FOV_DEFAULT{glm::radians(45.0f)};
+        static constexpr float FOV_DEFAULT{45.0f};
         static constexpr float NEAR_DEFAULT{0.01f};
         static constexpr float FAR_DEFAULT{1000.0f};
     };
