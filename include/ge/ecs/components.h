@@ -40,6 +40,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <string>
 
@@ -124,12 +125,8 @@ struct GE_API TransformComponent {
 
     glm::mat4 getTransform() const
     {
-        glm::mat4 rot = glm::rotate(glm::mat4{1.0f}, rotation.x, {1, 0, 0});
-        rot = glm::rotate(rot, rotation.y, {0, 1, 0});
-        rot = glm::rotate(rot, rotation.z, {0, 0, 1});
-
-        return glm::translate(glm::mat4{1.0f}, translation) * rot *
-               glm::scale(glm::mat4{1.0f}, scale);
+        return glm::translate(glm::mat4{1.0f}, translation) *
+               glm::toMat4(glm::quat(rotation)) * glm::scale(glm::mat4{1.0f}, scale);
     }
 
     static std::string name() { return "Transform"; }
