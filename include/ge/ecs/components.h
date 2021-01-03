@@ -50,6 +50,8 @@ class Entity;
 struct GE_API CameraComponent {
     SceneCamera camera;
     bool fixed_aspect_ratio{false};
+
+    static std::string name() { return "Camera"; }
 };
 
 struct GE_API NativeScriptComponent {
@@ -97,16 +99,22 @@ struct GE_API NativeScriptComponent {
 
     bool isScriptBound() const { return m_script != nullptr; }
 
+    static std::string name() { return "Native Script"; }
+
 private:
     Scoped<ScriptableEntity> m_script;
 };
 
 struct GE_API SpriteRendererComponent {
     glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+
+    static std::string name() { return "Sprite Renderer"; }
 };
 
 struct GE_API TagComponent {
     std::string tag;
+
+    static std::string name() { return "Tag"; }
 };
 
 struct GE_API TransformComponent {
@@ -123,6 +131,8 @@ struct GE_API TransformComponent {
         return glm::translate(glm::mat4{1.0f}, translation) * rot *
                glm::scale(glm::mat4{1.0f}, scale);
     }
+
+    static std::string name() { return "Transform"; }
 };
 
 } // namespace GE
