@@ -70,9 +70,8 @@ void EditorLayer::onAttach()
 
     auto scene = GE::makeScoped<GE::Scene>();
 
-    auto square = scene->createEntity("Green Square");
-    square.addComponent<GE::SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
-    square.getComponent<GE::TransformComponent>().scale = glm::vec3{0.5f};
+    auto square = scene->createEntity("Square");
+    square.addComponent<GE::SpriteRendererComponent>(GE::Color::GREEN);
 
     auto main_camera = scene->createCamera("Main Camera");
     main_camera.addComponent<GE::NativeScriptComponent>()
@@ -110,7 +109,7 @@ void EditorLayer::onUpdate(GE::Timestamp delta_time)
 
     m_editor_state->framebuffer()->bind();
 
-    GE::RenderCommand::clear({1.0f, 0.0f, 1.0f, 1.0f});
+    GE::RenderCommand::clear(GE::Color::DARK_GREY);
     m_editor_state->scene()->onUpdate(delta_time);
 
     m_editor_state->framebuffer()->unbind();
