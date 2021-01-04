@@ -56,24 +56,6 @@ struct GE_API CameraComponent {
 };
 
 struct GE_API NativeScriptComponent {
-    NativeScriptComponent() = default;
-    NativeScriptComponent(const NativeScriptComponent&& other) = delete;
-    NativeScriptComponent& operator=(const NativeScriptComponent& other) = delete;
-
-    NativeScriptComponent(NativeScriptComponent&& other) noexcept
-    {
-        *this = std::move(other);
-    }
-
-    NativeScriptComponent& operator=(NativeScriptComponent&& other) noexcept
-    {
-        if (this != &other) {
-            m_script = std::move(other.m_script);
-        }
-
-        return *this;
-    }
-
     ~NativeScriptComponent()
     {
         if (isScriptBound()) {
@@ -85,7 +67,7 @@ struct GE_API NativeScriptComponent {
     void bind(Args&&... args)
     {
         GE_ASSERT_MSG(!m_script, "Scriptable Entity has already been bound!");
-        m_script = makeScoped<T>(std::forward<Args>(args)...);
+        m_script = makeShared<T>(std::forward<Args>(args)...);
         m_script->onCreate();
     }
 
@@ -96,14 +78,20 @@ struct GE_API NativeScriptComponent {
         m_script.reset();
     }
 
-    void onUpdate(Timestamp dt) { m_script->onUpdate(dt); }
+    void onUpdate(Timestamp dt)
+    {
+        if (isScriptBound()) {
+            m_script->onUpdate(dt);
+        }
+    }
 
     bool isScriptBound() const { return m_script != nullptr; }
+    const std::string& scriptName() const { return m_script->name(); }
 
     static std::string name() { return "Native Script"; }
 
 private:
-    Scoped<ScriptableEntity> m_script;
+    Shared<ScriptableEntity> m_script;
 };
 
 struct GE_API SpriteRendererComponent {
