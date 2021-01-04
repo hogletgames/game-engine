@@ -49,7 +49,7 @@ class GE_API EntityRegistry
 public:
     using ForeachCallback = std::function<void(Entity)>;
 
-    Entity create(const std::string& name = {});
+    Entity create();
     void destroy(const Entity& entity);
 
     template<typename T, typename... Args>

@@ -34,6 +34,8 @@
 #define GE_ECS_SCENE_H_
 
 #include <ge/core/timestamp.h>
+#include <ge/core/type_list.h>
+#include <ge/ecs/components.h>
 #include <ge/ecs/entity.h>
 #include <ge/ecs/entity_registry.h>
 
@@ -49,6 +51,7 @@ class GE_API Scene
 {
 public:
     using ForeachCallback = EntityRegistry::ForeachCallback;
+    using DefaultComponents = TypeList<TagComponent, TransformComponent>;
 
     void onUpdate(Timestamp dt);
     void onViewportResize(const glm::vec2& viewport);

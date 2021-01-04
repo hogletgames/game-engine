@@ -38,6 +38,12 @@
 #include "ge/debug/profile.h"
 #include "ge/renderer/renderer_2d.h"
 
+namespace {
+
+constexpr auto ENTITY_TAG_DEFAULT = "Entity";
+
+} // namespace
+
 namespace GE {
 
 void Scene::onUpdate(Timestamp dt)
@@ -84,7 +90,12 @@ Entity Scene::createEntity(const std::string& name)
 {
     GE_PROFILE_FUNC();
 
-    return m_registry.create(name);
+    Entity entity = m_registry.create();
+    entity.addComponent<TransformComponent>();
+    auto& tag = entity.addComponent<TagComponent>().tag;
+    tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
+
+    return entity;
 }
 
 Entity Scene::createCamera(const std::string& name)

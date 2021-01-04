@@ -36,26 +36,13 @@
 
 #include "ge/debug/profile.h"
 
-namespace {
-
-constexpr auto ENTITY_TAG_DEFAULT = "Entity";
-
-} // namespace
-
 namespace GE {
 
-Entity EntityRegistry::create(const std::string& name)
+Entity EntityRegistry::create()
 {
     GE_PROFILE_FUNC();
 
-    Entity entity{m_registry.create(), this};
-
-    entity.addComponent<TransformComponent>();
-
-    auto& tag = entity.addComponent<TagComponent>().tag;
-    tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
-
-    return entity;
+    return {m_registry.create(), this};
 }
 
 void EntityRegistry::destroy(const Entity& entity)
