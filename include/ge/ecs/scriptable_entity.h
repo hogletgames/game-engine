@@ -42,13 +42,16 @@ namespace GE {
 class GE_API ScriptableEntity: public Interface
 {
 public:
-    explicit ScriptableEntity(const Entity& entity)
+    ScriptableEntity(const Entity& entity, std::string name)
         : m_entity{entity}
+        , m_name{std::move(name)}
     {}
 
     virtual void onCreate() = 0;
     virtual void onDestroy() = 0;
     virtual void onUpdate(Timestamp dt) = 0;
+
+    const std::string& name() const { return m_name; }
 
 protected:
     template<typename T>
@@ -59,6 +62,7 @@ protected:
 
 private:
     Entity m_entity;
+    std::string m_name;
 };
 
 } // namespace GE

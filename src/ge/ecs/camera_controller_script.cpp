@@ -39,7 +39,7 @@
 namespace GE {
 
 CameraControllerScript::CameraControllerScript(const Entity& entity)
-    : ScriptableEntity{entity}
+    : ScriptableEntity{entity, "Camera Controller"}
 {
     GE_PROFILE_FUNC();
 }
