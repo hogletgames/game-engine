@@ -6,6 +6,7 @@ list(APPEND GE_ECS_SRC
     entity_registry.cpp
     scene.cpp
     scene_camera.cpp
+    scene_serializer.cpp
 )
 
 list(APPEND GE_ECS_HEADERS
@@ -15,10 +16,15 @@ list(APPEND GE_ECS_HEADERS
     ${GE_ECS_INCLUDE_DIR}/entity_registry.h
     ${GE_ECS_INCLUDE_DIR}/scene.h
     ${GE_ECS_INCLUDE_DIR}/scene_camera.h
+    ${GE_ECS_INCLUDE_DIR}/scene_serializer.h
     ${GE_ECS_INCLUDE_DIR}/scriptable_entity.h
 )
 
 add_library(ge-ecs STATIC ${GE_ECS_SRC} ${GE_ECS_HEADERS})
+target_link_libraries(ge-ecs PUBLIC yaml-cpp)
 target_include_directories(ge-ecs PRIVATE
     ${GE_ECS_INCLUDE_DIR}
+)
+target_include_directories(ge-ecs SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/third-party/yaml-cpp/include
 )
