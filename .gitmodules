@@ -22,3 +22,6 @@
 [submodule "third-party/entt"]
 	path = third-party/entt
 	url = https://github.com/hogletgames/entt.git
+[submodule "third-party/yaml-cpp"]
+	path = third-party/yaml-cpp
+	url = https://github.com/hogletgames/yaml-cpp.git

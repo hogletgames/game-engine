@@ -41,3 +41,11 @@ target_compile_definitions(imgui-examples PRIVATE
 
 # docopt
 add_subdirectory(docopt)
+
+# yaml-cpp
+set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "Enable testing" FORCE)
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "Enable parse tools" FORCE)
+set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "Enable contrib stuff in library" FORCE)
+set(YAML_CPP_INSTALL OFF CACHE BOOL "Enable generation of install target" FORCE)
+add_subdirectory(yaml-cpp)
+target_compile_options(yaml-cpp PRIVATE -Wno-error=effc++)

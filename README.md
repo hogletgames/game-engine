@@ -12,6 +12,7 @@
 - [docopt.cpp](https://github.com/docopt/docopt.cpp)
 - [stb](https://github.com/nothings/stb)
 - [entt](https://github.com/skypjack/entt)
+- [yaml-cpp](https://github.com/jbeder/yaml-cpp)
 
 ### Dependencies
 - [Boost v1.65](https://www.boost.org/doc/libs/1_65_0/)
