@@ -70,7 +70,7 @@ bool Manager::initialize(std::string props_file)
 
     if (!Renderer::initialize(props.api) || !Window::initialize() ||
         !Application::initialize(props.window) ||
-        !Renderer2D::initialize(props.assets_dir) || !Gui::initialize()) {
+        !Renderer2D::initialize(props.assets_dir) || !Gui::initialize(props.assets_dir)) {
         return false;
     }
 

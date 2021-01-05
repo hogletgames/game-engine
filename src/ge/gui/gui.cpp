@@ -54,6 +54,9 @@ using PlatformGui = ::GE::UNIX::Gui;
 
 namespace {
 
+constexpr auto FONT_OPEN_SANS_PATH = "fonts/OpenSans/OpenSans-Bold.ttf";
+constexpr float FONT_OPEN_SANS_SIZE{18.0f};
+
 int32_t toImGuiButton(GE::MouseButton button)
 {
     switch (button) {
@@ -203,7 +206,7 @@ bool onWindowResized(const GE::WindowResizedEvent& event)
 
 namespace GE {
 
-bool Gui::initialize()
+bool Gui::initialize(const std::string& assets_dir)
 {
     GE_PROFILE_FUNC();
 
@@ -216,6 +219,9 @@ bool Gui::initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+    std::string font_path = assets_dir + "/" + FONT_OPEN_SANS_PATH;
+    io.Fonts->AddFontFromFileTTF(font_path.c_str(), FONT_OPEN_SANS_SIZE);
 
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();

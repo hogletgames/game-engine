@@ -42,7 +42,7 @@ class Event;
 class GE_API Gui
 {
 public:
-    static bool initialize();
+    static bool initialize(const std::string& assets_dir);
     static void shutdown();
 
     static void begin();
