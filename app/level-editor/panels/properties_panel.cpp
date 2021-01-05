@@ -43,10 +43,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 
-using Components =
-    GE::TypeList<GE::TagComponent, GE::TransformComponent, GE::CameraComponent,
-                 GE::SpriteRendererComponent, GE::NativeScriptComponent>;
-
 namespace {
 /**
  * Tag Component
@@ -270,7 +266,7 @@ void drawAddNewComponent(GE::Entity* entity)
     }
 
     if (ImGui::BeginPopup("Add Component")) {
-        GE::forEachType<Components>([entity](auto component) {
+        GE::forEachType<GE::ComponentsList>([entity](auto component) {
             using Component = decltype(component);
 
             if (entity->hasComponent<Component>()) {
@@ -340,7 +336,7 @@ void PropertiesPanel::onGuiRender()
     GE_PROFILE_FUNC();
 
     if (ImGui::Begin("Properties") && !m_editor_state->selectedEntity().isNull()) {
-        GE::forEachType<Components>(
+        GE::forEachType<GE::ComponentsList>(
             [this](auto component) { draw<decltype(component)>(m_editor_state.get()); });
         ImGui::Separator();
         drawAddNewComponent(&m_editor_state->selectedEntity());

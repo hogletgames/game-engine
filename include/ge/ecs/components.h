@@ -34,6 +34,7 @@
 #define GE_ECS_COMPONENTS_H_
 
 #include <ge/core/core.h>
+#include <ge/core/type_list.h>
 #include <ge/core/utils.h>
 #include <ge/ecs/scene_camera.h>
 #include <ge/ecs/scriptable_entity.h>
@@ -119,6 +120,9 @@ struct GE_API TransformComponent {
 
     static std::string name() { return "Transform"; }
 };
+
+using ComponentsList = TypeList<TagComponent, TransformComponent, CameraComponent,
+                                SpriteRendererComponent, NativeScriptComponent>;
 
 } // namespace GE
 
