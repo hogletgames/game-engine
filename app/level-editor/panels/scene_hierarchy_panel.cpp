@@ -86,7 +86,9 @@ void SceneHierarchyPanel::drawEntityNode(const GE::Entity& entity)
 
     const auto& tag = entity.getComponent<GE::TagComponent>().tag;
     const void* tree_id = reinterpret_cast<const void*>(entity.getID());
-    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+
+    ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
     if (entity == m_editor_state->selectedEntity()) {
         flags |= ImGuiTreeNodeFlags_Selected;
