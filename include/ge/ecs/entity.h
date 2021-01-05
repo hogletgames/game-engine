@@ -94,6 +94,8 @@ private:
     EntityRegistry* m_registry{nullptr};
 };
 
+std::string toString(Entity::ID id);
+
 } // namespace GE
 
 #endif // GE_ECS_ENTITY_H_

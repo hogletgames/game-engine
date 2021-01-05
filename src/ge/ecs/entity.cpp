@@ -43,4 +43,10 @@ Entity::Entity(ID id, EntityRegistry* registry)
     GE_PROFILE_FUNC();
 }
 
+std::string toString(Entity::ID id)
+{
+    auto id_num = static_cast<uint32_t>(id);
+    return std::to_string(id_num);
+}
+
 } // namespace GE
