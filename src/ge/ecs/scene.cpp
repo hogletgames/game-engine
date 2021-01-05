@@ -46,6 +46,12 @@ constexpr auto ENTITY_TAG_DEFAULT = "Entity";
 
 namespace GE {
 
+Scene::Scene(std::string name)
+    : m_name{std::move(name)}
+{
+    GE_PROFILE_FUNC();
+}
+
 void Scene::onUpdate(Timestamp dt)
 {
     GE_PROFILE_FUNC();

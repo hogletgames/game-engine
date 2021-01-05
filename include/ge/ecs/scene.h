@@ -50,6 +50,8 @@ class Entity;
 class GE_API Scene
 {
 public:
+    explicit Scene(std::string name = "Untitled");
+
     using ForeachCallback = EntityRegistry::ForeachCallback;
     using DefaultComponents = TypeList<TagComponent, TransformComponent>;
 
@@ -62,10 +64,14 @@ public:
     Entity createCamera(const std::string& name = {});
     void destroyEntity(const Entity& entity);
 
+    const std::string& getName() const { return m_name; }
+    void setName(std::string name) { m_name = std::move(name); }
+
     const Entity& getMainCamera() const { return m_main_camera; }
     bool setMainCamera(const Entity& camera);
 
 private:
+    std::string m_name;
     EntityRegistry m_registry;
     Entity m_main_camera;
 
