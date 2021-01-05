@@ -111,6 +111,10 @@ void Scene::destroyEntity(const Entity& entity)
 {
     GE_PROFILE_FUNC();
 
+    if (entity == m_main_camera) {
+        setMainCamera({});
+    }
+
     m_registry.destroy(entity);
 }
 
@@ -118,7 +122,7 @@ bool Scene::setMainCamera(const Entity& camera)
 {
     GE_PROFILE_FUNC();
 
-    if (!camera.hasComponent<CameraComponent>()) {
+    if (!camera.isNull() && !camera.hasComponent<CameraComponent>()) {
         GE_CORE_ERR("Trying to set entity without CameraComponent as main camera");
         return false;
     }
