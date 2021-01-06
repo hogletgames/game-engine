@@ -63,6 +63,8 @@ public:
     void eachEntity(const ForeachCallback& callback);
 
     Entity createEntity(const std::string& name = {});
+    Entity createEntity(Entity::ID id, const std::string& name = {});
+
     Entity createCamera(const std::string& name = {});
     void destroyEntity(const Entity& entity);
 

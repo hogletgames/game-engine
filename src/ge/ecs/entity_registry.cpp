@@ -45,6 +45,13 @@ Entity EntityRegistry::create()
     return {m_registry.create(), this};
 }
 
+Entity EntityRegistry::create(NativeEntityID id)
+{
+    GE_PROFILE_FUNC();
+
+    return {m_registry.create(id), this};
+}
+
 void EntityRegistry::destroy(const Entity& entity)
 {
     GE_PROFILE_FUNC();

@@ -42,6 +42,15 @@ namespace {
 
 constexpr auto ENTITY_TAG_DEFAULT = "Entity";
 
+void addDefaultComponents(GE::Entity* entity, const std::string& name)
+{
+    GE_PROFILE_FUNC();
+
+    entity->addComponent<GE::TransformComponent>();
+    auto& tag = entity->addComponent<GE::TagComponent>().tag;
+    tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
+}
+
 } // namespace
 
 namespace GE {
@@ -106,11 +115,15 @@ Entity Scene::createEntity(const std::string& name)
 {
     GE_PROFILE_FUNC();
 
-    Entity entity = m_registry.create();
-    entity.addComponent<TransformComponent>();
-    auto& tag = entity.addComponent<TagComponent>().tag;
-    tag = name.empty() ? ENTITY_TAG_DEFAULT : name;
+    return createEntity(Entity::nullID(), name);
+}
 
+Entity Scene::createEntity(Entity::ID id, const std::string& name)
+{
+    GE_PROFILE_FUNC();
+
+    Entity entity = id == Entity::nullID() ? m_registry.create() : m_registry.create(id);
+    addDefaultComponents(&entity, name);
     return entity;
 }
 

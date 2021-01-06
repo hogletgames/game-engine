@@ -50,6 +50,7 @@ public:
     using ForeachCallback = std::function<void(Entity)>;
 
     Entity create();
+    Entity create(NativeEntityID id);
     void destroy(const Entity& entity);
 
     void clear();
