@@ -55,6 +55,8 @@ public:
     using ForeachCallback = EntityRegistry::ForeachCallback;
     using DefaultComponents = TypeList<TagComponent, TransformComponent>;
 
+    void clear();
+
     void onUpdate(Timestamp dt);
     void onViewportResize(const glm::vec2& viewport);
 

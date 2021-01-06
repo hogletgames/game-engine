@@ -52,6 +52,13 @@ void EntityRegistry::destroy(const Entity& entity)
     m_registry.destroy(entity.getID());
 }
 
+void EntityRegistry::clear()
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.clear();
+}
+
 EntityRegistry::NativeEntityID EntityRegistry::getNativeID(const Entity& entity)
 {
     GE_PROFILE_FUNC();

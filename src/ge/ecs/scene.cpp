@@ -52,6 +52,16 @@ Scene::Scene(std::string name)
     GE_PROFILE_FUNC();
 }
 
+void Scene::clear()
+{
+    GE_PROFILE_FUNC();
+
+    m_name = {};
+    m_registry.clear();
+    m_main_camera = Entity{};
+    m_viewport = {0.0, 0.0};
+}
+
 void Scene::onUpdate(Timestamp dt)
 {
     GE_PROFILE_FUNC();

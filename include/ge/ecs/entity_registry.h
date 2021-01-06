@@ -52,6 +52,8 @@ public:
     Entity create();
     void destroy(const Entity& entity);
 
+    void clear();
+
     template<typename T, typename... Args>
     T& addComponent(const Entity& entity, Args&&... args)
     {
