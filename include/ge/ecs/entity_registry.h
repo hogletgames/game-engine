@@ -47,6 +47,7 @@ class Entity;
 class GE_API EntityRegistry
 {
 public:
+    using NativeEntityID = entt::entity;
     using ForeachCallback = std::function<void(Entity)>;
 
     Entity create();
@@ -97,9 +98,9 @@ public:
         }
     }
 
-private:
-    using NativeEntityID = entt::entity;
+    static constexpr NativeEntityID nullID() { return entt::null; }
 
+private:
     template<typename Component, typename... Args>
     void eachEntityGroup(const ForeachCallback& callback)
     {

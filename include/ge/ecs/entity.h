@@ -42,7 +42,7 @@ namespace GE {
 class GE_API Entity
 {
 public:
-    using ID = entt::entity;
+    using ID = EntityRegistry::NativeEntityID;
 
     Entity() = default;
     Entity(ID id, EntityRegistry* registry);
@@ -80,7 +80,7 @@ public:
         return m_registry->hasComponent<T>(*this);
     }
 
-    static constexpr ID nullID() { return entt::null; }
+    static constexpr ID nullID() { return EntityRegistry::nullID(); }
 
     bool operator==(const Entity& other) const
     {
