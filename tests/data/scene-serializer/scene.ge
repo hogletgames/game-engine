@@ -1,0 +1,35 @@
+Magic Word: 0xad9a98eb
+Protocol Version: 0x10000
+Scene: Untitled
+Main Camera: 1
+Entities:
+  - Entity: 1
+    Tag:
+      Tag: Main Camera
+    Transform:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Camera:
+      Fixed Aspect Ratio: false
+      Scene Camera:
+        Projection Type: Orthographic
+        Perspective:
+          Vertical FOV: 45
+          Near: 0.00999999978
+          Far: 1000
+        Orthographic:
+          Size: 10
+          Near: -1
+          Far: 1
+    Native Script:
+      Script: Camera Controller
+  - Entity: 0
+    Tag:
+      Tag: Square
+    Transform:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Sprite Renderer:
+      Color: [0, 1, 0, 1]

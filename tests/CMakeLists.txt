@@ -1,5 +1,6 @@
 list(APPEND GE_TEST_SRC
     test_core.cpp
+    test_scene_serializer.cpp
     test_window.cpp
 )
 
