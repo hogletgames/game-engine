@@ -97,6 +97,10 @@ if(UNIX)
     message("- Platform: unix")
     set(GE_PLATFORM_UNIX ON)
     add_definitions(-DGE_PLATFORM_UNIX)
+
+    # gtk
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
 elseif(WIN32)
     message("- Platform: windows")
     set(GE_PLATFORM_WINDOWS ON)

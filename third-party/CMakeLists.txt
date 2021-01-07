@@ -54,3 +54,21 @@ set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "Enable contrib stuff in library" FORC
 set(YAML_CPP_INSTALL OFF CACHE BOOL "Enable generation of install target" FORCE)
 add_subdirectory(yaml-cpp)
 target_compile_options(yaml-cpp PRIVATE -Wno-error=effc++)
+
+# nativefiledialog
+list(APPEND NATIVEFILEDIALOG_SRC
+    nativefiledialog/src/nfd_common.c
+)
+if (GE_PLATFORM_UNIX)
+    list(APPEND NATIVEFILEDIALOG_SRC
+        nativefiledialog/src/nfd_gtk.c
+    )
+endif()
+add_library(nativefiledialog ${NATIVEFILEDIALOG_SRC})
+target_include_directories(nativefiledialog PUBLIC
+    nativefiledialog/src/include
+)
+if (GE_PLATFORM_UNIX)
+    target_include_directories(nativefiledialog PUBLIC ${GTK3_INCLUDE_DIRS})
+    target_link_libraries(nativefiledialog PUBLIC ${GTK3_LIBRARIES})
+endif ()

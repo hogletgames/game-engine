@@ -28,3 +28,6 @@
 [submodule "third-party/googletest"]
 	path = third-party/googletest
 	url = https://github.com/hogletgames/googletest.git
+[submodule "third-party/nativefiledialog"]
+	path = third-party/nativefiledialog
+	url = https://github.com/hogletgames/nativefiledialog.git

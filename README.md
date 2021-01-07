@@ -13,6 +13,7 @@
 - [stb](https://github.com/nothings/stb)
 - [entt](https://github.com/skypjack/entt)
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+- [nativefiledialog](https://github.com/mlabbe/nativefiledialog)
 
 ### Dependencies
 - [Boost v1.65](https://www.boost.org/doc/libs/1_65_0/)
