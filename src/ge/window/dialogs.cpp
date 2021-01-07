@@ -30,57 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#include "dialogs.h"
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
+#include "ge/core/log.h"
 
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
+#include <nfd.h>
+#include <nfd_common.h>
 
-#include <ge/ecs/camera_controller_script.h>
-#include <ge/ecs/components.h>
-#include <ge/ecs/entity.h>
-#include <ge/ecs/scene.h>
-#include <ge/ecs/scene_camera.h>
-#include <ge/ecs/scene_serializer.h>
-#include <ge/ecs/scriptable_entity.h>
+#include <string>
+#include <vector>
 
-#include <ge/gui/gui.h>
+namespace {
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/colors.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
+std::string getFilename(nfdchar_t* output_buff, nfdresult_t result)
+{
+    std::string filename;
 
-#include <ge/window/dialogs.h>
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+    switch (result) {
+        case NFD_ERROR:
+            GE_CORE_ERR("Failed to get filename from File Dialog: '{}'", NFD_GetError());
+            break;
+        case NFD_CANCEL: break;
+        case NFD_OKAY: filename = reinterpret_cast<const char*>(output_buff); break;
+        default: GE_CORE_ERR("Unknown NFD result: {}", static_cast<int>(result));
+    }
 
-#endif // GE_GE_H_
+    if (output_buff != nullptr) {
+        NFDi_Free(output_buff);
+    }
+
+    return filename;
+}
+
+} // namespace
+
+namespace GE {
+
+DialogBase::DialogBase(std::string default_path, std::string filters)
+    : m_default_path{std::move(default_path)}
+    , m_filters{std::move(filters)}
+{}
+
+std::string OpenDialog::show()
+{
+    const nfdchar_t* default_path = m_default_path.c_str();
+    const nfdchar_t* filters = m_filters.c_str();
+    nfdchar_t* output_buff = nullptr;
+    nfdresult_t result = NFD_OpenDialog(filters, default_path, &output_buff);
+    return getFilename(output_buff, result);
+}
+
+std::string SaveDialog::show()
+{
+    const nfdchar_t* default_path = m_default_path.c_str();
+    const nfdchar_t* filters = m_filters.c_str();
+    nfdchar_t* output_buff = nullptr;
+    nfdresult_t result = NFD_SaveDialog(filters, default_path, &output_buff);
+    return getFilename(output_buff, result);
+}
+
+} // namespace GE
