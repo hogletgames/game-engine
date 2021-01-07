@@ -8,8 +8,8 @@
 #include "ge/layer_stack.h"
 #include "ge/window/key_event.h"
 
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 namespace {
 

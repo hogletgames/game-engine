@@ -63,13 +63,13 @@ clean:
 
 # Tests
 # Run GE core test
-.PHONY: test_ge_core
-test_ge_core:
-	$(VALGRIND_BIN) ${BUILD_DIR}/tests/test_ge_core
+.PHONY: ge_test
+ge_test:
+	$(VALGRIND_BIN) ${BUILD_DIR}/tests/ge_test
 
 # Run all tests
 .PHONY: test
-test: test_ge_core
+test: ge_test
 
 # Docker
 .PHONY: docker_init

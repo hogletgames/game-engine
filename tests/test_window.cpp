@@ -2,7 +2,7 @@
 #include "ge/window/mouse_event.h"
 #include "ge/window/window_event.h"
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace GE {
 

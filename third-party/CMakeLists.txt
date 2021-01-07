@@ -1,6 +1,11 @@
 # spdlog
 add_subdirectory(spdlog)
 
+# google
+if(GE_BUILD_TESTS)
+    add_subdirectory(googletest)
+endif()
+
 # SDL2
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
