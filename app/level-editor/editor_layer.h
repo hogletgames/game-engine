@@ -41,6 +41,12 @@
 
 #include <glm/glm.hpp>
 
+namespace GE {
+
+class KeyPressedEvent;
+
+} // namespace GE
+
 namespace LE {
 
 class EditorState;
@@ -54,13 +60,18 @@ public:
     void onAttach() override;
     void onDetach() override;
     void onUpdate(GE::Timestamp delta_time) override;
-    void onEvent(GE::Event *event) override;
+    void onEvent(GE::Event* event) override;
     void onGuiRender() override;
 
 private:
     void showMenuBar();
 
     void updateViewport();
+
+    void openScene();
+    void saveScene();
+
+    bool onKeyPressed(const GE::KeyPressedEvent& event);
 
     GE::Shared<EditorState> m_editor_state;
     std::vector<GE::Shared<PanelBase>> m_panels;

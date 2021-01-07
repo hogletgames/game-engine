@@ -42,12 +42,15 @@
 
 #include <imgui.h>
 
+#include <filesystem>
+
 using WindowProps = GE::Window::properties_t;
 
 namespace {
 
 constexpr float ASPECT_RATION_DEFAULT{static_cast<float>(WindowProps::WIDTH_DEFAULT) /
                                       WindowProps::HEIGHT_DEFAULT};
+constexpr auto SCENE_FILE_FILTERS = "ge";
 
 } // namespace
 
@@ -120,6 +123,9 @@ void EditorLayer::onEvent(GE::Event* event)
     GE_PROFILE_FUNC();
 
     m_vp_camera.onEvent(event);
+
+    GE::EventDispatcher dispatcher{event};
+    dispatcher.dispatch<GE::KeyPressedEvent>(GE_BIND_EVENT_FN(onKeyPressed));
 }
 
 void EditorLayer::onGuiRender()
@@ -141,6 +147,14 @@ void EditorLayer::showMenuBar()
 
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Open Scene", "Ctrl+O")) {
+                openScene();
+            }
+
+            if (ImGui::MenuItem("Save Scene", "Ctrl+S")) {
+                saveScene();
+            }
+
             if (ImGui::MenuItem("Exit")) {
                 GE::Application::close();
             }
@@ -167,6 +181,47 @@ void EditorLayer::updateViewport()
         m_vp_camera.resize(viewport);
         m_editor_state->scene()->onViewportResize(viewport);
     }
+}
+
+void EditorLayer::openScene()
+{
+    auto pwd = std::filesystem::current_path().string();
+
+    GE::OpenDialog dialog{pwd, SCENE_FILE_FILTERS};
+    auto filename = dialog.show();
+
+    if (!filename.empty()) {
+        GE::SceneSerializer::deserialize(filename, m_editor_state->scene().get());
+    }
+}
+
+void EditorLayer::saveScene()
+{
+    auto pwd = std::filesystem::current_path().string();
+
+    GE::SaveDialog dialog{pwd, SCENE_FILE_FILTERS};
+    auto filename = dialog.show();
+
+    if (!filename.empty()) {
+        GE::SceneSerializer::serialize(filename, m_editor_state->scene().get());
+    }
+}
+
+bool EditorLayer::onKeyPressed(const GE::KeyPressedEvent& event)
+{
+    bool is_ctrl_pressed = GE::Input::isKeyPressed(GE::KeyCode::LCTRL) ||
+                           GE::Input::isKeyPressed(GE::KeyCode::RCTRL);
+    auto key_code = event.getKeyCode();
+
+    if (is_ctrl_pressed) {
+        if (key_code == GE::KeyCode::O) {
+            openScene();
+        } else if (key_code == GE::KeyCode::S) {
+            saveScene();
+        }
+    }
+
+    return false;
 }
 
 } // namespace LE
