@@ -25,3 +25,6 @@
 [submodule "third-party/yaml-cpp"]
 	path = third-party/yaml-cpp
 	url = https://github.com/hogletgames/yaml-cpp.git
+[submodule "third-party/googletest"]
+	path = third-party/googletest
+	url = https://github.com/hogletgames/googletest.git
