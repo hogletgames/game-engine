@@ -38,6 +38,14 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+namespace {
+
+const auto PROJECTION_UNKNOWN_STR = "Unknown";
+const auto PROJECTION_PERSPECTIVE_STR = "Perspective";
+const auto PROJECTION_ORTHOGRAPHIC_STR = "Orthographic";
+
+} // namespace
+
 namespace GE {
 
 SceneCamera::SceneCamera()
@@ -89,7 +97,9 @@ void SceneCamera::calculateProjection()
         case ProjectionType::PERSPECTIVE: calculatePerspectiveProjection(); break;
         case ProjectionType::ORTHOGRAPHIC: calculateOrthographicProjection(); break;
         default:
-            GE_CORE_ERR("Unknown projection type: {}", toString(m_projection_type));
+            m_projection = glm::mat4{1.0f};
+            GE_CORE_ERR("Unknown projection type: {}",
+                        static_cast<int>(m_projection_type));
             break;
     }
 }
@@ -118,11 +128,23 @@ void SceneCamera::calculateOrthographicProjection()
 std::string toString(SceneCamera::ProjectionType projection)
 {
     using Projection = SceneCamera::ProjectionType;
-    static const std::unordered_map<Projection, std::string> projection_to_string{
-        {Projection::PERSPECTIVE, "Perspective"},
-        {Projection::ORTHOGRAPHIC, "Orthographic"}};
+    static const std::unordered_map<Projection, std::string> projection_to_string = {
+        {Projection::UNKNOWN, PROJECTION_UNKNOWN_STR},
+        {Projection::PERSPECTIVE, PROJECTION_PERSPECTIVE_STR},
+        {Projection::ORTHOGRAPHIC, PROJECTION_ORTHOGRAPHIC_STR}};
 
-    return toType(projection_to_string, projection, std::string("Unknown"));
+    return toType(projection_to_string, projection, std::string(PROJECTION_UNKNOWN_STR));
+}
+
+SceneCamera::ProjectionType toCameraProjection(const std::string& projection)
+{
+    using Projection = SceneCamera::ProjectionType;
+    static const std::unordered_map<std::string, Projection> string_to_projection = {
+        {PROJECTION_UNKNOWN_STR, Projection::UNKNOWN},
+        {PROJECTION_PERSPECTIVE_STR, Projection::PERSPECTIVE},
+        {PROJECTION_ORTHOGRAPHIC_STR, Projection::ORTHOGRAPHIC}};
+
+    return toType(string_to_projection, projection, Projection::UNKNOWN);
 }
 
 } // namespace GE

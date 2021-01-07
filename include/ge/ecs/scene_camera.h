@@ -44,7 +44,8 @@ class GE_API SceneCamera
 public:
     enum class ProjectionType : uint8_t
     {
-        PERSPECTIVE = 0,
+        UNKNOWN = 0,
+        PERSPECTIVE,
         ORTHOGRAPHIC
     };
 
@@ -96,6 +97,7 @@ private:
 };
 
 std::string toString(SceneCamera::ProjectionType projection);
+SceneCamera::ProjectionType toCameraProjection(const std::string& projection);
 
 } // namespace GE
 
