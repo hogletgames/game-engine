@@ -3,7 +3,10 @@ set(GE_GUI_SRC
 )
 
 add_library(ge-gui STATIC ${GE_GUI_SRC})
-target_link_libraries(ge-gui PUBLIC imgui)
+target_link_libraries(ge-gui PUBLIC
+    imgui
+    ImGuizmo
+)
 target_include_directories(ge-gui PRIVATE
     ${CMAKE_SOURCE_DIR}/include/ge/gui
 )

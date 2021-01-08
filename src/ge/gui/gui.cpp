@@ -36,12 +36,11 @@
 #include "ge/core/log.h"
 #include "ge/debug/profile.h"
 #include "ge/renderer/render_command.h"
-#include "ge/window/input.h"
 #include "ge/window/key_event.h"
 #include "ge/window/mouse_event.h"
 #include "ge/window/window_event.h"
 
-#include <imgui.h>
+#include <ImGuizmo.h>
 
 #if defined(GE_PLATFORM_UNIX)
     #include "unix/gui.h"
@@ -249,6 +248,7 @@ void Gui::begin()
 
     PlatformGui::newFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 
 void Gui::end()
