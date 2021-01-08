@@ -41,3 +41,16 @@ target_compile_definitions(imgui-examples PRIVATE
 
 # docopt
 add_subdirectory(docopt)
+
+# ImGuizmo
+add_library(ImGuizmo STATIC
+    ImGuizmo/ImGuizmo.cpp
+    ImGuizmo/ImGuizmo.h
+)
+target_include_directories(ImGuizmo PUBLIC
+    ImGuizmo
+)
+target_compile_options(ImGuizmo PRIVATE
+    -Wno-error=deprecated-copy
+    -Wno-error=parentheses
+)

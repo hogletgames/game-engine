@@ -12,6 +12,7 @@
 - [docopt.cpp](https://github.com/docopt/docopt.cpp)
 - [stb](https://github.com/nothings/stb)
 - [entt](https://github.com/skypjack/entt)
+- [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)
 
 ### Dependencies
 - [Boost v1.65](https://www.boost.org/doc/libs/1_65_0/)

@@ -22,3 +22,6 @@
 [submodule "third-party/entt"]
 	path = third-party/entt
 	url = https://github.com/hogletgames/entt.git
+[submodule "third-party/ImGuizmo"]
+	path = third-party/ImGuizmo
+	url = https://github.com/hogletgames/ImGuizmo.git
