@@ -17,7 +17,7 @@ RUN apt-get install -y libx11-dev libsamplerate-dev libasound2-dev \
                        libdbus-1-dev
 
 # GE dependencies
-RUN apt-get install -y libboost-dev
+RUN apt-get update && apt-get install -y libboost-dev libgtk-3-dev
 
 # Compilers
 RUN apt-add-repository ppa:ubuntu-toolchain-r/test && \
