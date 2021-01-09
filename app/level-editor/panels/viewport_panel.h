@@ -36,6 +36,12 @@
 
 #include <panels/panel_base.h>
 
+namespace GE {
+
+class Entity;
+
+} // namespace GE
+
 namespace LE {
 
 class EditorState;
@@ -49,7 +55,11 @@ public:
     void clear() override{};
 
 private:
+    void drawGizmo(GE::Entity* entity);
+
     GE::Shared<EditorState> m_editor_state;
+
+    int m_gizmo_type{-1};
 };
 
 } // namespace LE

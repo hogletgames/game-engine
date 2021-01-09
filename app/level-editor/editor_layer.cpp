@@ -42,7 +42,7 @@
 #include "ge/debug/profile.h"
 #include "ge/ge.h"
 
-#include <imgui.h>
+#include <ImGuizmo.h>
 
 using WindowProps = GE::Window::properties_t;
 
@@ -166,6 +166,20 @@ void EditorLayer::updateViewport()
         m_vp_camera->resize(viewport);
         m_editor_state->scene()->onViewportResize(viewport);
     }
+}
+
+bool EditorLayer::onKeyPressed(const GE::KeyPressedEvent& event)
+{
+    // Gizmo
+    switch (event.getKeyCode()) {
+        case GE::KeyCode::Q: m_editor_state->setGizmoType(GIZMO_TYPE_UNKNOWN); break;
+        case GE::KeyCode::W: m_editor_state->setGizmoType(ImGuizmo::TRANSLATE); break;
+        case GE::KeyCode::E: m_editor_state->setGizmoType(ImGuizmo::ROTATE); break;
+        case GE::KeyCode::R: m_editor_state->setGizmoType(ImGuizmo::SCALE); break;
+        default: break;
+    }
+
+    return false;
 }
 
 } // namespace LE

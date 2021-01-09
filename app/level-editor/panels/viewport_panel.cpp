@@ -34,9 +34,12 @@
 
 #include "ge/debug/profile.h"
 #include "ge/gui/gui.h"
+#include "ge/math/math.h"
 #include "ge/renderer/framebuffer.h"
+#include "ge/window/input.h"
 
-#include <imgui.h>
+#include <ImGuizmo.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace LE {
 
@@ -62,6 +65,7 @@ void ViewportPanel::onGuiRender()
         auto* fb_texture = reinterpret_cast<ImTextureID>(framebuffer_tex);
 
         ImGui::Image(fb_texture, vp_panel_size, {0, 1}, {1, 0});
+        drawGizmo(&m_editor_state->selectedEntity());
 
         m_editor_state->setViewport({vp_panel_size.x, vp_panel_size.y});
         m_editor_state->setIsVPFocused(is_vp_focused);
@@ -69,6 +73,60 @@ void ViewportPanel::onGuiRender()
 
     ImGui::End();
     ImGui::PopStyleVar();
+}
+
+void ViewportPanel::drawGizmo(GE::Entity* entity)
+{
+    const auto& camera_entity = m_editor_state->scene()->getMainCamera();
+
+    if (entity->isNull() || camera_entity.isNull() ||
+        m_editor_state->gizmoType() == GIZMO_TYPE_UNKNOWN) {
+        return;
+    }
+
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist();
+
+    auto window_pos = ImGui::GetWindowPos();
+    auto window_size = ImGui::GetWindowSize();
+    ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
+
+    // TODO: replace with Editor Camera
+    const auto& camera = camera_entity.getComponent<GE::CameraComponent>().camera;
+    const auto& camera_projection = camera.getProjection();
+    const auto& camera_transform = camera_entity.getComponent<GE::TransformComponent>();
+    auto camera_view = glm::inverse(camera_transform.getTransform());
+
+    auto& tc = entity->getComponent<GE::TransformComponent>();
+    auto transform = tc.getTransform();
+
+    std::array<float, 3> snap_values{};
+    auto type = static_cast<ImGuizmo::OPERATION>(m_editor_state->gizmoType());
+    float* snap = GE::Input::isKeyPressed(GE::KeyCode::LCTRL) ? snap_values.data()
+                                                              : nullptr;
+
+    if (snap != nullptr) {
+        float snap_value = type == ImGuizmo::ROTATE ? 45.0f : 0.5f;
+        std::fill(snap_values.begin(), snap_values.end(), snap_value);
+    }
+
+    ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
+                         type, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr,
+                         snap_values.data());
+
+    if (ImGuizmo::IsUsing()) {
+        glm::vec3 translation;
+        glm::vec3 rotation;
+        glm::vec3 scale;
+
+        if (GE::Math::decomposeTransform(transform, &translation, &rotation, &scale)) {
+            glm::vec3 rotation_delta = rotation - tc.rotation;
+
+            tc.translation = translation;
+            tc.rotation += rotation_delta;
+            tc.scale = scale;
+        }
+    }
 }
 
 } // namespace LE

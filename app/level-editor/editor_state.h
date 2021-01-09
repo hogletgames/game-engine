@@ -40,6 +40,12 @@
 
 #include <glm/glm.hpp>
 
+namespace {
+
+inline constexpr int GIZMO_TYPE_UNKNOWN{-1};
+
+}
+
 namespace LE {
 
 class GE_API EditorState
@@ -66,6 +72,9 @@ public:
     const GE::Entity& selectedEntity() const { return m_selected_entity; }
     GE::Entity& selectedEntity() { return m_selected_entity; }
 
+    void setGizmoType(int type) { m_gizmo_type = type; }
+    int gizmoType() const { return m_gizmo_type; }
+
 private:
     GE::Scoped<GE::Framebuffer> m_framebuffer;
     glm::vec2 m_viewport{0.0f, 0.0f};
@@ -73,6 +82,8 @@ private:
 
     GE::Shared<GE::Scene> m_scene;
     GE::Entity m_selected_entity;
+
+    int m_gizmo_type{-1};
 };
 
 } // namespace LE
