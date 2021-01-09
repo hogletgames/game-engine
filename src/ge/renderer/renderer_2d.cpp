@@ -179,7 +179,7 @@ void Renderer2D::begin(const Entity& camera)
     const auto& transform = camera.getComponent<TransformComponent>().getTransform();
     const auto& scene_camera = camera.getComponent<CameraComponent>().camera;
 
-    get()->begin(scene_camera.getProjection() * glm::inverse(transform));
+    get()->begin(scene_camera.getProjectionMatrix() * glm::inverse(transform));
 }
 
 void Renderer2D::end()

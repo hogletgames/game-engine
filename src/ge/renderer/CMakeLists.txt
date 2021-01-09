@@ -1,6 +1,7 @@
 set(GE_RENDERER_SRC
     buffer_layout.cpp
     buffers.cpp
+    projection_camera.cpp
     framebuffer.cpp
     graphics_context.cpp
     ortho_camera_controller.cpp

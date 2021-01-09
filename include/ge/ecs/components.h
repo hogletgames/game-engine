@@ -33,10 +33,10 @@
 #ifndef GE_ECS_COMPONENTS_H_
 #define GE_ECS_COMPONENTS_H_
 
-#include <ge/core/core.h>
+#include <ge/core/type_list.h>
 #include <ge/core/utils.h>
-#include <ge/ecs/scene_camera.h>
 #include <ge/ecs/scriptable_entity.h>
+#include <ge/renderer/projection_camera.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -49,7 +49,7 @@ namespace GE {
 class Entity;
 
 struct GE_API CameraComponent {
-    SceneCamera camera;
+    GE::ProjectionCamera camera;
     bool fixed_aspect_ratio{false};
 
     static std::string name() { return "Camera"; }

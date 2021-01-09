@@ -5,7 +5,6 @@ list(APPEND GE_ECS_SRC
     entity.cpp
     entity_registry.cpp
     scene.cpp
-    scene_camera.cpp
 )
 
 list(APPEND GE_ECS_HEADERS
@@ -14,7 +13,6 @@ list(APPEND GE_ECS_HEADERS
     ${GE_ECS_INCLUDE_DIR}/entity.h
     ${GE_ECS_INCLUDE_DIR}/entity_registry.h
     ${GE_ECS_INCLUDE_DIR}/scene.h
-    ${GE_ECS_INCLUDE_DIR}/scene_camera.h
     ${GE_ECS_INCLUDE_DIR}/scriptable_entity.h
 )
 

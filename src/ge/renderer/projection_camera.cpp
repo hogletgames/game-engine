@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "scene_camera.h"
+#include "projection_camera.h"
 
 #include "ge/core/log.h"
 #include "ge/core/utils.h"
@@ -38,16 +38,32 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+namespace {
+
+const auto PROJECTION_UNKNOWN_STR = "Unknown";
+const auto PROJECTION_PERSPECTIVE_STR = "Perspective";
+const auto PROJECTION_ORTHOGRAPHIC_STR = "Orthographic";
+
+} // namespace
+
 namespace GE {
 
-SceneCamera::SceneCamera()
+ProjectionCamera::ProjectionCamera()
 {
     GE_PROFILE_FUNC();
 
     calculateProjection();
 }
 
-void SceneCamera::setProjectionType(ProjectionType projection_type)
+void ProjectionCamera::setViewport(const glm::vec2& viewport)
+{
+    GE_PROFILE_FUNC();
+
+    m_viewport = viewport;
+    calculateProjection();
+}
+
+void ProjectionCamera::setProjectionType(ProjectionType projection_type)
 {
     GE_PROFILE_FUNC();
 
@@ -55,33 +71,23 @@ void SceneCamera::setProjectionType(ProjectionType projection_type)
     calculateProjection();
 }
 
-void SceneCamera::setViewport(const glm::vec2& viewport)
+void ProjectionCamera::setPerspectiveParams(const perspective_params_t& perspective)
 {
     GE_PROFILE_FUNC();
 
-    m_aspect_ratio = std::abs(viewport.x / viewport.y);
-    calculateProjection();
-}
-
-void SceneCamera::setPerspective(const SceneCamera::perspective_params_t& perspective)
-{
-    GE_PROFILE_FUNC();
-
-    m_projection_type = ProjectionType::PERSPECTIVE;
     m_perspective = perspective;
     calculateProjection();
 }
 
-void SceneCamera::setOrthographic(const SceneCamera::orthographic_params_t& orthographic)
+void ProjectionCamera::setOrthographicParams(const orthographic_params_t& orthographic)
 {
     GE_PROFILE_FUNC();
 
-    m_projection_type = ProjectionType::ORTHOGRAPHIC;
     m_orthographic = orthographic;
     calculateProjection();
 }
 
-void SceneCamera::calculateProjection()
+void ProjectionCamera::calculateProjection()
 {
     GE_PROFILE_FUNC();
 
@@ -94,35 +100,48 @@ void SceneCamera::calculateProjection()
     }
 }
 
-void SceneCamera::calculatePerspectiveProjection()
+void ProjectionCamera::calculatePerspectiveProjection()
 {
     GE_PROFILE_FUNC();
 
-    m_projection = glm::perspective(glm::radians(m_perspective.fov), m_aspect_ratio,
-                                    m_perspective.near, m_perspective.far);
+    m_proj_mat = glm::perspective(glm::radians(m_perspective.fov), getAspectRatio(),
+                                  m_perspective.near, m_perspective.far);
 }
 
-void SceneCamera::calculateOrthographicProjection()
+void ProjectionCamera::calculateOrthographicProjection()
 {
     GE_PROFILE_FUNC();
 
-    float left = -m_orthographic.size * m_aspect_ratio * 0.5f;
-    float right = m_orthographic.size * m_aspect_ratio * 0.5f;
+    float aspect_ratio = getAspectRatio();
+    float left = -m_orthographic.size * aspect_ratio * 0.5f;
+    float right = m_orthographic.size * aspect_ratio * 0.5f;
     float bottom = -m_orthographic.size * 0.5f;
     float top = m_orthographic.size * 0.5f;
 
-    m_projection =
+    m_proj_mat =
         glm::ortho(left, right, bottom, top, m_orthographic.near, m_orthographic.far);
 }
 
-std::string toString(SceneCamera::ProjectionType projection)
+std::string toString(ProjectionCamera::ProjectionType projection)
 {
-    using Projection = SceneCamera::ProjectionType;
-    static const std::unordered_map<Projection, std::string> projection_to_string{
-        {Projection::PERSPECTIVE, "Perspective"},
-        {Projection::ORTHOGRAPHIC, "Orthographic"}};
+    using Projection = ProjectionCamera::ProjectionType;
+    static const std::unordered_map<Projection, std::string> projection_to_string = {
+        {Projection::UNKNOWN, PROJECTION_UNKNOWN_STR},
+        {Projection::PERSPECTIVE, PROJECTION_PERSPECTIVE_STR},
+        {Projection::ORTHOGRAPHIC, PROJECTION_ORTHOGRAPHIC_STR}};
 
-    return toType(projection_to_string, projection, std::string("Unknown"));
+    return toType(projection_to_string, projection, std::string(PROJECTION_UNKNOWN_STR));
+}
+
+ProjectionCamera::ProjectionType toCameraProjection(const std::string& projection)
+{
+    using Projection = ProjectionCamera::ProjectionType;
+    static const std::unordered_map<std::string, Projection> string_to_projection = {
+        {PROJECTION_UNKNOWN_STR, Projection::UNKNOWN},
+        {PROJECTION_PERSPECTIVE_STR, Projection::PERSPECTIVE},
+        {PROJECTION_ORTHOGRAPHIC_STR, Projection::ORTHOGRAPHIC}};
+
+    return toType(string_to_projection, projection, Projection::UNKNOWN);
 }
 
 } // namespace GE

@@ -108,7 +108,7 @@ void drawCameraProjectionCombo(GE::CameraComponent* component)
 {
     GE_PROFILE_FUNC();
 
-    using Projection = GE::SceneCamera::ProjectionType;
+    using Projection = GE::ProjectionCamera::ProjectionType;
 
     auto current_projection = component->camera.getProjectionType();
     static constexpr std::array<Projection, 2> all_projections{Projection::PERSPECTIVE,
@@ -144,11 +144,11 @@ void drawCameraProjectionPerspective(GE::CameraComponent* component)
     is_projection_changed |= ImGui::DragFloat("Far", &params.far, 10.0f);
 
     if (is_projection_changed) {
-        camera.setPerspective(params);
+        camera.setPerspectiveParams(params);
     }
 
     if (ImGui::Button("Reset Projection")) {
-        camera.setPerspective({});
+        camera.setPerspectiveParams({});
     }
 }
 
@@ -165,11 +165,11 @@ void drawCameraProjectionOrthographic(GE::CameraComponent* component,
     is_projection_changed |= ImGui::DragFloat("Far", &params.far, 0.25);
 
     if (is_projection_changed) {
-        camera.setOrthographic(params);
+        camera.setOrthographicParams(params);
     }
 
     if (ImGui::Button("Reset Projection")) {
-        camera.setOrthographic({});
+        camera.setOrthographicParams({});
     }
 
     if (ImGui::Checkbox("Fixed aspect ratio", &component->fixed_aspect_ratio) &&
@@ -182,7 +182,7 @@ void drawComponent(GE::CameraComponent* component, LE::EditorState* editor_state
 {
     GE_PROFILE_FUNC();
 
-    using Projection = GE::SceneCamera::ProjectionType;
+    using Projection = GE::ProjectionCamera::ProjectionType;
 
     auto& scene = editor_state->scene();
     auto current_projection = component->camera.getProjectionType();

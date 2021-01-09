@@ -30,21 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_ECS_SCENE_CAMERA_H_
-#define GE_ECS_SCENE_CAMERA_H_
+#ifndef GE_RENDERER_PROJECTION_CAMERA_H_
+#define GE_RENDERER_PROJECTION_CAMERA_H_
 
-#include <ge/core/core.h>
+#include <ge/core/interface.h>
 
 #include <glm/glm.hpp>
 
 namespace GE {
 
-class GE_API SceneCamera
+class GE_API ProjectionCamera: public Interface
 {
 public:
     enum class ProjectionType : uint8_t
     {
-        PERSPECTIVE = 0,
+        UNKNOWN = 0,
+        PERSPECTIVE,
         ORTHOGRAPHIC
     };
 
@@ -68,35 +69,41 @@ public:
         static constexpr float FAR_DEFAULT{1.0f};
     };
 
-    SceneCamera();
+    ProjectionCamera();
+
+    const glm::mat4& getProjectionMatrix() const { return m_proj_mat; }
+
+    void setViewport(const glm::vec2& viewport);
+    const glm::vec2& getViewport() const { return m_viewport; }
 
     ProjectionType getProjectionType() const { return m_projection_type; }
     void setProjectionType(ProjectionType projection_type);
 
-    const glm::mat4& getProjection() const { return m_projection; }
-    void setViewport(const glm::vec2& viewport);
-
     const perspective_params_t& getPerspective() const { return m_perspective; }
-    void setPerspective(const perspective_params_t& perspective);
+    void setPerspectiveParams(const perspective_params_t& perspective);
 
     const orthographic_params_t& getOrthographic() const { return m_orthographic; }
-    void setOrthographic(const orthographic_params_t& orthographic);
+    void setOrthographicParams(const orthographic_params_t& orthographic);
+
+    void calculateProjection();
 
 private:
-    void calculateProjection();
     void calculatePerspectiveProjection();
     void calculateOrthographicProjection();
 
+    float getAspectRatio() const { return std::abs(m_viewport.x / m_viewport.y); }
+
     ProjectionType m_projection_type{ProjectionType::ORTHOGRAPHIC};
-    glm::mat4 m_projection{1.0f};
-    float m_aspect_ratio{1.0f};
+    glm::vec2 m_viewport{1.0f, 1.0f};
+    glm::mat4 m_proj_mat{1.0f};
 
     perspective_params_t m_perspective{};
     orthographic_params_t m_orthographic{};
 };
 
-std::string toString(SceneCamera::ProjectionType projection);
+std::string toString(ProjectionCamera::ProjectionType projection);
+ProjectionCamera::ProjectionType toCameraProjection(const std::string& projection);
 
 } // namespace GE
 
-#endif // GE_ECS_SCENE_CAMERA_H_
+#endif // GE_RENDERER_PROJECTION_CAMERA_H_

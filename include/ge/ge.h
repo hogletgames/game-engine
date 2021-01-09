@@ -52,7 +52,6 @@
 #include <ge/ecs/components.h>
 #include <ge/ecs/entity.h>
 #include <ge/ecs/scene.h>
-#include <ge/ecs/scene_camera.h>
 #include <ge/ecs/scriptable_entity.h>
 
 #include <ge/gui/gui.h>
@@ -64,6 +63,7 @@
 #include <ge/renderer/graphics_context.h>
 #include <ge/renderer/ortho_camera_controller.h>
 #include <ge/renderer/orthographic_camera.h>
+#include <ge/renderer/projection_camera.h>
 #include <ge/renderer/render_command.h>
 #include <ge/renderer/renderer.h>
 #include <ge/renderer/renderer_2d.h>
