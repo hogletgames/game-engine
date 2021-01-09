@@ -31,6 +31,7 @@
  */
 
 #include "editor_layer.h"
+#include "editor_scene_renderer.h"
 #include "editor_state.h"
 #include "panels/properties_panel.h"
 #include "panels/scene_hierarchy_panel.h"
@@ -44,17 +45,9 @@
 
 using WindowProps = GE::Window::properties_t;
 
-namespace {
-
-constexpr float ASPECT_RATION_DEFAULT{static_cast<float>(WindowProps::WIDTH_DEFAULT) /
-                                      WindowProps::HEIGHT_DEFAULT};
-
-} // namespace
-
 namespace LE {
 
 EditorLayer::EditorLayer()
-    : m_vp_camera{ASPECT_RATION_DEFAULT, true}
 {
     GE_PROFILE_FUNC();
 }
@@ -68,7 +61,7 @@ void EditorLayer::onAttach()
     framebuffer_props.height = GE::Application::getWindow().getHeight();
     auto framebuffer = GE::Framebuffer::create(framebuffer_props);
 
-    auto scene = GE::makeScoped<GE::Scene>();
+    auto scene = GE::makeShared<GE::Scene>();
 
     auto square = scene->createEntity("Square");
     square.addComponent<GE::SpriteRendererComponent>(GE::Color::GREEN);
@@ -78,9 +71,10 @@ void EditorLayer::onAttach()
         .bind<GE::CameraControllerScript>(main_camera);
     scene->setMainCamera(main_camera);
 
-    m_editor_state =
-        GE::makeShared<EditorState>(std::move(framebuffer), std::move(scene));
-
+    auto camera = GE::makeShared<GE::ViewProjectionCamera>();
+    m_vp_camera = GE::makeShared<GE::VPCameraController>(camera);
+    m_scene_renderer = GE::makeShared<EditorSceneRenderer>(m_vp_camera, scene);
+    m_editor_state = GE::makeShared<EditorState>(std::move(framebuffer), scene);
     m_panels = {GE::makeShared<ViewportPanel>(m_editor_state),
                 GE::makeShared<SceneHierarchyPanel>(m_editor_state),
                 GE::makeShared<PropertiesPanel>(m_editor_state),
@@ -91,35 +85,38 @@ void EditorLayer::onDetach()
 {
     GE_PROFILE_FUNC();
 
+    m_scene_renderer.reset();
+    m_vp_camera.reset();
     m_panels.clear();
     m_editor_state.reset();
 }
 
-void EditorLayer::onUpdate(GE::Timestamp delta_time)
+void EditorLayer::onUpdate(GE::Timestamp dt)
 {
     GE_PROFILE_FUNC();
 
     updateViewport();
 
     if (m_editor_state->isVPFocused()) {
-        m_vp_camera.onUpdate(delta_time);
+        m_vp_camera->onUpdate(dt);
     }
 
+    auto& framebuffer = m_editor_state->framebuffer();
     GE::Renderer2D::resetStats();
 
-    m_editor_state->framebuffer()->bind();
+    framebuffer->bind();
 
     GE::RenderCommand::clear(GE::Color::DARK_GREY);
-    m_editor_state->scene()->onUpdate(delta_time);
+    m_scene_renderer->onUpdate(dt);
 
-    m_editor_state->framebuffer()->unbind();
+    framebuffer->unbind();
 }
 
 void EditorLayer::onEvent(GE::Event* event)
 {
     GE_PROFILE_FUNC();
 
-    m_vp_camera.onEvent(event);
+    m_vp_camera->onEvent(event);
 }
 
 void EditorLayer::onGuiRender()
@@ -164,7 +161,7 @@ void EditorLayer::updateViewport()
 
     if (is_vp_changed && is_vp_positive) {
         m_editor_state->framebuffer()->resize(viewport);
-        m_vp_camera.resize(viewport);
+        m_vp_camera->resize(viewport);
         m_editor_state->scene()->onViewportResize(viewport);
     }
 }

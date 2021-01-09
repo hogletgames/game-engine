@@ -31,48 +31,35 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
-#define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#ifndef LE_EDITOR_SCENE_RENDERER_H_
+#define LE_EDITOR_SCENE_RENDERER_H_
 
-#include <ge/empty_layer.h>
-
-#include <vector>
+#include <ge/renderer/scene_renderer_base.h>
 
 namespace GE {
 
 class VPCameraController;
-class SceneRendererBase;
 
 } // namespace GE
 
 namespace LE {
 
-class EditorState;
-class PanelBase;
-
-class GE_API EditorLayer: public GE::EmptyLayer
+class GE_API EditorSceneRenderer: public GE::SceneRendererBase
 {
 public:
-    EditorLayer();
+    explicit EditorSceneRenderer(GE::Shared<GE::VPCameraController> camera_controller,
+                                 GE::Shared<GE::Scene> scene = nullptr);
 
-    void onAttach() override;
-    void onDetach() override;
     void onUpdate(GE::Timestamp dt) override;
-    void onEvent(GE::Event *event) override;
-    void onGuiRender() override;
+
+    void setScene(GE::Shared<GE::Scene> scene) override { m_scene = std::move(scene); }
+    const GE::Shared<GE::Scene>& getScene() const override { return m_scene; }
 
 private:
-    void showMenuBar();
-
-    void updateViewport();
-
-    GE::Shared<EditorState> m_editor_state;
-    std::vector<GE::Shared<PanelBase>> m_panels;
-
-    GE::Shared<GE::VPCameraController> m_vp_camera;
-    GE::Shared<GE::SceneRendererBase> m_scene_renderer;
+    GE::Shared<GE::VPCameraController> m_camera_controller;
+    GE::Shared<GE::Scene> m_scene;
 };
 
 } // namespace LE
 
-#endif // GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
+#endif // LE_EDITOR_SCENE_RENDERER_H_
