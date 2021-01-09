@@ -14,6 +14,7 @@ set(GE_RENDERER_SRC
     shader.cpp
     texture.cpp
     vertex_array.cpp
+    view_projection_camera.cpp
 )
 
 add_library(ge-renderer STATIC ${GE_RENDERER_SRC})

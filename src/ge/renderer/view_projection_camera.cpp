@@ -30,56 +30,79 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#include "view_projection_camera.h"
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
+#include "ge/debug/profile.h"
 
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
+namespace GE {
 
-#include <ge/ecs/camera_controller_script.h>
-#include <ge/ecs/components.h>
-#include <ge/ecs/entity.h>
-#include <ge/ecs/scene.h>
-#include <ge/ecs/scriptable_entity.h>
+ViewProjectionCamera::ViewProjectionCamera()
+{
+    GE_PROFILE_FUNC();
 
-#include <ge/gui/gui.h>
+    calculateVPMatrix();
+}
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/colors.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/projection_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
-#include <ge/renderer/view_projection_camera.h>
+void ViewProjectionCamera::setDistance(float distance)
+{
+    GE_PROFILE_FUNC();
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+    m_distance = distance;
+    calculateVPMatrix();
+}
 
-#endif // GE_GE_H_
+void ViewProjectionCamera::setOrientation(const glm::quat& orientation)
+{
+    GE_PROFILE_FUNC();
+
+    m_orientation = orientation;
+    calculateVPMatrix();
+}
+
+void ViewProjectionCamera::setFocalPoint(const glm::vec3& focal_point)
+{
+    GE_PROFILE_FUNC();
+
+    m_focal_point = focal_point;
+    calculateVPMatrix();
+}
+
+glm::vec3 ViewProjectionCamera::getUpDirection() const
+{
+    GE_PROFILE_FUNC();
+
+    return glm::rotate(m_orientation, {0.0f, 1.0f, 0.0f});
+}
+
+glm::vec3 ViewProjectionCamera::getRightDirection() const
+{
+    GE_PROFILE_FUNC();
+
+    return glm::rotate(m_orientation, {1.0f, 0.0f, 0.0f});
+}
+
+glm::vec3 ViewProjectionCamera::getForwardDirection() const
+{
+    GE_PROFILE_FUNC();
+
+    return glm::rotate(m_orientation, {0.0f, 0.0f, -1.0f});
+}
+
+void ViewProjectionCamera::calculateVPMatrix()
+{
+    GE_PROFILE_FUNC();
+
+    m_position = calculatePosition();
+    auto transform = glm::translate(glm::mat4{1.0f}, m_position);
+    m_view_mat = glm::inverse(transform * glm::toMat4(m_orientation));
+    m_vp_mat = getProjectionMatrix() * m_view_mat;
+}
+
+glm::vec3 ViewProjectionCamera::calculatePosition()
+{
+    GE_PROFILE_FUNC();
+
+    return m_focal_point - getForwardDirection() * m_distance;
+}
+
+} // namespace GE
