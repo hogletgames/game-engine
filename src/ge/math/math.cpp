@@ -30,57 +30,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
-
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
-
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
-#include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
-
-#include <ge/ecs/camera_controller_script.h>
-#include <ge/ecs/components.h>
-#include <ge/ecs/entity.h>
-#include <ge/ecs/scene.h>
-#include <ge/ecs/scriptable_entity.h>
-
-#include <ge/gui/gui.h>
-
 #include <ge/math/math.h>
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/colors.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/projection_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
-#include <ge/renderer/view_projection_camera.h>
-#include <ge/renderer/vp_camera_controller.h>
+#include <glm/gtx/matrix_decompose.hpp>
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+namespace GE::Math {
 
-#endif // GE_GE_H_
+/**
+ * Based on glm::decompose()
+ * https://github.com/g-truc/glm/blob/0.9.9.8/glm/gtx/matrix_decompose.inl
+ */
+bool decomposeTransform(glm::mat4 transform, glm::vec3 *translation, glm::vec3 *rotation,
+                        glm::vec3 *scale)
+{
+    static constexpr auto epsilon = glm::epsilon<float>();
+
+    // Normalize the matrix
+    if (glm::epsilonEqual(transform[3][3], 0.0f, epsilon)) {
+        return false;
+    }
+
+    // Clear perspective partition
+    if (glm::epsilonEqual(transform[0][3], 0.0f, epsilon) ||
+        glm::epsilonEqual(transform[1][3], 0.0f, epsilon) ||
+        glm::epsilonEqual(transform[2][3], 0.0f, epsilon)) {
+        transform[0][3] = 0.0f;
+        transform[1][3] = 0.0f;
+        transform[2][3] = 0.0f;
+        transform[3][3] = 1.0f;
+    }
+
+    // Translation
+    *translation = glm::vec3{transform[3]};
+    transform[3] = glm::vec4{0.0f, 0.0f, 0.0f, transform[3].w};
+
+    // Scale
+    glm::mat3 row = glm::mat3{transform};
+
+    for (glm::mat3::length_type i{0}; i < glm::mat3::length(); i++) {
+        (*scale)[i] = glm::length(row[i]);
+        row[i] = glm::detail::scale(row[i], 1.0f);
+    }
+
+    // Rotation
+    rotation->y = glm::asin(-row[0][2]);
+
+    if (glm::cos(rotation->y) != 0.0f) {
+        rotation->x = std::atan2(row[1][2], row[2][2]);
+        rotation->z = std::atan2(row[0][1], row[0][0]);
+    } else {
+        rotation->x = std::atan2(-row[2][0], row[1][1]);
+        rotation->z = 0.0f;
+    }
+
+    return true;
+}
+
+} // namespace GE::Math

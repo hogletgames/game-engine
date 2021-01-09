@@ -17,6 +17,7 @@ target_link_libraries(ge PUBLIC
     ge-core
     ge-ecs
     ge-gui
+    ge-math
     ge-renderer
     ge-window
 )
@@ -36,5 +37,6 @@ install(TARGETS ge
 add_subdirectory(core)
 add_subdirectory(ecs)
 add_subdirectory(gui)
+add_subdirectory(math)
 add_subdirectory(renderer)
 add_subdirectory(window)
