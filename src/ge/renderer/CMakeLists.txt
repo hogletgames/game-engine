@@ -15,6 +15,7 @@ set(GE_RENDERER_SRC
     texture.cpp
     vertex_array.cpp
     view_projection_camera.cpp
+    vp_camera_controller.cpp
 )
 
 add_library(ge-renderer STATIC ${GE_RENDERER_SRC})

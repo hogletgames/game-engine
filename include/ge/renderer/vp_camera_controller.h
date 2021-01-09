@@ -30,57 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GE_GE_H_
-#define GE_GE_H_
+#ifndef GE_RENDERER_VP_CAMERA_CONTROLLER_H_
+#define GE_RENDERER_VP_CAMERA_CONTROLLER_H_
 
-#include <ge/app_properties.h>
-#include <ge/application.h>
-#include <ge/empty_layer.h>
-#include <ge/layer.h>
-#include <ge/layer_stack.h>
-#include <ge/manager.h>
-
-#include <ge/core/asserts.h>
-#include <ge/core/begin.h>
-#include <ge/core/interface.h>
-#include <ge/core/log.h>
-#include <ge/core/non_copyable.h>
 #include <ge/core/timestamp.h>
-#include <ge/core/utils.h>
 
-#include <ge/ecs/camera_controller_script.h>
-#include <ge/ecs/components.h>
-#include <ge/ecs/entity.h>
-#include <ge/ecs/scene.h>
-#include <ge/ecs/scriptable_entity.h>
+#include <glm/glm.hpp>
 
-#include <ge/gui/gui.h>
+namespace GE {
 
-#include <ge/renderer/buffer_layout.h>
-#include <ge/renderer/buffers.h>
-#include <ge/renderer/colors.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
-#include <ge/renderer/projection_camera.h>
-#include <ge/renderer/render_command.h>
-#include <ge/renderer/renderer.h>
-#include <ge/renderer/renderer_2d.h>
-#include <ge/renderer/renderer_api.h>
-#include <ge/renderer/shader.h>
-#include <ge/renderer/shader_program.h>
-#include <ge/renderer/texture.h>
-#include <ge/renderer/vertex_array.h>
-#include <ge/renderer/view_projection_camera.h>
-#include <ge/renderer/vp_camera_controller.h>
+class Event;
+class MouseScrolledEvent;
+class ViewProjectionCamera;
 
-#include <ge/window/input.h>
-#include <ge/window/key_codes.h>
-#include <ge/window/key_event.h>
-#include <ge/window/mouse_button_codes.h>
-#include <ge/window/mouse_event.h>
-#include <ge/window/window.h>
-#include <ge/window/window_event.h>
+class GE_API VPCameraController
+{
+public:
+    VPCameraController() = default;
+    explicit VPCameraController(Shared<ViewProjectionCamera> camera);
 
-#endif // GE_GE_H_
+    void onUpdate(Timestamp dt);
+    void onEvent(Event* event);
+
+    void resize(const glm::vec2& size);
+
+    void setCamera(Shared<ViewProjectionCamera> camera);
+    const Shared<ViewProjectionCamera>& getCamera() const { return m_camera; }
+
+private:
+    bool onMouseScrolled(const MouseScrolledEvent& event);
+
+    void mousePan(const glm::vec2& delta);
+    void mouseRotate(const glm::vec2& delta);
+    void mouseZoom(float delta);
+
+    glm::vec2 getPanSpeed() const;
+    float getZoomSpeed() const;
+
+    Shared<ViewProjectionCamera> m_camera;
+    glm::vec2 m_prev_mouse_pos{0.0f, 0.0f};
+};
+
+} // namespace GE
+
+#endif // GE_RENDERER_VP_CAMERA_CONTROLLER_H_
