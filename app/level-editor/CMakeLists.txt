@@ -2,6 +2,8 @@ list(APPEND LE_LEVEL_EDITOR_SRC
     editor_layer.cpp
     editor_scene_renderer.cpp
     level_editor.cpp
+    editor_scene_renderer.cpp
+    panels/common_controls.cpp
     panels/properties_panel.cpp
     panels/scene_hierarchy_panel.cpp
     panels/statistic_panel.cpp
@@ -12,6 +14,8 @@ list(APPEND LE_LEVEL_EDITOR_HEADERS
     editor_layer.h
     editor_scene_renderer.h
     editor_state.h
+    editor_scene_renderer.h
+    panels/common_controls.h
     panels/panel_base.h
     panels/properties_panel.h
     panels/scene_hierarchy_panel.h
