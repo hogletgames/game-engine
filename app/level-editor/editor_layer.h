@@ -35,11 +35,8 @@
 #define GE_APP_LEVEL_EDITOR_EDITOR_LAYER_H_
 
 #include <ge/empty_layer.h>
-#include <ge/renderer/framebuffer.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/renderer_2d.h>
 
-#include <glm/glm.hpp>
+#include <vector>
 
 namespace LE {
 

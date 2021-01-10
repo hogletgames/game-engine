@@ -101,7 +101,7 @@ void TriangleLayer::onUpdate(Timestamp delta_time)
 
     {
         GE_PROFILE_SCOPE("TriangleLayer Draw");
-        Begin<Renderer> begin{m_camera_controller.getCamera()};
+        Begin<Renderer> begin{*m_camera_controller.getCamera()};
         Renderer::submit(m_shader_library.get(SHADER_NAME), m_vao);
     }
 }

@@ -100,7 +100,7 @@ void Renderer2DLayer::onUpdate(Timestamp delta_time)
     {
         GE_PROFILE_SCOPE("Renderer2DLayer Draw");
 
-        Begin<Renderer2D> begin{m_camera_controller.getCamera()};
+        Begin<Renderer2D> begin{*m_camera_controller.getCamera()};
         Renderer2D::draw(m_editable_quad);
         Renderer2D::draw(m_red_quad);
         Renderer2D::draw(m_tex_blue_sqrs_quad);

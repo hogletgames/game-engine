@@ -4,8 +4,6 @@ set(GE_RENDERER_SRC
     projection_camera.cpp
     framebuffer.cpp
     graphics_context.cpp
-    ortho_camera_controller.cpp
-    orthographic_camera.cpp
     render_command.cpp
     renderer.cpp
     renderer_2d.cpp

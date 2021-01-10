@@ -35,20 +35,11 @@
 #include "ge/debug/profile.h"
 #include "ge/ge.h"
 
-using WindowProp = GE::Window::properties_t;
-
-namespace {
-
-constexpr float ASPECT_RATIO_DEFAULT{static_cast<float>(WindowProp::WIDTH_DEFAULT) /
-                                     WindowProp::HEIGHT_DEFAULT};
-
-} // namespace
-
 namespace GE::Examples {
 
 GuiLayer::GuiLayer(bool show_gui_demo, const char* name)
     : EmptyLayer{name}
-    , m_camera_controller{ASPECT_RATIO_DEFAULT, true}
+    , m_camera_controller{makeShared<ViewProjectionCamera>()}
     , m_show_gui_demo{show_gui_demo}
 {}
 

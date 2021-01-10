@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
+// NOLINTNEXTLINE(llvm-header-guard)
 #ifndef GE_EXAMPLES_GUI_LAYER_H_
 #define GE_EXAMPLES_GUI_LAYER_H_
 
@@ -50,7 +50,7 @@ public:
     void onGuiRender() override;
 
 protected:
-    OrthoCameraController m_camera_controller;
+    VPCameraController m_camera_controller;
 
 private:
     bool m_show_gui_demo{false};

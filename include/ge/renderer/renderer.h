@@ -67,7 +67,7 @@ constexpr auto TEXTURE_SHADER = "shaders/texture";
 
 } // namespace Paths
 
-class OrthographicCamera;
+class ViewProjectionCamera;
 class ShaderProgram;
 class WindowResizedEvent;
 
@@ -79,7 +79,7 @@ public:
 
     static bool onWindowResized(const WindowResizedEvent& event);
 
-    static void begin(const OrthographicCamera& camera);
+    static void begin(const ViewProjectionCamera& camera);
     static void end();
 
     static void submit(const Shared<ShaderProgram>& shader,

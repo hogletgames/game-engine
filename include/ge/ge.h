@@ -61,8 +61,6 @@
 #include <ge/renderer/colors.h>
 #include <ge/renderer/framebuffer.h>
 #include <ge/renderer/graphics_context.h>
-#include <ge/renderer/ortho_camera_controller.h>
-#include <ge/renderer/orthographic_camera.h>
 #include <ge/renderer/projection_camera.h>
 #include <ge/renderer/render_command.h>
 #include <ge/renderer/renderer.h>

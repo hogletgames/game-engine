@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE
+// NOLINTNEXTLINE(llvm-header-guard)
 #ifndef GE_EXAMPLES_TRIANGLE_LAYER_H_
 #define GE_EXAMPLES_TRIANGLE_LAYER_H_
 
@@ -50,7 +50,6 @@ public:
 
 private:
     ShaderLibrary m_shader_library;
-    OrthographicCamera m_camera;
     Shared<VertexArray> m_vao;
 };
 

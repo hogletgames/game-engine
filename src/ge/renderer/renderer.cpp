@@ -32,13 +32,13 @@
 
 #include "renderer.h"
 #include "render_command.h"
+#include "shader_program.h"
 #include "vertex_array.h"
+#include "view_projection_camera.h"
 
 #include "ge/core/log.h"
 #include "ge/core/utils.h"
 #include "ge/debug/profile.h"
-#include "ge/renderer/orthographic_camera.h"
-#include "ge/renderer/shader_program.h"
 #include "ge/window/window_event.h"
 
 namespace GE {
@@ -72,7 +72,7 @@ bool Renderer::onWindowResized(const WindowResizedEvent& event)
     return false;
 }
 
-void Renderer::begin(const OrthographicCamera& camera)
+void Renderer::begin(const ViewProjectionCamera& camera)
 {
     GE_PROFILE_FUNC();
 

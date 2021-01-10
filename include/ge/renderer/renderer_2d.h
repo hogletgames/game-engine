@@ -43,10 +43,10 @@
 namespace GE {
 
 class Entity;
-class OrthographicCamera;
 class Texture2D;
 class VertexArray;
 class VertexBuffer;
+class ViewProjectionCamera;
 
 class GE_API Renderer2D
 {
@@ -82,7 +82,7 @@ public:
 
     static const std::string& getAssetsDir();
 
-    static void begin(const OrthographicCamera& camera);
+    static void begin(const ViewProjectionCamera& camera);
     static void begin(const Entity& camera);
     static void end();
 

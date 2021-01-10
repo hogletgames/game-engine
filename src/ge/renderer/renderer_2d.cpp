@@ -32,14 +32,13 @@
 
 #include "renderer_2d.h"
 #include "buffers.h"
-#include "orthographic_camera.h"
 #include "render_command.h"
 #include "renderer.h"
 #include "shader_program.h"
 #include "texture.h"
 #include "vertex_array.h"
+#include "view_projection_camera.h"
 
-#include "ge/core/asserts.h"
 #include "ge/core/log.h"
 #include "ge/core/utils.h"
 #include "ge/debug/profile.h"
@@ -165,7 +164,7 @@ const std::string& Renderer2D::getAssetsDir()
     return get()->m_assets_dir;
 }
 
-void Renderer2D::begin(const OrthographicCamera& camera)
+void Renderer2D::begin(const ViewProjectionCamera& camera)
 {
     GE_PROFILE_FUNC();
 
