@@ -31,6 +31,7 @@
  */
 
 #include "properties_panel.h"
+#include "common_controls.h"
 #include "editor_state.h"
 
 #include "ge/core/type_list.h"
@@ -104,80 +105,6 @@ void drawComponent(GE::TransformComponent* component,
 /**
  * Camera Component
  */
-void drawCameraProjectionCombo(GE::CameraComponent* component)
-{
-    GE_PROFILE_FUNC();
-
-    using Projection = GE::ProjectionCamera::ProjectionType;
-
-    auto current_projection = component->camera.getProjectionType();
-    static constexpr std::array<Projection, 2> all_projections{Projection::PERSPECTIVE,
-                                                               Projection::ORTHOGRAPHIC};
-
-    if (ImGui::BeginCombo("Projection", GE::toString(current_projection).c_str())) {
-        for (auto projection : all_projections) {
-            bool is_selected = current_projection == projection;
-
-            if (ImGui::Selectable(GE::toString(projection).c_str(), is_selected)) {
-                current_projection = projection;
-                component->camera.setProjectionType(projection);
-            }
-
-            if (is_selected) {
-                ImGui::SetItemDefaultFocus();
-            }
-        }
-
-        ImGui::EndCombo();
-    }
-}
-
-void drawCameraProjectionPerspective(GE::CameraComponent* component)
-{
-    GE_PROFILE_FUNC();
-
-    auto& camera = component->camera;
-    auto params = camera.getPerspective();
-
-    bool is_projection_changed = ImGui::DragFloat("Vertical FOV", &params.fov);
-    is_projection_changed |= ImGui::DragFloat("Near", &params.near, 0.1f);
-    is_projection_changed |= ImGui::DragFloat("Far", &params.far, 10.0f);
-
-    if (is_projection_changed) {
-        camera.setPerspectiveParams(params);
-    }
-
-    if (ImGui::Button("Reset Projection")) {
-        camera.setPerspectiveParams({});
-    }
-}
-
-void drawCameraProjectionOrthographic(GE::CameraComponent* component,
-                                      LE::EditorState* editor_state)
-{
-    GE_PROFILE_FUNC();
-
-    auto& camera = component->camera;
-    auto params = camera.getOrthographic();
-
-    bool is_projection_changed = ImGui::DragFloat("Size", &params.size, 0.25);
-    is_projection_changed |= ImGui::DragFloat("Near", &params.near, 0.25);
-    is_projection_changed |= ImGui::DragFloat("Far", &params.far, 0.25);
-
-    if (is_projection_changed) {
-        camera.setOrthographicParams(params);
-    }
-
-    if (ImGui::Button("Reset Projection")) {
-        camera.setOrthographicParams({});
-    }
-
-    if (ImGui::Checkbox("Fixed aspect ratio", &component->fixed_aspect_ratio) &&
-        !component->fixed_aspect_ratio) {
-        component->camera.setViewport(editor_state->viewport());
-    }
-}
-
 void drawComponent(GE::CameraComponent* component, LE::EditorState* editor_state)
 {
     GE_PROFILE_FUNC();
@@ -185,7 +112,7 @@ void drawComponent(GE::CameraComponent* component, LE::EditorState* editor_state
     using Projection = GE::ProjectionCamera::ProjectionType;
 
     auto& scene = editor_state->scene();
-    auto current_projection = component->camera.getProjectionType();
+    auto projection_type = component->camera.getProjectionType();
     bool is_primary = scene->getMainCamera() == editor_state->selectedEntity();
 
     if (ImGui::Checkbox("Primary Camera", &is_primary)) {
@@ -194,12 +121,12 @@ void drawComponent(GE::CameraComponent* component, LE::EditorState* editor_state
         scene->setMainCamera(camera_entity);
     }
 
-    drawCameraProjectionCombo(component);
+    LE::drawProjectionCamera(&component->camera);
 
-    if (current_projection == Projection::PERSPECTIVE) {
-        drawCameraProjectionPerspective(component);
-    } else if (current_projection == Projection::ORTHOGRAPHIC) {
-        drawCameraProjectionOrthographic(component, editor_state);
+    if (projection_type == Projection::ORTHOGRAPHIC &&
+        ImGui::Checkbox("Fixed aspect ratio", &component->fixed_aspect_ratio) &&
+        !component->fixed_aspect_ratio) {
+        component->camera.setViewport(editor_state->viewport());
     }
 }
 

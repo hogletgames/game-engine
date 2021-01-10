@@ -36,12 +36,6 @@
 
 #include <panels/panel_base.h>
 
-namespace GE {
-
-class Entity;
-
-} // namespace GE
-
 namespace LE {
 
 class EditorState;
