@@ -33,6 +33,7 @@
 #include "editor_layer.h"
 #include "editor_scene_renderer.h"
 #include "editor_state.h"
+#include "panels/editor_camera_panel.h"
 #include "panels/properties_panel.h"
 #include "panels/scene_hierarchy_panel.h"
 #include "panels/statistic_panel.h"
@@ -78,7 +79,8 @@ void EditorLayer::onAttach()
     m_panels = {GE::makeShared<ViewportPanel>(m_editor_state),
                 GE::makeShared<SceneHierarchyPanel>(m_editor_state),
                 GE::makeShared<PropertiesPanel>(m_editor_state),
-                GE::makeShared<StatisticPanel>()};
+                GE::makeShared<StatisticPanel>(),
+                GE::makeShared<EditorCameraPanel>(camera)};
 }
 
 void EditorLayer::onDetach()
