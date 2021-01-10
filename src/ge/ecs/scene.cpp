@@ -46,24 +46,6 @@ constexpr auto ENTITY_TAG_DEFAULT = "Entity";
 
 namespace GE {
 
-void Scene::onUpdate(Timestamp dt)
-{
-    GE_PROFILE_FUNC();
-
-    m_registry.eachEntityWith<NativeScriptComponent>([dt](Entity entity) {
-        entity.getComponent<NativeScriptComponent>().onUpdate(dt);
-    });
-
-    if (m_main_camera.isNull()) {
-        return;
-    }
-
-    Begin<GE::Renderer2D> begin{m_main_camera};
-
-    m_registry.eachEntityWith<TransformComponent, SpriteRendererComponent>(
-        [](Entity entity) { Renderer2D::draw(entity); });
-}
-
 void Scene::onViewportResize(const glm::vec2& viewport)
 {
     GE_PROFILE_FUNC();
@@ -77,6 +59,23 @@ void Scene::onViewportResize(const glm::vec2& viewport)
             camera.camera.setViewport(m_viewport);
         }
     });
+}
+
+void Scene::updateEntities(Timestamp dt)
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.eachEntityWith<NativeScriptComponent>([dt](Entity entity) {
+        entity.getComponent<NativeScriptComponent>().onUpdate(dt);
+    });
+}
+
+void Scene::drawEntities()
+{
+    GE_PROFILE_FUNC();
+
+    m_registry.eachEntityWith<TransformComponent, SpriteRendererComponent>(
+        [](Entity entity) { Renderer2D::draw(entity); });
 }
 
 void Scene::eachEntity(const ForeachCallback& callback)
