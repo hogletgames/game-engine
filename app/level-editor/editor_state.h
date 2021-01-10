@@ -45,7 +45,7 @@ namespace LE {
 class GE_API EditorState
 {
 public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Scoped<GE::Scene> scene)
+    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Shared<GE::Scene> scene)
         : m_framebuffer{std::move(framebuffer)}
         , m_scene{std::move(scene)}
     {}
@@ -59,8 +59,8 @@ public:
     void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
     bool isVPFocused() const { return m_is_vp_focused; }
 
-    const GE::Scoped<GE::Scene>& scene() const { return m_scene; }
-    GE::Scoped<GE::Scene>& scene() { return m_scene; }
+    const GE::Shared<GE::Scene>& scene() const { return m_scene; }
+    GE::Shared<GE::Scene>& scene() { return m_scene; }
 
     void setSelectedEntity(const GE::Entity& entity) { m_selected_entity = entity; }
     const GE::Entity& selectedEntity() const { return m_selected_entity; }
@@ -71,7 +71,7 @@ private:
     glm::vec2 m_viewport{0.0f, 0.0f};
     bool m_is_vp_focused{false};
 
-    GE::Scoped<GE::Scene> m_scene;
+    GE::Shared<GE::Scene> m_scene;
     GE::Entity m_selected_entity;
 };
 
