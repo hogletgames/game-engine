@@ -8,6 +8,7 @@ set(GE_RENDERER_SRC
     renderer.cpp
     renderer_2d.cpp
     renderer_api.cpp
+    scene_renderer.cpp
     shader_program.cpp
     shader.cpp
     texture.cpp
