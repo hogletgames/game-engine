@@ -91,11 +91,15 @@ void ViewportPanel::drawGizmo(GE::Entity* entity)
     auto window_size = ImGui::GetWindowSize();
     ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
 
-    // TODO: replace with Editor Camera
-    const auto& camera = camera_entity.getComponent<GE::CameraComponent>().camera;
-    const auto& camera_projection = camera.getProjection();
-    const auto& camera_transform = camera_entity.getComponent<GE::TransformComponent>();
-    auto camera_view = glm::inverse(camera_transform.getTransform());
+    const auto& camera = m_editor_state->cameraController()->getCamera();
+    const auto& camera_projection = camera->getProjectionMatrix();
+    const auto& camera_view = camera->getViewMatrix();
+
+    // TODO: use it in runtime
+    // const auto& camera = camera_entity.getComponent<GE::CameraComponent>().camera;
+    // const auto& camera_projection = camera.getProjectionMatrix();
+    // const auto& camera_transform = camera_entity.getComponent<GE::TransformComponent>();
+    // auto camera_view = glm::inverse(camera_transform.getTransform());
 
     auto& tc = entity->getComponent<GE::TransformComponent>();
     auto transform = tc.getTransform();

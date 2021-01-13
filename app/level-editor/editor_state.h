@@ -37,6 +37,8 @@
 #include <ge/ecs/entity.h>
 #include <ge/ecs/scene.h>
 #include <ge/renderer/framebuffer.h>
+#include <ge/renderer/view_projection_camera.h>
+#include <ge/renderer/vp_camera_controller.h>
 
 #include <glm/glm.hpp>
 
@@ -44,20 +46,20 @@ namespace {
 
 inline constexpr int GIZMO_TYPE_UNKNOWN{-1};
 
-}
+} // namespace
 
 namespace LE {
 
 class GE_API EditorState
 {
 public:
-    EditorState(GE::Scoped<GE::Framebuffer> framebuffer, GE::Shared<GE::Scene> scene)
-        : m_framebuffer{std::move(framebuffer)}
-        , m_scene{std::move(scene)}
-    {}
+    void setFramebuffer(GE::Shared<GE::Framebuffer> framebuffer)
+    {
+        m_framebuffer = std::move(framebuffer);
+    }
 
-    const GE::Scoped<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
-    GE::Scoped<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
+    const GE::Shared<GE::Framebuffer>& framebuffer() const { return m_framebuffer; }
+    GE::Shared<GE::Framebuffer>& framebuffer() { return m_framebuffer; }
 
     void setViewport(const glm::vec2& viewport) { m_viewport = viewport; }
     const glm::vec2& viewport() const { return m_viewport; }
@@ -65,6 +67,14 @@ public:
     void setIsVPFocused(bool is_vp_focused) { m_is_vp_focused = is_vp_focused; }
     bool isVPFocused() const { return m_is_vp_focused; }
 
+    void setCameraController(GE::Shared<GE::VPCameraController> camera_controller)
+    {
+        m_camera_controller = std::move(camera_controller);
+    }
+
+    GE::Shared<GE::VPCameraController>& cameraController() { return m_camera_controller; }
+
+    void setScene(GE::Shared<GE::Scene> scene) { m_scene = std::move(scene); }
     const GE::Shared<GE::Scene>& scene() const { return m_scene; }
     GE::Shared<GE::Scene>& scene() { return m_scene; }
 
@@ -76,9 +86,10 @@ public:
     int gizmoType() const { return m_gizmo_type; }
 
 private:
-    GE::Scoped<GE::Framebuffer> m_framebuffer;
+    GE::Shared<GE::Framebuffer> m_framebuffer;
     glm::vec2 m_viewport{0.0f, 0.0f};
     bool m_is_vp_focused{false};
+    GE::Shared<GE::VPCameraController> m_camera_controller;
 
     GE::Shared<GE::Scene> m_scene;
     GE::Entity m_selected_entity;

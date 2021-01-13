@@ -60,12 +60,14 @@ void EditorLayer::onAttach()
     GE::Framebuffer::properties_t framebuffer_props{};
     framebuffer_props.width = GE::Application::getWindow().getWidth();
     framebuffer_props.height = GE::Application::getWindow().getHeight();
-    auto framebuffer = GE::Framebuffer::create(framebuffer_props);
+    GE::Shared<GE::Framebuffer> framebuffer = GE::Framebuffer::create(framebuffer_props);
 
     auto scene = GE::makeShared<GE::Scene>();
 
     auto square = scene->createEntity("Square");
     square.addComponent<GE::SpriteRendererComponent>(GE::Color::GREEN);
+    auto& square_rotation = square.getComponent<GE::TransformComponent>().rotation;
+    square_rotation = glm::radians(glm::vec3{45.0f, 45.0f, 0.0f});
 
     auto main_camera = scene->createCamera("Main Camera");
     main_camera.addComponent<GE::NativeScriptComponent>()
@@ -73,9 +75,14 @@ void EditorLayer::onAttach()
     scene->setMainCamera(main_camera);
 
     auto camera = GE::makeShared<GE::ViewProjectionCamera>();
-    m_vp_camera = GE::makeShared<GE::VPCameraController>(camera);
-    m_scene_renderer = GE::makeShared<EditorSceneRenderer>(m_vp_camera, scene);
-    m_editor_state = GE::makeShared<EditorState>(std::move(framebuffer), scene);
+    auto camera_controller = GE::makeShared<GE::VPCameraController>(camera);
+    m_scene_renderer = GE::makeShared<EditorSceneRenderer>(camera_controller, scene);
+
+    m_editor_state = GE::makeShared<EditorState>();
+    m_editor_state->setFramebuffer(framebuffer);
+    m_editor_state->setScene(scene);
+    m_editor_state->setCameraController(camera_controller);
+
     m_panels = {GE::makeShared<ViewportPanel>(m_editor_state),
                 GE::makeShared<SceneHierarchyPanel>(m_editor_state),
                 GE::makeShared<PropertiesPanel>(m_editor_state),
@@ -88,7 +95,6 @@ void EditorLayer::onDetach()
     GE_PROFILE_FUNC();
 
     m_scene_renderer.reset();
-    m_vp_camera.reset();
     m_panels.clear();
     m_editor_state.reset();
 }
@@ -100,7 +106,7 @@ void EditorLayer::onUpdate(GE::Timestamp dt)
     updateViewport();
 
     if (m_editor_state->isVPFocused()) {
-        m_vp_camera->onUpdate(dt);
+        m_editor_state->cameraController()->onUpdate(dt);
     }
 
     auto& framebuffer = m_editor_state->framebuffer();
@@ -118,7 +124,10 @@ void EditorLayer::onEvent(GE::Event* event)
 {
     GE_PROFILE_FUNC();
 
-    m_vp_camera->onEvent(event);
+    m_editor_state->cameraController()->onEvent(event);
+
+    GE::EventDispatcher dispatcher{event};
+    dispatcher.dispatch<GE::KeyPressedEvent>(GE_BIND_EVENT_FN(onKeyPressed));
 }
 
 void EditorLayer::onGuiRender()
@@ -131,6 +140,20 @@ void EditorLayer::onGuiRender()
     for (auto& panel : m_panels) {
         panel->onGuiRender();
     }
+}
+
+bool EditorLayer::onKeyPressed(const GE::KeyPressedEvent& event)
+{
+    // Gizmo
+    switch (event.getKeyCode()) {
+        case GE::KeyCode::Q: m_editor_state->setGizmoType(GIZMO_TYPE_UNKNOWN); break;
+        case GE::KeyCode::W: m_editor_state->setGizmoType(ImGuizmo::TRANSLATE); break;
+        case GE::KeyCode::E: m_editor_state->setGizmoType(ImGuizmo::ROTATE); break;
+        case GE::KeyCode::R: m_editor_state->setGizmoType(ImGuizmo::SCALE); break;
+        default: break;
+    }
+
+    return false;
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
@@ -163,23 +186,9 @@ void EditorLayer::updateViewport()
 
     if (is_vp_changed && is_vp_positive) {
         m_editor_state->framebuffer()->resize(viewport);
-        m_vp_camera->resize(viewport);
+        m_editor_state->cameraController()->resize(viewport);
         m_editor_state->scene()->onViewportResize(viewport);
     }
-}
-
-bool EditorLayer::onKeyPressed(const GE::KeyPressedEvent& event)
-{
-    // Gizmo
-    switch (event.getKeyCode()) {
-        case GE::KeyCode::Q: m_editor_state->setGizmoType(GIZMO_TYPE_UNKNOWN); break;
-        case GE::KeyCode::W: m_editor_state->setGizmoType(ImGuizmo::TRANSLATE); break;
-        case GE::KeyCode::E: m_editor_state->setGizmoType(ImGuizmo::ROTATE); break;
-        case GE::KeyCode::R: m_editor_state->setGizmoType(ImGuizmo::SCALE); break;
-        default: break;
-    }
-
-    return false;
 }
 
 } // namespace LE

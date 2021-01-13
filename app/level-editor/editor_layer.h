@@ -40,6 +40,7 @@
 
 namespace GE {
 
+class KeyPressedEvent;
 class VPCameraController;
 class SceneRendererBase;
 
@@ -58,10 +59,12 @@ public:
     void onAttach() override;
     void onDetach() override;
     void onUpdate(GE::Timestamp dt) override;
-    void onEvent(GE::Event *event) override;
+    void onEvent(GE::Event* event) override;
     void onGuiRender() override;
 
 private:
+    bool onKeyPressed(const GE::KeyPressedEvent& event);
+
     void showMenuBar();
 
     void updateViewport();
@@ -69,7 +72,6 @@ private:
     GE::Shared<EditorState> m_editor_state;
     std::vector<GE::Shared<PanelBase>> m_panels;
 
-    GE::Shared<GE::VPCameraController> m_vp_camera;
     GE::Shared<GE::SceneRendererBase> m_scene_renderer;
 };
 
